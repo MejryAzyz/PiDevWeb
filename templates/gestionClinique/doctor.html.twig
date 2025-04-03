@@ -1,0 +1,76 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Doctors | Osen - Responsive Bootstrap 5 Admin Dashboard{% endblock %}
+
+{% block css %}
+<!-- App css -->
+<link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet" type="text/css" id="app-style" />
+
+<!-- Icons css -->
+<link href="{{ asset('assets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+{% block body %}
+<!-- Begin page -->
+    <!-- Page Content -->
+
+        <div class="page-container">
+            <div class="page-title-head d-flex align-items-sm-center flex-sm-row flex-column gap-2">
+                <div class="flex-grow-1">
+                    <h4 class="fs-18 fw-semibold mb-0">Doctors</h4>
+                </div>
+                <div class="text-end">
+                    <ol class="breadcrumb m-0 py-0">
+                        <li class="breadcrumb-item"><a href="#">Osen</a></li>
+                        <li class="breadcrumb-item"><a href="#">Hospital</a></li>
+                        <li class="breadcrumb-item active">Doctors</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center justify-content-between border-bottom border-light">
+                            <h4 class="header-title">Doctor List</h4>
+                            <div>
+                                <a href="{{ path('home') }}" class="btn btn-success bg-gradient">
+                                    <i class="ti ti-plus me-1"></i> Ajouter Docteur
+                                </a>
+                                <a href="#" class="btn btn-secondary bg-gradient">
+                                    <i class="ti ti-file-import me-1"></i> Import
+                                </a>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-nowrap mb-0">
+                                <thead class="bg-light-subtle">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Nom</th>
+                                        <th>Prenom</th>
+                                        <th>Email</th>
+                                        <th>Telephone</th>
+                                        <th>Clinique</th>
+                                        <th>Specialite</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                               
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+
+{% endblock %}
+
+{% block js %}
+<!-- Vendor js -->
+<script src="{{ asset('assets/js/vendor.min.js') }}"></script>
+
+<!-- App js -->
+<script src="{{ asset('assets/js/app.js') }}"></script>
+{% endblock %}
