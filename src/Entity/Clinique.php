@@ -14,19 +14,13 @@ use App\Repository\CliniqueRepository;
 class Clinique
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue(strategy: "AUTO")]
+    #[ORM\Column(type: "integer")]
     private ?int $id_clinique = null;
 
     public function getId_clinique(): ?int
     {
         return $this->id_clinique;
-    }
-
-    public function setId_clinique(int $id_clinique): self
-    {
-        $this->id_clinique = $id_clinique;
-        return $this;
     }
 
     #[ORM\Column(type: 'string', nullable: false)]
@@ -86,7 +80,7 @@ class Clinique
     }
 
     #[ORM\Column(type: 'integer', nullable: false)]
-    private ?int $rate = null;
+    private ?int $rate = 0;
 
     public function getRate(): ?int
     {

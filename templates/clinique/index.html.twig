@@ -34,7 +34,7 @@
                         <div class="card-header d-flex align-items-center justify-content-between border-bottom border-light">
                             <h4 class="header-title">Liste des cliniques</h4>
                             <div>
-                                <a href="{{ path('home') }}" class="btn btn-success bg-gradient">
+                                <a href="{{ path('app_clinique_new') }}" class="btn btn-success bg-gradient">
                                     <i class="ti ti-plus me-1"></i> Ajouter clinique
                                 </a>
                                 <a href="#" class="btn btn-secondary bg-gradient">
@@ -66,7 +66,13 @@
                                             <td>{{ clinique.email }}</td>
                                             <td>{{ clinique.telephone }}</td>
                                             <td>{{ clinique.prix }} €</td>
-                                            
+                                            <td class="pe-3">
+                                                <div class="hstack gap-1 justify-content-end">
+                                                    <a href="{{ path('app_clinique_show', {'id_clinique': clinique.id_clinique}) }}" class="btn btn-soft-primary btn-icon btn-sm rounded-circle"> <i class="ti ti-eye"></i></a>
+                                                    <a href="{{ path('app_clinique_edit', {'id_clinique': clinique.id_clinique}) }}" class="btn btn-soft-success btn-icon btn-sm rounded-circle"> <i class="ti ti-edit fs-16"></i></a>
+                                                    <a href="#" class="btn btn-soft-danger btn-icon btn-sm rounded-circle"onclick="deleteClinique({{ clinique.id_clinique }}); return false;"><i class="ti ti-trash"></i></a>
+
+                                                </div></td>
                                         </tr>
                                     {% else %}
                                         <tr>
@@ -90,5 +96,44 @@
 <script src="{{ asset('assets/js/vendor.min.js') }}"></script>
 
 <!-- App js -->
-<script src="{{ asset('assets/js/app.js') }}"></script>
+<script src="{{ asset('assets/js/vendor.min.js') }}"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+<script>
+    function deleteClinique(id) {
+        Swal.fire({
+            title: 'Êtes-vous sûr ?',
+            text: "Cette action est irréversible !",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Oui, supprimer',
+            cancelButtonText: 'Annuler'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/clinique/${id}/delete`; // adapte si nécessaire
+                form.style.display = 'none';
+
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = '_token';
+                csrfInput.value = '{{ csrf_token("delete") }}' + id;
+
+                form.appendChild(csrfInput);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+</script>
+
+
+
+
 {% endblock %}
+
