@@ -70,7 +70,12 @@
                                                 <div class="hstack gap-1 justify-content-end">
                                                     <a href="{{ path('app_clinique_show', {'id_clinique': clinique.id_clinique}) }}" class="btn btn-soft-primary btn-icon btn-sm rounded-circle"> <i class="ti ti-eye"></i></a>
                                                     <a href="{{ path('app_clinique_edit', {'id_clinique': clinique.id_clinique}) }}" class="btn btn-soft-success btn-icon btn-sm rounded-circle"> <i class="ti ti-edit fs-16"></i></a>
-                                                    <a href="#" class="btn btn-soft-danger btn-icon btn-sm rounded-circle"onclick="deleteClinique({{ clinique.id_clinique }}); return false;"><i class="ti ti-trash"></i></a>
+                                                    <button class="btn btn-soft-danger btn-icon btn-sm rounded-circle delete-btn" 
+                                                data-id="{{ clinique.id_clinique }}"
+                                                data-url="{{ path('app_clinique_delete', {'id_clinique': clinique.id_clinique}) }}"
+                                                data-token="{{ csrf_token('delete' ~ clinique.id_clinique) }}">
+                                            <i class="ti ti-trash"></i>
+                                        </button>
 
                                                 </div></td>
                                         </tr>
@@ -102,35 +107,74 @@
 
 
 <script>
-    function deleteClinique(id) {
-        Swal.fire({
-            title: 'Êtes-vous sûr ?',
-            text: "Cette action est irréversible !",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Oui, supprimer',
-            cancelButtonText: 'Annuler'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = `/clinique/${id}/delete`; // adapte si nécessaire
-                form.style.display = 'none';
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const deleteUrl = this.getAttribute('data-url');
+                const cliniqueId = this.getAttribute('data-id');
+                const csrfToken = this.getAttribute('data-token');
 
-                const csrfInput = document.createElement('input');
-                csrfInput.type = 'hidden';
-                csrfInput.name = '_token';
-                csrfInput.value = '{{ csrf_token("delete") }}' + id;
+                Swal.fire({
+                    title: 'Êtes-vous sûr ?',
+                    text: "Cette action est irréversible !",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Oui, supprimer',
+                    cancelButtonText: 'Annuler'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Créer un formulaire pour soumettre la requête POST
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = deleteUrl;
 
-                form.appendChild(csrfInput);
-                document.body.appendChild(form);
-                form.submit();
-            }
+                        // Ajouter le token CSRF
+                        const tokenInput = document.createElement('input');
+                        tokenInput.type = 'hidden';
+                        tokenInput.name = '_token';
+                        tokenInput.value = csrfToken;
+                        form.appendChild(tokenInput);
+
+                        document.body.appendChild(form);
+
+                        fetch(deleteUrl, {
+                            method: 'POST',
+                            body: new FormData(form)
+                        }).then(response => {
+                            if (response.ok) {
+                                Swal.fire(
+                                    'Supprimé !',
+                                    'La clinique a été supprimée avec succès.',
+                                    'success'
+                                ).then(() => {
+                                    button.closest('tr').remove();
+                                });
+                            } else {
+                                Swal.fire(
+                                    'Erreur !',
+                                    "Une erreur s'est produite lors de la suppression de la clinique.",
+                                    'error'
+                                );
+                            }
+                        }).catch(error => {
+                            Swal.fire(
+                                'Erreur !',
+                                "Une erreur s'est produite lors de la suppression de la clinique.",
+                                'error'
+                            );
+                        }).finally(() => {
+                            document.body.removeChild(form);
+                        });
+                    }
+                });
+            });
         });
-    }
+    });
 </script>
+
 
 
 

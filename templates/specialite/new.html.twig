@@ -1,0 +1,71 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter une Spécialité | Osen - Tableau de Bord Admin Bootstrap 5{% endblock %}
+
+{% block css %}
+    <!-- CSS spécifiques (au cas où tu en ajoutes plus tard) -->
+    <link href="{{ asset('assets/vendor/flatpickr/flatpickr.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/vendor/select2/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
+    <style>
+        .form-error {
+            color: red;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="page-container">
+        <div class="page-title-head d-flex align-items-sm-center flex-sm-row flex-column gap-2">
+            <div class="flex-grow-1">
+                <h4 class="fs-18 fw-semibold mb-0">Ajouter une Spécialité</h4>
+            </div>
+            <div class="text-end">
+                <ol class="breadcrumb m-0 py-0">
+                    <li class="breadcrumb-item"><a href="#">Osen</a></li>
+                    <li class="breadcrumb-item"><a href="{{ path('app_specialite_index') }}">Gestion Spécialités</a></li>
+                    <li class="breadcrumb-item active">Ajouter une Spécialité</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-7">
+                <div class="card">
+                    <div class="card-header border-bottom border-dashed">
+                        <h4 class="card-title mb-0">Informations de la Spécialité</h4>
+                    </div>
+                    <div class="card-body">
+                        {{ form_start(form, {'method': 'POST', 'action': path('app_specialite_new')}) }}
+
+
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="mb-3">
+                                        <label for="{{ form.nom.vars.id }}" class="form-label">Nom de la Spécialité</label>
+                                        {{ form_widget(form.nom, {'attr': {'class': 'form-control', 'placeholder': 'Entrez le nom de la spécialité'}}) }}
+                                        <div class="form-error">
+                                            {{ form_errors(form.nom) }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="text-end mb-3">
+                                <button type="submit" class="btn btn-primary">Ajouter la Spécialité</button>
+                                <a href="{{ path('app_specialite_index') }}" class="btn btn-danger">Annuler</a>
+                            </div>
+
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script src="{{ asset('assets/vendor/flatpickr/flatpickr.min.js') }}"></script>
+    <script src="{{ asset('assets/vendor/select2/js/select2.min.js') }}"></script>
+{% endblock %}

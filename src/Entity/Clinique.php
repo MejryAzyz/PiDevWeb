@@ -6,8 +6,8 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-
 use App\Repository\CliniqueRepository;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CliniqueRepository::class)]
 #[ORM\Table(name: 'clinique')]
@@ -23,6 +23,14 @@ class Clinique
         return $this->id_clinique;
     }
 
+    #[Assert\NotBlank(message: "Le nom est obligatoire.")]
+    #[Assert\Length(
+        min: 3,
+        max: 100,
+        minMessage: "Le nom doit contenir au moins {{ limit }} caractères.",
+        maxMessage: "Le nom ne peut pas dépasser {{ limit }} caractères."
+    )]
+
     #[ORM\Column(type: 'string', nullable: false)]
     private ?string $nom = null;
 
@@ -36,6 +44,17 @@ class Clinique
         $this->nom = $nom;
         return $this;
     }
+
+    // #[Assert\NotBlank(message: "L'adresse est obligatoire.")]
+    // #[Assert\Length(
+    //     min: 10,
+    //     minMessage: "L'adresse doit contenir au moins {{ limit }} caractères."
+    // )]
+    #[Assert\NotBlank(message: "L'adresse ne peut pas être vide")]
+    #[Assert\Regex(
+        pattern: "/^[a-zA-ZÀ-ÿ0-9\s'-]+, [a-zA-ZÀ-ÿ0-9\s'-]+, [0-9]{5}$/",
+        message: "L'adresse doit être au format 'Rue, Ville, Code Postal' (ex. : Rue de la Paix, Paris, 75001)"
+    )]
 
     #[ORM\Column(type: 'text', nullable: false)]
     private ?string $adresse = null;
@@ -51,6 +70,12 @@ class Clinique
         return $this;
     }
 
+    #[Assert\NotBlank(message: "Le numéro de téléphone est obligatoire.")]
+     #[Assert\Regex(
+    pattern: "/^\+?[0-9]{8,15}$/",
+    message: "Le numéro de téléphone doit être composé de 8 à 15 chiffres, avec un '+' facultatif au début."
+    )]
+
     #[ORM\Column(type: 'string', nullable: false)]
     private ?string $telephone = null;
 
@@ -65,6 +90,9 @@ class Clinique
         return $this;
     }
 
+    #[Assert\NotBlank(message: "L'email est obligatoire.")]
+    #[Assert\Email(message: "L'adresse email '{{ value }}' n'est pas valide.")]
+    
     #[ORM\Column(type: 'string', nullable: false)]
     private ?string $email = null;
 
@@ -93,6 +121,11 @@ class Clinique
         return $this;
     }
 
+    #[Assert\NotBlank(message: "La description est obligatoire.")]
+    #[Assert\Length(
+        min: 10,
+        minMessage: "La description doit contenir au moins {{ limit }} caractères."
+    )]
     #[ORM\Column(type: 'text', nullable: false)]
     private ?string $description = null;
 
@@ -106,7 +139,9 @@ class Clinique
         $this->description = $description;
         return $this;
     }
-
+ 
+    #[Assert\NotBlank(message: "Le prix est obligatoire.")]
+    #[Assert\Positive(message: "Le prix doit être un nombre positif.")]
     #[ORM\Column(type: 'decimal', nullable: false)]
     private ?float $prix = null;
 
