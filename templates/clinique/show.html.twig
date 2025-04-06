@@ -1,50 +1,256 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Clinique{% endblock %}
+{% block title %}Docteurs de la clinique{% endblock %}
+
+{% block css %}
+<!-- gridjs CSS -->
+<link rel="stylesheet" href="coderthemes.com/osen/layouts/assets/vendor/gridjs/theme/mermaid.min.css">
+<style>
+    /* Styles généraux */
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f9f9f9;
+        margin: 0;
+        padding: 0;
+    }
+
+    .card {
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        margin-top: 20px;
+        overflow: hidden;
+        background-color: #ffffff;
+    }
+
+    .card-header {
+        background-color: #ffffff;
+        color: #12024e;
+        padding: 15px 20px;
+        font-weight: bold;
+        border-bottom: 2px solid #dde4fa;
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    h4.card-title {
+        font-size: 1.5rem;
+        margin-bottom: 0;
+    }
+
+    /* Barre de recherche et pagination */
+    .search-bar {
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .search-bar input {
+        padding: 10px;
+        width: 250px;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        background-color: #f1f1f1;
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 15px;
+    }
+
+    .pagination a {
+        padding: 8px 16px;
+        margin: 0 5px;
+        border-radius: 5px;
+        text-decoration: none;
+        background-color: #dde4fa;
+        color: #6277b8;
+        transition: background-color 0.3s ease;
+    }
+
+    .pagination a:hover {
+        background-color: #dde4fa;
+    }
+
+    /* Table Styles */
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .table th, .table td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid #e2e2e2;
+    }
+
+    .table th {
+        background-color: #dde4fa;
+        color: #586cab;
+        font-weight: bolder;
+        cursor: pointer;
+        text-transform: none;
+    }
+
+    .table tr:nth-child(even) {
+        background-color: #fafafa;
+    }
+
+    .table tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    .table td {
+        color: #495057;
+    }
+
+    /* Custom Message for No Data */
+    .no-doctors-message {
+        color: #e74a3b;
+        font-size: 1.2rem;
+        text-align: center;
+    }
+
+    .text-center {
+        text-align: center;
+        font-size: 1rem;
+        color: #6c757d;
+    }
+
+</style>
+{% endblock %}
 
 {% block body %}
-    <h1>Clinique</h1>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header border-bottom border-dashed">
+                <h4 class="card-title mb-0">Liste des docteurs pour cette clinique</h4>
+            </div><!-- end card header -->
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id_clinique</th>
-                <td>{{ clinique.idClinique }}</td>
-            </tr>
-            <tr>
-                <th>Nom</th>
-                <td>{{ clinique.nom }}</td>
-            </tr>
-            <tr>
-                <th>Adresse</th>
-                <td>{{ clinique.adresse }}</td>
-            </tr>
-            <tr>
-                <th>Telephone</th>
-                <td>{{ clinique.telephone }}</td>
-            </tr>
-            <tr>
-                <th>Email</th>
-                <td>{{ clinique.email }}</td>
-            </tr>
-            <tr>
-                <th>Rate</th>
-                <td>{{ clinique.rate }}</td>
-            </tr>
-            <tr>
-                <th>Description</th>
-                <td>{{ clinique.description }}</td>
-            </tr>
-            <tr>
-                <th>Prix</th>
-                <td>{{ clinique.prix }}</td>
-            </tr>
-        </tbody>
-    </table>
+            <div class="card-body">
+                <!-- Barre de recherche -->
+                <div class="search-bar">
+                    <input type="text" id="search-input" placeholder="Rechercher un docteur..." onkeyup="searchDoctors()">
+                </div>
 
-    <a href="{{ path('app_clinique_index') }}">back to list</a>
+                {% if docteurs is not empty %}
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th onclick="sortTable(0)">ID</th>
+                                <th onclick="sortTable(1)">Nom</th>
+                                <th onclick="sortTable(2)">Prénom</th>
+                                <th onclick="sortTable(4)">Téléphone</th>
+                                <th onclick="sortTable(5)">Email</th>
+                                <th onclick="sortTable(3)">Spécialité</th>
+                            </tr>
+                        </thead>
+                        <tbody id="doctors-table">
+                            {% for docteur in docteurs %}
+                                <tr>
+                                    <td>{{ docteur.idDocteur }}</td>
+                                    <td>{{ docteur.nom }}</td>
+                                    <td>{{ docteur.prenom }}</td>
+                                    <td>{{ docteur.telephone }}</td>
+                                    <td>{{ docteur.email }}</td>
+                                    <td>{{ docteur.specialite.nom }}</td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="6" class="no-doctors-message">Aucun docteur trouvé pour cette clinique.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
 
-    <a href="{{ path('app_clinique_edit', {'id_clinique': clinique.id_clinique}) }}">edit</a>
+                    <!-- Pagination -->
+                    <div class="pagination">
+                        <a href="#">« Précédent</a>
+                        <a href="#">1</a>
+                        <a href="#">2</a>
+                        <a href="#">Suivant »</a>
+                    </div>
+                {% else %}
+                    <p class="no-doctors-message">Aucun docteur trouvé pour cette clinique.</p>
+                {% endif %}
+            </div><!-- end card-body -->
+        </div><!-- end card -->
+    </div><!-- end col -->
+</div><!-- end row -->
+{% endblock %}
 
-    {{ include('clinique/_delete_form.html.twig') }}
+{% block js %}
+<!-- gridjs JS -->
+<script src="coderthemes.com/osen/layouts/assets/vendor/gridjs/gridjs.umd.js"></script>
+
+<script>
+    // Fonction de recherche
+    function searchDoctors() {
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("search-input");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("doctors-table");
+        tr = table.getElementsByTagName("tr");
+
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td");
+            if (td) {
+                for (var j = 0; j < td.length; j++) {
+                    if (td[j].textContent.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                        break;
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+    }
+
+    // Fonction de tri des colonnes
+    function sortTable(n) {
+        var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+        table = document.querySelector(".table");
+        switching = true;
+        dir = "asc"; 
+
+        while (switching) {
+            switching = false;
+            rows = table.rows;
+
+            for (i = 1; i < (rows.length - 1); i++) {
+                shouldSwitch = false;
+                x = rows[i].getElementsByTagName("TD")[n];
+                y = rows[i + 1].getElementsByTagName("TD")[n];
+
+                if (dir === "asc" && x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                    shouldSwitch = true;
+                    break;
+                } else if (dir === "desc" && x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                    shouldSwitch = true;
+                    break;
+                }
+            }
+
+            if (shouldSwitch) {
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+                switchcount++;
+            } else {
+                if (switchcount === 0 && dir === "asc") {
+                    dir = "desc";
+                    switching = true;
+                }
+            }
+        }
+    }
+</script>
 {% endblock %}

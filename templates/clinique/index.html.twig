@@ -27,6 +27,71 @@
                     </ol>
                 </div>
             </div>
+            <div class="container mt-2">
+                <div class="row row-cols-xxl-3 row-cols-md-2 row-cols-1 g-4 align-items-stretch">
+                    
+                    <!-- Card 1: Nombre total de cliniques -->
+                    <div class="col">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <a href="#!" class="text-muted float-end mt-n1 fs-18"><i class="ti ti-external-link"></i></a>
+                                <h5 class="text-muted fs-13 text-uppercase" title="Number of Clinics">Overall Clinics</h5>
+                                <div class="d-flex align-items-center gap-2 my-3">
+                                    <div class="avatar-md flex-shrink-0">
+                                        <span class="avatar-title bg-primary-subtle text-primary rounded fs-22">
+                                            <i class="ti ti-hospital"></i> <!-- Icône pour les hôpitaux -->
+                                        </span>
+                                    </div>
+                                    <h3 class="mb-0 fw-bold">{{ totalCliniques }} <span class="badge text-bg-success fw-medium ms-2 fs-12">Total des cliniques</span></h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            
+                    <!-- Card 2: Clinique avec le prix le plus bas -->
+                    <div class="col">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <a href="#!" class="text-muted float-end mt-n1 fs-18"><i class="ti ti-external-link"></i></a>
+                                <h5 class="text-muted fs-13 text-uppercase" title="Cheapest Clinic">La clinique qui a le prix le plus bas</h5>
+                                <div class="d-flex align-items-center gap-2 my-3">
+                                    <div class="avatar-md flex-shrink-0">
+                                        <span class="avatar-title bg-success-subtle text-success rounded fs-22">
+                                            <i class="ti ti-cash"></i> <!-- Icône pour le prix -->
+                                        </span>
+                                    </div>
+                                    <h3 class="mb-0 fw-bold">{{ cliniqueBasPrix.nom }} <span class="badge text-bg-success fw-medium ms-2 fs-12">{{ cliniqueBasPrix.prix }} €</span></h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            
+                    <!-- Card 3: Clinique avec le prix le plus haut -->
+                    <div class="col">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <a href="#!" class="text-muted float-end mt-n1 fs-18"><i class="ti ti-external-link"></i></a>
+                                <h5 class="text-muted fs-13 text-uppercase" title="Clinique la plus chère">La clinique avec le prix le plus haut</h5>
+                                <div class="d-flex align-items-center gap-2 my-3">
+                                    <div class="avatar-md flex-shrink-0">
+                                        <span class="avatar-title bg-danger-subtle text-danger rounded fs-22">
+                                            <i class="ti ti-wallet"></i> <!-- Icône pour portefeuille -->
+                                        </span>
+                                    </div>
+                                    <h3 class="mb-0 fw-bold">{{ cliniqueHautPrix.nom }} 
+                                        <span class="badge text-bg-success fw-medium ms-2 fs-12">
+                                            {{ cliniqueHautPrix.prix }} €
+                                        </span>
+                                    </h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            
+                </div> <!-- End row -->
+            </div> <!-- End container -->
+            
+            
 
             <div class="row">
                 <div class="col-12">
@@ -68,7 +133,7 @@
                                             <td>{{ clinique.prix }} €</td>
                                             <td class="pe-3">
                                                 <div class="hstack gap-1 justify-content-end">
-                                                    <a href="{{ path('app_clinique_show', {'id_clinique': clinique.id_clinique}) }}" class="btn btn-soft-primary btn-icon btn-sm rounded-circle"> <i class="ti ti-eye"></i></a>
+                                                    <a href="{{ path('app_clinique_docteurs', {'id_clinique': clinique.id_clinique}) }}" class="btn btn-soft-primary btn-icon btn-sm rounded-circle"> <i class="ti ti-eye"></i></a>
                                                     <a href="{{ path('app_clinique_edit', {'id_clinique': clinique.id_clinique}) }}" class="btn btn-soft-success btn-icon btn-sm rounded-circle"> <i class="ti ti-edit fs-16"></i></a>
                                                     <button class="btn btn-soft-danger btn-icon btn-sm rounded-circle delete-btn" 
                                                 data-id="{{ clinique.id_clinique }}"

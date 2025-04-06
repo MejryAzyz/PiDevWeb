@@ -5,6 +5,7 @@ namespace App\Controller\gestionClinique;
 use App\Entity\Clinique;
 use App\Form\CliniqueType;
 use App\Repository\CliniqueRepository;
+use App\Repository\DocteurRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,8 +18,16 @@ final class CliniqueController extends AbstractController
     #[Route(name: 'app_clinique_index', methods: ['GET'])]
     public function index(CliniqueRepository $cliniqueRepository): Response
     {
+        $totalCliniques = count($cliniqueRepository->findAll());
+
+        // Clinique avec le prix le plus bas
+        $cliniqueBasPrix = $cliniqueRepository->findOneBy([], ['prix' => 'ASC']);
+        $cliniqueHautPrix = $cliniqueRepository->findOneBy([], ['prix' => 'DESC']);
         return $this->render('clinique/index.html.twig', [
             'cliniques' => $cliniqueRepository->findAll(),
+            'totalCliniques' => $totalCliniques,
+            'cliniqueBasPrix' => $cliniqueBasPrix,
+            'cliniqueHautPrix' => $cliniqueHautPrix,
         ]);
     }
 
@@ -45,6 +54,7 @@ final class CliniqueController extends AbstractController
     #[Route('/{id_clinique}', name: 'app_clinique_show', methods: ['GET'])]
     public function show(Clinique $clinique): Response
     {
+
         return $this->render('clinique/show.html.twig', [
             'clinique' => $clinique,
         ]);
@@ -78,5 +88,7 @@ final class CliniqueController extends AbstractController
 
         return $this->redirectToRoute('app_clinique_index', [], Response::HTTP_SEE_OTHER);
     }
+
+    
 
 }

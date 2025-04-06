@@ -5,8 +5,8 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-
 use App\Repository\DocteurRepository;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: DocteurRepository::class)]
 #[ORM\Table(name: 'docteur')]
@@ -58,6 +58,13 @@ class Docteur
         return $this;
     }
 
+    #[Assert\NotBlank(message: 'Le nom est requis')]
+    #[Assert\Length(
+        min: 2,
+        max: 50,
+        minMessage: 'Le nom doit contenir au moins {{ limit }} caractères',
+        maxMessage: 'Le nom ne peut pas dépasser {{ limit }} caractères'
+    )]
     #[ORM\Column(type: 'string', nullable: false)]
     private ?string $nom = null;
 
@@ -72,6 +79,13 @@ class Docteur
         return $this;
     }
 
+    #[Assert\NotBlank(message: 'Le prénom est requis')]
+    #[Assert\Length(
+        min: 2,
+        max: 50,
+        minMessage: 'Le prénom doit contenir au moins {{ limit }} caractères',
+        maxMessage: 'Le prénom ne peut pas dépasser {{ limit }} caractères'
+    )]
     #[ORM\Column(type: 'string', nullable: false)]
     private ?string $prenom = null;
 
@@ -86,6 +100,12 @@ class Docteur
         return $this;
     }
 
+
+    #[Assert\NotBlank(message: "Le numéro de téléphone est obligatoire.")]
+    #[Assert\Regex(
+    pattern: "/^\+?[0-9]{8,15}$/",
+    message: "Le numéro de téléphone doit être composé de 8 à 15 chiffres, avec un '+' facultatif au début."
+    )]
     #[ORM\Column(type: 'string', nullable: false)]
     private ?string $telephone = null;
 
@@ -100,6 +120,8 @@ class Docteur
         return $this;
     }
 
+    #[Assert\NotBlank(message: 'L\'email est requis')]
+    #[Assert\Email(message: 'L\'email {{ value }} n\'est pas valide')]
     #[ORM\Column(type: 'string', nullable: false)]
     private ?string $email = null;
 
