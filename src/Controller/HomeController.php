@@ -13,5 +13,15 @@ class HomeController extends AbstractController
     {
         return $this->render('base.html.twig'); // Renders templates/home.html.twig
     }
+    #[Route('/aziz1', name: 'home_aziz1')]
+    public function aziz1(): Response
+    {
+        return $this->render('baseFront.html.twig'); // Vous pouvez changer le template si nécessaire
+    }
+    #[Route('/aziz2', name: 'home_aziz2')]
+    public function aziz2(): Response
+    {
+        return $this->render('clinique/indexFront.html.twig'); // Vous pouvez changer le template si nécessaire
+    }
 }
 

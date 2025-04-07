@@ -98,6 +98,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                
                             </div>
 
                             <!-- Boutons de soumission -->
@@ -109,8 +110,55 @@
                         <!-- Fin du formulaire -->
                         {{ form_end(form) }}
                     </div>
+                    
+                </div>
+                
+            </div>
+            <div class="col-lg-5">
+                <div class="card">
+                    <div class="card-header border-bottom border-dashed">
+                        <h4 class="card-title mb-0">Upload Profile Photo</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="col-12">
+                            <form action="{{ path('app_clinique_upload_photo') }}" class="dropzone" id="myAwesomeDropzone" data-plugin="dropzone" data-previews-container="#file-previews" data-upload-preview-template="#uploadPreviewTemplate">
+                                <div class="fallback">
+                                    <input name="file" type="file" />
+                                </div>
+                                <div class="dz-message needsclick">
+                                    <i class="h1 ti ti-cloud-upload mb-4"></i>
+                                    <h4>Drop files here or click to upload.</h4>
+                                    <span class="text-muted fs-13">Images JPG ou PNG, max 5MB</span>
+                                </div>
+                            </form>
+                            <div class="dropzone-previews mt-3" id="file-previews"></div>
+                            <div class="d-none" id="uploadPreviewTemplate">
+                                <div class="card mt-1 mb-0 shadow-none border">
+                                    <div class="p-2">
+                                        <div class="row align-items-center">
+                                            <div class="col-auto">
+                                                <img data-dz-thumbnail src="#" class="avatar-sm rounded bg-light" alt="">
+                                            </div>
+                                            <div class="col ps-0">
+                                                <a href="javascript:void(0);" class="text-muted fw-bold" data-dz-name></a>
+                                                <p class="mb-0" data-dz-size></p>
+                                            </div>
+                                            <div class="col-auto">
+                                                <a href="#" class="btn btn-link btn-lg text-muted" data-dz-remove>
+                                                    <i class="ti ti-x"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
+            
+            
+            
         </div>
     </div>
 {% endblock %}
@@ -119,4 +167,40 @@
     <script src="{{ asset('assets/vendor/dropzone/min/dropzone.min.js') }}"></script>
     <script src="{{ asset('assets/vendor/flatpickr/flatpickr.min.js') }}"></script>
     <script src="{{ asset('assets/vendor/select2/js/select2.min.js') }}"></script>
+    <script>
+        Dropzone.options.myAwesomeDropzone = {
+            paramName: "file",
+            maxFilesize: 5, // MB
+            acceptedFiles: "image/jpeg,image/png",
+            addRemoveLinks: true,
+            dictDefaultMessage: "Drop files here or click to upload.",
+            dictRemoveFile: "Remove file",
+            init: function() {
+                let uploadedPhotoIds = [];
+
+                this.on("success", function(file, response) {
+                    if (response.success) {
+                        uploadedPhotoIds.push(response.photo_id);
+                        file.photoId = response.photo_id;
+                    }
+                });
+
+                this.on("removedfile", function(file) {
+                    if (file.photoId) {
+                        uploadedPhotoIds = uploadedPhotoIds.filter(id => id !== file.photoId);
+                    }
+                });
+
+                document.getElementById('cliniqueForm').addEventListener('submit', function(e) {
+                    if (uploadedPhotoIds.length > 0) {
+                        let input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'photo_ids';
+                        input.value = JSON.stringify(uploadedPhotoIds);
+                        this.appendChild(input);
+                    }
+                });
+            }
+        };
+    </script>
 {% endblock %}
