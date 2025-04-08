@@ -42,23 +42,154 @@ final class CliniqueController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Si une photo a été téléchargée, associez-la à la clinique
-        $photoIds = $request->get('photo_ids'); // Récupérer les ID de la photo envoyée
-        if ($photoIds) {
-            $photoIds = json_decode($photoIds); // Décoder le JSON
-            foreach ($photoIds as $photoId) {
-                $photo = $entityManager->getRepository(Clinique_photos::class)->find($photoId);
-                if ($photo) {
-                    // Ajouter la photo à la clinique (si la relation est définie)
-                    $clinique->addCliniquePhoto($photo); // Assurez-vous que vous avez une méthode addPhoto dans votre entité Clinique
+            try {
+                error_log('=== CLINIQUE FORM SUBMISSION START ===');
+                error_log('Form submitted and valid');
+                
+                // First save the clinique
+                $entityManager->persist($clinique);
+                $entityManager->flush();
+                error_log('Clinique saved with ID: ' . $clinique->getId_clinique());
+
+                // Get all request data for debugging
+                $allRequestData = $request->request->all();
+                error_log('All form data: ' . print_r($allRequestData, true));
+                
+                // Get photo IDs from the request
+                $photoIdsJson = $request->request->get('photo_ids');
+                error_log('Received photo_ids JSON: ' . ($photoIdsJson ?? 'none'));
+
+                $photoIds = [];
+                $foundPhotoIds = false;
+                
+                // Try to get photo IDs from the JSON input first
+                if ($photoIdsJson && !empty($photoIdsJson)) {
+                    try {
+                        $photoIds = json_decode($photoIdsJson, true);
+                        if (is_array($photoIds) && count($photoIds) > 0) {
+                            $foundPhotoIds = true;
+                            error_log('Found ' . count($photoIds) . ' photo IDs in the form data');
+                        }
+                    } catch (\Exception $e) {
+                        error_log('Error processing photo IDs from JSON: ' . $e->getMessage());
+                    }
                 }
+                
+                // If no photo IDs from JSON, try to find recently uploaded photos as fallback
+                if (!$foundPhotoIds) {
+                    error_log('No photo IDs found in form data, looking for recent uploads as fallback');
+                    
+                    // Find photos uploaded in the last 5 minutes with null clinique_id
+                    $fiveMinutesAgo = new \DateTime('-5 minutes');
+                    $recentPhotos = $entityManager->getRepository(Clinique_photos::class)
+                        ->createQueryBuilder('p')
+                        ->where('p.clinique_id IS NULL')
+                        ->andWhere('p.uploaded_at >= :time')
+                        ->setParameter('time', $fiveMinutesAgo)
+                        ->orderBy('p.uploaded_at', 'DESC')
+                        ->getQuery()
+                        ->getResult();
+                    
+                    if (count($recentPhotos) > 0) {
+                        error_log('Found ' . count($recentPhotos) . ' recently uploaded photos with null clinique_id');
+                        $photoIds = array_map(function($photo) {
+                            return $photo->getId_photo();
+                        }, $recentPhotos);
+                        error_log('Using recent photo IDs: ' . implode(', ', $photoIds));
+                        $foundPhotoIds = true;
+                    } else {
+                        error_log('No recent photos found');
+                    }
+                }
+                
+                // Process photo IDs if we found any
+                if ($foundPhotoIds && count($photoIds) > 0) {
+                    error_log('Processing ' . count($photoIds) . ' photo IDs');
+                    $updatedPhotoCount = 0;
+                    
+                    // Direct SQL check before updates
+                    $connection = $entityManager->getConnection();
+                    $stmt = $connection->prepare('SELECT id_photo, clinique_id FROM clinique_photos WHERE id_photo IN (' . implode(',', $photoIds) . ')');
+                    $result = $stmt->executeQuery();
+                    $rows = $result->fetchAllAssociative();
+                    error_log('Current DB state for photos: ' . print_r($rows, true));
+                    
+                    foreach ($photoIds as $photoId) {
+                        error_log('Processing photo ID: ' . $photoId);
+                        $photo = $entityManager->getRepository(Clinique_photos::class)->find($photoId);
+                        
+                        if ($photo) {
+                            error_log('Found photo with ID: ' . $photoId);
+                            $oldCliniqueId = $photo->getCliniqueId() ? $photo->getCliniqueId()->getId_clinique() : 'null';
+                            error_log('Current clinique_id: ' . $oldCliniqueId);
+                            
+                            // Set the new clinique ID
+                            $photo->setCliniqueId($clinique);
+                            $entityManager->persist($photo);
+                            
+                            // Check if the association worked
+                            $newCliniqueId = $photo->getCliniqueId() ? $photo->getCliniqueId()->getId_clinique() : 'null';
+                            error_log('New clinique_id set to: ' . $newCliniqueId);
+                            
+                            $updatedPhotoCount++;
+                        } else {
+                            error_log('Could not find photo with ID: ' . $photoId);
+                        }
+                    }
+                    
+                    if ($updatedPhotoCount > 0) {
+                        // Only flush if we actually updated photos
+                        error_log('Flushing ' . $updatedPhotoCount . ' photo updates to database');
+                        $entityManager->flush();
+                        
+                        // Check if the flush worked
+                        $stmt = $connection->prepare('SELECT id_photo, clinique_id FROM clinique_photos WHERE id_photo IN (' . implode(',', $photoIds) . ')');
+                        $result = $stmt->executeQuery();
+                        $updatedRows = $result->fetchAllAssociative();
+                        error_log('DB state after updates: ' . print_r($updatedRows, true));
+                        
+                        // If ORM update didn't work, try direct SQL update as a fallback
+                        $anyNullCliniqueIds = false;
+                        foreach ($updatedRows as $row) {
+                            if (is_null($row['clinique_id'])) {
+                                $anyNullCliniqueIds = true;
+                                break;
+                            }
+                        }
+                        
+                        if ($anyNullCliniqueIds) {
+                            error_log('Some photos still have null clinique_id, trying direct SQL update');
+                            try {
+                                $cliniqueId = $clinique->getId_clinique();
+                                $photoIdsStr = implode(',', $photoIds);
+                                $sql = "UPDATE clinique_photos SET clinique_id = $cliniqueId WHERE id_photo IN ($photoIdsStr)";
+                                error_log('Executing SQL: ' . $sql);
+                                $connection->executeStatement($sql);
+                                
+                                // Verify SQL update worked
+                                $stmt = $connection->prepare('SELECT id_photo, clinique_id FROM clinique_photos WHERE id_photo IN (' . implode(',', $photoIds) . ')');
+                                $result = $stmt->executeQuery();
+                                $finalRows = $result->fetchAllAssociative();
+                                error_log('DB state after direct SQL update: ' . print_r($finalRows, true));
+                            } catch (\Exception $e) {
+                                error_log('Error in direct SQL update: ' . $e->getMessage());
+                            }
+                        }
+                        
+                        error_log('Successfully associated ' . $updatedPhotoCount . ' photos with clinique');
+                    } else {
+                        error_log('No photos were associated with the clinique');
+                    }
+                } else {
+                    error_log('No photo_ids found in request');
+                }
+                
+                error_log('=== CLINIQUE FORM SUBMISSION END ===');
+                return $this->redirectToRoute('app_clinique_index', [], Response::HTTP_SEE_OTHER);
+            } catch (\Exception $e) {
+                error_log('Error in new clinique: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+                throw $e;
             }
-        }
-
-            $entityManager->persist($clinique);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_clinique_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('clinique/new.html.twig', [
@@ -118,47 +249,368 @@ final class CliniqueController extends AbstractController
      #[Route('/front/liste', name: 'app_clinique_front_index', methods: ['GET'])]
      public function indexFront(CliniqueRepository $cliniqueRepository): Response
      {
+         $cliniques = $cliniqueRepository->createQueryBuilder('c')
+             ->leftJoin('c.cliniquePhotos', 'photos')
+             ->addSelect('photos')
+             ->getQuery()
+             ->getResult();
+
          return $this->render('clinique/indexFront.html.twig', [
-             'cliniques' => $cliniqueRepository->findAll(),
+             'cliniques' => $cliniques,
          ]);
      }
     
 
      //upload image
-    //  #[Route('/upload-photo', name: 'app_clinique_upload_photo', methods: ['POST'])]
-    // public function uploadPhoto(Request $request, EntityManagerInterface $entityManager): JsonResponse
-    // {
-    //     $file = $request->files->get('file');
-    //     if (!$file) {
-    //         return new JsonResponse(['error' => 'Aucun fichier téléversé'], Response::HTTP_BAD_REQUEST);
-    //     }
+    #[Route('/upload-photo', name: 'app_clinique_upload_photo', methods: ['POST'])]
+    public function uploadPhoto(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    {
+        // Handle OPTIONS requests for CORS preflight
+        if ($request->isMethod('OPTIONS')) {
+            return new JsonResponse([], Response::HTTP_OK);
+        }
+        
+        // Check if this is a test request without a file
+        if (!$request->files->has('file') && $request->headers->get('X-Requested-With') === 'XMLHttpRequest') {
+            return new JsonResponse(['message' => 'Upload endpoint is working'], Response::HTTP_OK);
+        }
+        
+        try {
+            $file = $request->files->get('file');
+            
+            if (!$file) {
+                return new JsonResponse([
+                    'success' => false,
+                    'error' => 'Aucun fichier téléversé'
+                ], Response::HTTP_BAD_REQUEST);
+            }
 
-    //     // Validation du fichier
-    //     $allowedMimeTypes = ['image/jpeg', 'image/png'];
-    //     if (!in_array($file->getMimeType(), $allowedMimeTypes)) {
-    //         return new JsonResponse(['error' => 'Type de fichier non autorisé (JPG ou PNG uniquement)'], Response::HTTP_BAD_REQUEST);
-    //     }
-    //     if ($file->getSize() > 5 * 1024 * 1024) { // 5MB
-    //         return new JsonResponse(['error' => 'Fichier trop volumineux (max 5MB)'], Response::HTTP_BAD_REQUEST);
-    //     }
+            error_log('Received file: ' . $file->getClientOriginalName());
+            error_log('File size: ' . $file->getSize());
+            error_log('File mime type: ' . $file->getMimeType());
 
-    //     // Générer un nom unique et déplacer le fichier dans public/uploads
-    //     $newFilename = uniqid() . '.' . $file->guessExtension();
-    //     $uploadDir = $this->getParameter('UPLOADS_DIRECTORY');
-    //     try {
-    //         $file->move($uploadDir, $newFilename);
-    //     } catch (FileException $e) {
-    //         return new JsonResponse(['error' => 'Erreur lors de l’upload : ' . $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
-    //     }
+            // Validation du fichier
+            $allowedMimeTypes = ['image/jpeg', 'image/png'];
+            if (!in_array($file->getMimeType(), $allowedMimeTypes)) {
+                error_log('Invalid file type: ' . $file->getMimeType());
+                return new JsonResponse([
+                    'success' => false,
+                    'error' => 'Type de fichier non autorisé (JPG ou PNG uniquement)'
+                ], Response::HTTP_BAD_REQUEST);
+            }
 
-    //     // Créer une entrée dans CliniquePhoto
-    //     $cliniquePhoto = new Clinique_photos();
-    //     $cliniquePhoto->setPhotoUrl('/uploads/' . $newFilename);
-    //     $cliniquePhoto->setUploadedAt(new \DateTime());
-    //     $entityManager->persist($cliniquePhoto);
-    //     $entityManager->flush();
+            // Générer un nom unique et déplacer le fichier
+            $newFilename = uniqid() . '.' . $file->guessExtension();
+            $uploadDir = $this->getParameter('kernel.project_dir') . '/public/uploads/cliniques';
+            
+            if (!file_exists($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
+                error_log('Created upload directory: ' . $uploadDir);
+            }
 
-    //     // Retourner l'ID de la photo pour l'associer plus tard
-    //     return new JsonResponse(['success' => true, 'photo_id' => $cliniquePhoto->getIdPhoto()]);
-    // }
+            try {
+                $file->move($uploadDir, $newFilename);
+                error_log('File moved successfully to: ' . $uploadDir . '/' . $newFilename);
+            } catch (\Exception $e) {
+                error_log('Error moving file: ' . $e->getMessage());
+                return new JsonResponse([
+                    'success' => false,
+                    'error' => 'Erreur lors du déplacement du fichier: ' . $e->getMessage()
+                ], Response::HTTP_INTERNAL_SERVER_ERROR);
+            }
+
+            try {
+                // Create new Clinique_photos entry
+                $cliniquePhoto = new Clinique_photos();
+                
+                // Generate new ID
+                $lastPhoto = $entityManager->getRepository(Clinique_photos::class)
+                    ->findOneBy([], ['id_photo' => 'DESC']);
+                $newId = $lastPhoto ? $lastPhoto->getId_photo() + 1 : 1;
+                
+                $cliniquePhoto->setId_photo($newId);
+                $cliniquePhoto->setPhoto_url('/uploads/cliniques/' . $newFilename);
+                $cliniquePhoto->setUploaded_at(new \DateTime());
+                
+                $entityManager->persist($cliniquePhoto);
+                $entityManager->flush();
+                
+                error_log('Created new photo entry with ID: ' . $cliniquePhoto->getId_photo());
+
+                return new JsonResponse([
+                    'success' => true,
+                    'photo_id' => $cliniquePhoto->getId_photo(),
+                    'photo_url' => $cliniquePhoto->getPhoto_url()
+                ], Response::HTTP_OK);
+            } catch (\Exception $e) {
+                error_log('Error saving to database: ' . $e->getMessage());
+                return new JsonResponse([
+                    'success' => false,
+                    'error' => 'Erreur lors de l\'enregistrement dans la base de données: ' . $e->getMessage()
+                ], Response::HTTP_INTERNAL_SERVER_ERROR);
+            }
+
+        } catch (\Exception $e) {
+            error_log('General error in upload: ' . $e->getMessage());
+            return new JsonResponse([
+                'success' => false,
+                'error' => 'Erreur lors de l\'upload: ' . $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // TEST ENDPOINTS FOR DEBUGGING
+    
+    #[Route('/test/upload-debug', name: 'app_test_upload_debug', methods: ['GET'])]
+    public function testUploadDebug(): Response
+    {
+        return $this->render('clinique/test_upload.html.twig');
+    }
+    
+    #[Route('/test/handle-test-upload', name: 'app_test_handle_upload', methods: ['POST'])]
+    public function handleTestUpload(Request $request, EntityManagerInterface $entityManager): JsonResponse
+    {
+        try {
+            error_log('=== TEST UPLOAD START ===');
+            
+            // First check if we have files
+            if (!$request->files->has('files')) {
+                error_log('No files in request');
+                return new JsonResponse(['success' => false, 'error' => 'No files uploaded'], 400);
+            }
+            
+            $files = $request->files->get('files');
+            error_log('Received ' . count($files) . ' files');
+            
+            // Get the test clinique ID if provided
+            $cliniqueId = $request->request->get('clinique_id');
+            $clinique = null;
+            
+            if ($cliniqueId) {
+                $clinique = $entityManager->getRepository(Clinique::class)->find($cliniqueId);
+                error_log('Looking for clinique with ID: ' . $cliniqueId . ', found: ' . ($clinique ? 'yes' : 'no'));
+            }
+            
+            $photoIds = [];
+            
+            // Process each file
+            foreach ($files as $file) {
+                $originalName = $file->getClientOriginalName();
+                error_log('Processing file: ' . $originalName);
+                
+                // Generate a unique filename
+                $newFilename = uniqid() . '.' . $file->guessExtension();
+                $uploadDir = $this->getParameter('kernel.project_dir') . '/public/uploads/cliniques';
+                
+                // Make sure the directory exists
+                if (!file_exists($uploadDir)) {
+                    mkdir($uploadDir, 0777, true);
+                }
+                
+                // Move the file
+                $file->move($uploadDir, $newFilename);
+                error_log('File moved to: ' . $uploadDir . '/' . $newFilename);
+                
+                // Create a new photo entity
+                $photo = new Clinique_photos();
+                
+                // Generate new ID
+                $lastPhoto = $entityManager->getRepository(Clinique_photos::class)
+                    ->findOneBy([], ['id_photo' => 'DESC']);
+                $newId = $lastPhoto ? $lastPhoto->getId_photo() + 1 : 1;
+                
+                $photo->setId_photo($newId);
+                $photo->setPhoto_url('/uploads/cliniques/' . $newFilename);
+                $photo->setUploaded_at(new \DateTime());
+                
+                // Associate with clinique if provided
+                if ($clinique) {
+                    error_log('Associating with clinique ID: ' . $clinique->getId_clinique());
+                    $photo->setCliniqueId($clinique);
+                } else {
+                    error_log('No clinique provided, photo will have null clinique_id');
+                }
+                
+                $entityManager->persist($photo);
+                $photoIds[] = $newId;
+            }
+            
+            // Save changes
+            $entityManager->flush();
+            error_log('Saved ' . count($photoIds) . ' photos with IDs: ' . implode(', ', $photoIds));
+            
+            // If we have a clinique, verify the association worked
+            if ($clinique) {
+                $connection = $entityManager->getConnection();
+                $stmt = $connection->prepare('SELECT id_photo, clinique_id FROM clinique_photos WHERE id_photo IN (' . implode(',', $photoIds) . ')');
+                $result = $stmt->executeQuery();
+                $rows = $result->fetchAllAssociative();
+                error_log('DB state for new photos: ' . print_r($rows, true));
+                
+                // Check if any have null clinique_id
+                $anyNullCliniqueIds = false;
+                foreach ($rows as $row) {
+                    if (is_null($row['clinique_id'])) {
+                        $anyNullCliniqueIds = true;
+                        break;
+                    }
+                }
+                
+                // Try direct SQL update if ORM didn't work
+                if ($anyNullCliniqueIds) {
+                    error_log('Some photos have null clinique_id, trying direct SQL update');
+                    try {
+                        $sql = "UPDATE clinique_photos SET clinique_id = {$clinique->getId_clinique()} WHERE id_photo IN (" . implode(',', $photoIds) . ")";
+                        $connection->executeStatement($sql);
+                        
+                        // Verify the update worked
+                        $stmt = $connection->prepare('SELECT id_photo, clinique_id FROM clinique_photos WHERE id_photo IN (' . implode(',', $photoIds) . ')');
+                        $result = $stmt->executeQuery();
+                        $finalRows = $result->fetchAllAssociative();
+                        error_log('DB state after direct SQL update: ' . print_r($finalRows, true));
+                    } catch (\Exception $e) {
+                        error_log('Error in direct SQL update: ' . $e->getMessage());
+                    }
+                }
+            }
+            
+            error_log('=== TEST UPLOAD END ===');
+            
+            return new JsonResponse([
+                'success' => true,
+                'message' => 'Files uploaded successfully',
+                'photo_ids' => $photoIds
+            ]);
+            
+        } catch (\Exception $e) {
+            error_log('Error in test upload: ' . $e->getMessage());
+            return new JsonResponse([
+                'success' => false,
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    // Additional debug/test endpoints
+    
+    #[Route('/test/db-check', name: 'app_test_db_check', methods: ['GET'])]
+    public function testDbCheck(EntityManagerInterface $entityManager): JsonResponse
+    {
+        try {
+            // Get all cliniques
+            $cliniques = $entityManager->getRepository(Clinique::class)->findAll();
+            $cliniquesData = [];
+            
+            foreach ($cliniques as $clinique) {
+                $cliniquesData[] = [
+                    'id_clinique' => $clinique->getId_clinique(),
+                    'nom' => $clinique->getNom(),
+                    'adresse' => $clinique->getAdresse(),
+                    'telephone' => $clinique->getTelephone(),
+                    'email' => $clinique->getEmail(),
+                    'rate' => $clinique->getRate(),
+                    'description' => $clinique->getDescription(),
+                    'prix' => $clinique->getPrix()
+                ];
+            }
+            
+            // Get all photos
+            $photos = $entityManager->getRepository(Clinique_photos::class)->findAll();
+            $photosData = [];
+            
+            foreach ($photos as $photo) {
+                $photosData[] = [
+                    'id_photo' => $photo->getId_photo(),
+                    'clinique_id' => $photo->getCliniqueId() ? $photo->getCliniqueId()->getId_clinique() : null,
+                    'photo_url' => $photo->getPhoto_url(),
+                    'uploaded_at' => $photo->getUploaded_at()->format('Y-m-d H:i:s')
+                ];
+            }
+            
+            return new JsonResponse([
+                'success' => true,
+                'cliniques' => $cliniquesData,
+                'photos' => $photosData,
+                'timestamp' => (new \DateTime())->format('Y-m-d H:i:s')
+            ]);
+            
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'success' => false,
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+    
+    #[Route('/test/fix-photos/{photoId}/{cliniqueId}', name: 'app_test_fix_photos', methods: ['GET'])]
+    public function testFixPhotos(int $photoId, int $cliniqueId, EntityManagerInterface $entityManager): JsonResponse
+    {
+        try {
+            // Find the photo
+            $photo = $entityManager->getRepository(Clinique_photos::class)->find($photoId);
+            
+            if (!$photo) {
+                return new JsonResponse([
+                    'success' => false,
+                    'error' => 'Photo not found with ID: ' . $photoId
+                ], 404);
+            }
+            
+            // Find the clinique
+            $clinique = $entityManager->getRepository(Clinique::class)->find($cliniqueId);
+            
+            if (!$clinique) {
+                return new JsonResponse([
+                    'success' => false,
+                    'error' => 'Clinique not found with ID: ' . $cliniqueId
+                ], 404);
+            }
+            
+            // Get current association for logging
+            $oldCliniqueId = $photo->getCliniqueId() ? $photo->getCliniqueId()->getId_clinique() : null;
+            
+            // Try ORM approach first
+            $photo->setCliniqueId($clinique);
+            $entityManager->persist($photo);
+            $entityManager->flush();
+            
+            // Check if ORM update worked
+            $updatedPhoto = $entityManager->getRepository(Clinique_photos::class)->find($photoId);
+            $newCliniqueId = $updatedPhoto->getCliniqueId() ? $updatedPhoto->getCliniqueId()->getId_clinique() : null;
+            
+            // If ORM didn't work, try direct SQL
+            if ($newCliniqueId !== $cliniqueId) {
+                try {
+                    $connection = $entityManager->getConnection();
+                    $sql = "UPDATE clinique_photos SET clinique_id = :cliniqueId WHERE id_photo = :photoId";
+                    $connection->executeStatement($sql, [
+                        'cliniqueId' => $cliniqueId,
+                        'photoId' => $photoId
+                    ]);
+                    
+                    $newCliniqueId = $cliniqueId;
+                } catch (\Exception $e) {
+                    return new JsonResponse([
+                        'success' => false,
+                        'error' => 'Failed to update photo with direct SQL: ' . $e->getMessage()
+                    ], 500);
+                }
+            }
+            
+            return new JsonResponse([
+                'success' => true,
+                'photo_id' => $photoId,
+                'clinique_id' => $cliniqueId,
+                'old_clinique_id' => $oldCliniqueId,
+                'new_clinique_id' => $newCliniqueId,
+                'message' => 'Photo association updated successfully'
+            ]);
+            
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'success' => false,
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

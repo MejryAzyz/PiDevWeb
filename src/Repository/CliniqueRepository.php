@@ -13,5 +13,14 @@ class CliniqueRepository extends ServiceEntityRepository
         parent::__construct($registry, Clinique::class);
     }
 
+    public function findAllWithPhotos()
+    {
+        return $this->createQueryBuilder('c')
+            ->leftJoin('c.cliniquePhotos', 'p') // Charger les photos associées
+            ->addSelect('p') // Inclure les données des photos
+            ->getQuery()
+            ->getResult();
+    }
+
     // Add custom methods as needed
 }

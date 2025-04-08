@@ -156,11 +156,11 @@ class Clinique
         return $this;
     }
 
-    #[ORM\OneToMany(targetEntity: CliniquePhoto::class, mappedBy: 'clinique')]
+    #[ORM\OneToMany(targetEntity: Clinique_photos::class, mappedBy: 'clinique_id')]
     private Collection $cliniquePhotos;
 
     /**
-     * @return Collection<int, CliniquePhoto>
+     * @return Collection<int, Clinique_photos>
      */
     public function getCliniquePhotos(): Collection
     {
@@ -170,17 +170,24 @@ class Clinique
         return $this->cliniquePhotos;
     }
 
-    public function addCliniquePhoto(CliniquePhoto $cliniquePhoto): self
+    public function addCliniquePhoto(Clinique_photos $cliniquePhoto): self
     {
         if (!$this->getCliniquePhotos()->contains($cliniquePhoto)) {
             $this->getCliniquePhotos()->add($cliniquePhoto);
+            $cliniquePhoto->setCliniqueId($this);
         }
         return $this;
     }
 
-    public function removeCliniquePhoto(CliniquePhoto $cliniquePhoto): self
+    public function removeCliniquePhoto(Clinique_photos $cliniquePhoto): self
     {
-        $this->getCliniquePhotos()->removeElement($cliniquePhoto);
+        if ($this->getCliniquePhotos()->contains($cliniquePhoto)) {
+            $this->getCliniquePhotos()->removeElement($cliniquePhoto);
+            // Set the clinique_id to null if it's this clinique
+            if ($cliniquePhoto->getCliniqueId() === $this) {
+                $cliniquePhoto->setCliniqueId(null);
+            }
+        }
         return $this;
     }
 

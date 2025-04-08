@@ -4,19 +4,38 @@
 
 {% block css %}
     <!-- CSS spécifiques -->
-    <link href="{{ asset('assets/vendor/dropzone/min/dropzone.min.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('assets/vendor/flatpickr/flatpickr.min.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('assets/vendor/select2/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('coderthemes.com/osen/layouts/assets/vendor/dropzone/min/dropzone.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('coderthemes.com/osen/layouts/assets/vendor/flatpickr/flatpickr.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('coderthemes.com/osen/layouts/assets/vendor/select2/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
     <style>
         .form-error {
             color: red;
             font-size: 0.875rem;
             margin-top: 0.25rem;
         }
+        #debug-info {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            max-width: 300px;
+            z-index: 9999;
+            overflow-y: auto;
+            max-height: 400px;
+        }
     </style>
 {% endblock %}
 
 {% block body %}
+    <!-- Debug info div -->
+    <div id="debug-info">
+        <h5>Debug Info:</h5>
+        <div id="debug-content"></div>
+    </div>
+
     <div class="page-container">
         <div class="page-title-head d-flex align-items-sm-center flex-sm-row flex-column gap-2">
             <div class="flex-grow-1">
@@ -38,10 +57,7 @@
                         <h4 class="card-title mb-0">Informations de Base</h4>
                     </div>
                     <div class="card-body">
-                        <!-- Début du formulaire -->
-                        {{ form_start(form, {'method': 'POST', 'action': path('app_clinique_new')}) }}
-
-                        
+                        {{ form_start(form, {'attr': {'id': 'cliniqueForm', 'onsubmit': 'return validateForm(event)'}}) }}
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="mb-3">
@@ -64,7 +80,7 @@
                                 <div class="col-lg-6">
                                     <div class="mb-3">
                                         <label for="{{ form.email.vars.id }}" class="form-label">Adresse Email</label>
-                                        {{ form_widget(form.email, {'attr': {'class': 'form-control', 'placeholder': 'Entrez l’email'}}) }}
+                                        {{ form_widget(form.email, {'attr': {'class': 'form-control', 'placeholder': 'Entrez l\'email'}}) }}
                                         <div class="form-error">
                                             {{ form_errors(form.email) }}
                                         </div>
@@ -83,7 +99,7 @@
                                 <div class="col-lg-12">
                                     <div class="mb-3">
                                         <label for="{{ form.adresse.vars.id }}" class="form-label">Adresse</label>
-                                        {{ form_widget(form.adresse, {'attr': {'class': 'form-control', 'rows': '3', 'placeholder': 'Entrez l’adresse complète'}}) }}
+                                        {{ form_widget(form.adresse, {'attr': {'class': 'form-control', 'rows': '3', 'placeholder': 'Entrez l\'adresse complète'}}) }}
                                         <div class="form-error">
                                             {{ form_errors(form.adresse) }}
                                         </div>
@@ -100,28 +116,43 @@
                                 </div>
                                 
                             </div>
-
-                            <!-- Boutons de soumission -->
+                            <!-- Hidden input for photo IDs -->
+                            <input type="hidden" name="photo_ids" id="photo_ids" value="">
                             <div class="text-end mb-3">
                                 <button type="submit" class="btn btn-primary">Ajouter la Clinique</button>
                                 <a href="{{ path('app_clinique_index') }}" class="btn btn-danger">Annuler</a>
                             </div>
-                        
-                        <!-- Fin du formulaire -->
                         {{ form_end(form) }}
                     </div>
-                    
                 </div>
-                
             </div>
             <div class="col-lg-5">
+                <!-- Test direct upload form -->
+                <div class="card mb-3">
+                    <div class="card-header border-bottom border-dashed">
+                        <h4 class="card-title mb-0">Direct Upload Test</h4>
+                    </div>
+                    <div class="card-body">
+                        <form id="directUploadForm" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label for="testFile" class="form-label">Select File</label>
+                                <input type="file" id="testFile" name="file" class="form-control" accept="image/jpeg,image/png">
+                            </div>
+                            <button type="button" id="uploadButton" class="btn btn-primary">Upload</button>
+                        </form>
+                        <div id="directUploadResult" class="mt-3"></div>
+                    </div>
+                </div>
+                
+                <!-- Dropzone upload form -->
                 <div class="card">
                     <div class="card-header border-bottom border-dashed">
                         <h4 class="card-title mb-0">Upload Profile Photo</h4>
                     </div>
                     <div class="card-body">
                         <div class="col-12">
-                            <form action="{{ path('app_clinique_upload_photo') }}" class="dropzone" id="myAwesomeDropzone" data-plugin="dropzone" data-previews-container="#file-previews" data-upload-preview-template="#uploadPreviewTemplate">
+                            <div id="upload-status" class="alert" style="display: none;"></div>
+                            <form action="{{ path('app_upload_clinique_photo') }}" class="dropzone" id="myAwesomeDropzone">
                                 <div class="fallback">
                                     <input name="file" type="file" />
                                 </div>
@@ -132,75 +163,168 @@
                                 </div>
                             </form>
                             <div class="dropzone-previews mt-3" id="file-previews"></div>
-                            <div class="d-none" id="uploadPreviewTemplate">
-                                <div class="card mt-1 mb-0 shadow-none border">
-                                    <div class="p-2">
-                                        <div class="row align-items-center">
-                                            <div class="col-auto">
-                                                <img data-dz-thumbnail src="#" class="avatar-sm rounded bg-light" alt="">
-                                            </div>
-                                            <div class="col ps-0">
-                                                <a href="javascript:void(0);" class="text-muted fw-bold" data-dz-name></a>
-                                                <p class="mb-0" data-dz-size></p>
-                                            </div>
-                                            <div class="col-auto">
-                                                <a href="#" class="btn btn-link btn-lg text-muted" data-dz-remove>
-                                                    <i class="ti ti-x"></i>
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            
-            
-            
         </div>
     </div>
 {% endblock %}
 
 {% block js %}
-    <script src="{{ asset('assets/vendor/dropzone/min/dropzone.min.js') }}"></script>
-    <script src="{{ asset('assets/vendor/flatpickr/flatpickr.min.js') }}"></script>
-    <script src="{{ asset('assets/vendor/select2/js/select2.min.js') }}"></script>
+    <script src="{{ asset('coderthemes.com/osen/layouts/assets/vendor/dropzone/min/dropzone.min.js') }}"></script>
+    <script src="{{ asset('coderthemes.com/osen/layouts/assets/vendor/flatpickr/flatpickr.min.js') }}"></script>
+    <script src="{{ asset('coderthemes.com/osen/layouts/assets/vendor/select2/js/select2.min.js') }}"></script>
     <script>
-        Dropzone.options.myAwesomeDropzone = {
-            paramName: "file",
-            maxFilesize: 5, // MB
-            acceptedFiles: "image/jpeg,image/png",
-            addRemoveLinks: true,
-            dictDefaultMessage: "Drop files here or click to upload.",
-            dictRemoveFile: "Remove file",
-            init: function() {
-                let uploadedPhotoIds = [];
+        // Debug function
+        function debugLog(message) {
+            console.log(message);
+            const debugContent = document.getElementById('debug-content');
+            const timestamp = new Date().toLocaleTimeString();
+            debugContent.innerHTML += `<div>[${timestamp}] ${message}</div>`;
+            debugContent.scrollTop = debugContent.scrollHeight;
+        }
 
-                this.on("success", function(file, response) {
-                    if (response.success) {
-                        uploadedPhotoIds.push(response.photo_id);
-                        file.photoId = response.photo_id;
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            debugLog('Page loaded');
+            
+            // Create global variable to store uploaded photo IDs
+            window.uploadedPhotoIds = [];
+            const photoIdsInput = document.getElementById('photo_ids');
+            
+            // Test API endpoints
+            debugLog('Testing endpoint accessibility...');
+            
+            // Create Dropzone instance with simplified configuration
+            Dropzone.autoDiscover = false;
+            
+            const myDropzone = new Dropzone("#myAwesomeDropzone", {
+                url: "{{ path('app_upload_clinique_photo') }}",
+                paramName: "file",
+                maxFilesize: 5,
+                acceptedFiles: "image/jpeg,image/png",
+                addRemoveLinks: true,
+                autoProcessQueue: true,
+                dictDefaultMessage: "Déposez vos fichiers ici ou cliquez pour uploader",
+                dictRemoveFile: "Supprimer",
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            });
+            
+            debugLog('Dropzone initialized');
+            
+            // Handle successful uploads
+            myDropzone.on("success", function(file, response) {
+                debugLog(`Upload successful: ${JSON.stringify(response)}`);
+                
+                if (response && response.success) {
+                    // Store the photo ID directly on the file object
+                    file.photoId = response.photo_id;
+                    
+                    // Add to our global array
+                    window.uploadedPhotoIds.push(response.photo_id);
+                    
+                    // Update hidden input
+                    photoIdsInput.value = JSON.stringify(window.uploadedPhotoIds);
+                    debugLog(`Photo IDs updated: ${photoIdsInput.value}`);
+                }
+            });
+            
+            // Handle file removal
+            myDropzone.on("removedfile", function(file) {
+                if (file.photoId) {
+                    // Remove from our array
+                    window.uploadedPhotoIds = window.uploadedPhotoIds.filter(id => id !== file.photoId);
+                    
+                    // Update hidden input
+                    photoIdsInput.value = JSON.stringify(window.uploadedPhotoIds);
+                    debugLog(`Photo removed. Updated IDs: ${photoIdsInput.value}`);
+                }
+            });
+            
+            // Form validation with direct DOM manipulation of photo IDs
+            document.getElementById('cliniqueForm').addEventListener('submit', function(e) {
+                // Get all files with photoId from Dropzone
+                const files = myDropzone.files.filter(f => f.photoId);
+                
+                if (files.length > 0) {
+                    // Get all photo IDs from successful uploads
+                    const photoIds = files.map(f => f.photoId);
+                    
+                    // Force update the hidden input
+                    photoIdsInput.value = JSON.stringify(photoIds);
+                    debugLog(`Form submitting with photo IDs forced: ${photoIdsInput.value}`);
+                } else {
+                    debugLog('No photo IDs to submit');
+                    
+                    // Ask user if they want to continue without photos
+                    if (myDropzone.files.length > 0 && !confirm('Les fichiers semblent être visibles mais non traités. Voulez-vous continuer sans photos?')) {
+                        e.preventDefault();
+                        return false;
                     }
-                });
-
-                this.on("removedfile", function(file) {
-                    if (file.photoId) {
-                        uploadedPhotoIds = uploadedPhotoIds.filter(id => id !== file.photoId);
+                }
+                
+                // Continue with form submission
+                return true;
+            });
+            
+            // Direct upload handler
+            document.getElementById('uploadButton').addEventListener('click', function() {
+                const fileInput = document.getElementById('testFile');
+                const resultDiv = document.getElementById('directUploadResult');
+                
+                if (fileInput.files.length === 0) {
+                    resultDiv.innerHTML = '<div class="alert alert-warning">No file selected</div>';
+                    return;
+                }
+                
+                const file = fileInput.files[0];
+                debugLog(`Testing direct upload with file: ${file.name}`);
+                
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                resultDiv.innerHTML = '<div class="alert alert-info">Uploading...</div>';
+                
+                fetch('{{ path('app_upload_clinique_photo') }}', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
                     }
-                });
-
-                document.getElementById('cliniqueForm').addEventListener('submit', function(e) {
-                    if (uploadedPhotoIds.length > 0) {
-                        let input = document.createElement('input');
-                        input.type = 'hidden';
-                        input.name = 'photo_ids';
-                        input.value = JSON.stringify(uploadedPhotoIds);
-                        this.appendChild(input);
+                })
+                .then(response => response.text())
+                .then(text => {
+                    try {
+                        const data = JSON.parse(text);
+                        debugLog(`Direct upload response: ${JSON.stringify(data)}`);
+                        
+                        if (data.success) {
+                            resultDiv.innerHTML = `<div class="alert alert-success">Success! Photo ID: ${data.photo_id}</div>`;
+                            
+                            // Add to our global array
+                            window.uploadedPhotoIds.push(data.photo_id);
+                            
+                            // Update hidden input
+                            photoIdsInput.value = JSON.stringify(window.uploadedPhotoIds);
+                            debugLog(`Photo IDs updated: ${photoIdsInput.value}`);
+                        } else {
+                            resultDiv.innerHTML = `<div class="alert alert-danger">Error: ${data.error}</div>`;
+                        }
+                    } catch (e) {
+                        debugLog(`Error parsing response: ${e.message}`);
+                        debugLog(`Raw response: ${text.substring(0, 100)}...`);
+                        resultDiv.innerHTML = `<div class="alert alert-danger">Error parsing response</div>`;
                     }
+                })
+                .catch(error => {
+                    debugLog(`Upload error: ${error.message}`);
+                    resultDiv.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
                 });
-            }
-        };
+            });
+        });
     </script>
 {% endblock %}

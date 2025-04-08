@@ -102,7 +102,12 @@
                 <div class="box-style__1 rt-mb-30">
                     <div class="hotel-inner-content row">
                         <div class="hotel-thumb col-md-3 mb-5 mb-md-0">
-                            <div class="hotel-bg rtbgprefix-cover" ></div>
+                            {% if clinique.cliniquePhotos|length > 0 %}
+                                {# Accéder à la première photo avec first #}
+                                <div class="hotel-bg rtbgprefix-cover" style="background-image: url('{{ asset(clinique.cliniquePhotos.first.photo_url) }}')"></div>
+                            {% else %}
+                                <div class="hotel-bg rtbgprefix-cover" style="background-image: url('{{ asset('images/mayoClinic.jpg') }}')"></div>
+                            {% endif %}
                         </div>
                         <div class="hotel-text col-md-9">
                             <div class="top">
