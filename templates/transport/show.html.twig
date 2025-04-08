@@ -1,0 +1,106 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails du Transport{% endblock %}
+
+{% block css %}
+    <link href="{{ asset('coderthemes.com/osen/layouts/assets/css/app.min.css') }}" rel="stylesheet" type="text/css" id="app-style" />
+    <link href="{{ asset('coderthemes.com/osen/layouts/assets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
+    <style>
+        .dr-profile-bg { background-size: cover; background-position: center; }
+        .transport-image { object-fit: cover; }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <div class="page-title-head d-flex align-items-sm-center flex-sm-row flex-column gap-2">
+        <div class="flex-grow-1">
+            <h4 class="fs-18 fw-semibold mb-0">Détails du Transport</h4>
+        </div>
+        <div class="text-end">
+            <ol class="breadcrumb m-0 py-0">
+                <li class="breadcrumb-item"><a href="#">MedTravel</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('app_transport_index') }}">Transports</a></li>
+                <li class="breadcrumb-item active">Détails</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xl-4 col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="dr-profile-bg rounded-top position-relative mx-n3" style="height: 270px;">
+                        {% set transport_images = {
+                            'voiture': asset('https://img-4.linternaute.com/XpIwVOW1cq3k-npLPf_h0kYFxVE=/1500x/smart/52373731986a4566806476f7acb2dc3a/ccmcms-linternaute/10654353.jpg'),
+                            'bus': asset('https://img.linemedia.com/img/s/coach-bus-Temsa-Maraton-HDH-330kw-450HP-WC-USB-MATRIX-53-1-1-NO-FLIXBUS---1739353811855939579_common--25021210532098263900.jpg'),
+                            'taxi': asset('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRae_MuifW4xM_iK-vi-_El7z9KLsY1E8yGIw&s'),
+                            'van': asset('https://i.ytimg.com/vi/sbyR9yBOPZA/hqdefault.jpg'),
+                            'vtc': asset('https://www.enquetesecuriteroutiere.org/images/blog/vtc.jpg')
+                        } %}
+                        <img src="{{ transport_images[transport.type] ?? asset('assets/images/transport/default.jpg') }}" 
+                             alt="{{ transport.type }}" 
+                             class="border border-light border-6 rounded position-absolute top-110 start-50 translate-middle transport-image" 
+                             style="width: 375px; height: 250px;">
+                    </div>
+                    <div class="mt-12 mb-4 pt-6 text-center">
+                        <p class="mb-1 fs-18 fw-semibold text-dark">{{ transport.type|capitalize }}</p>
+                    </div>
+                    <h5 class="card-title fw-semibold">À propos du Transport :</h5>
+                    <p class="mt-2">Ce {{ transport.type }} a une capacité de {{ transport.capacite }} personnes et un tarif de {{ transport.tarif }} €.</p>
+                    <div class="mt-3">
+                        <div class="row">
+                            <div class="col-lg-6 col-6">
+                                <h5>Capacité</h5>
+                                <p class="fs-15 text-dark fw-semibold mb-0">{{ transport.capacite }}</p>
+                            </div>
+                            <div class="col-lg-6 col-6">
+                                <h5>Tarif</h5>
+                                <p class="fs-15 text-dark fw-semibold mb-0">{{ transport.tarif }} €</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-8 col-lg-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Informations sur le Transport :</h4>
+                    <div class="table-responsive mt-3 border border-dashed rounded px-2 py-1">
+                        <table class="table table-borderless m-0">
+                            <tbody>
+                               
+                                <tr>
+                                    <td><p class="mb-0">Type :</p></td>
+                                    <td class="px-2 text-dark fw-medium fs-14">{{ transport.type|capitalize }}</td>
+                                </tr>
+                                <tr>
+                                    <td><p class="mb-0">Capacité :</p></td>
+                                    <td class="px-2 text-dark fw-medium fs-14">{{ transport.capacite }}</td>
+                                </tr>
+                                <tr>
+                                    <td><p class="mb-0">Tarif :</p></td>
+                                    <td class="px-2 text-dark fw-medium fs-14">{{ transport.tarif }} €</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer border-top gap-1 hstack">
+                    <a href="{{ path('app_transport_index') }}" class="btn btn-light w-100">Retour à la liste</a>
+                    <a href="{{ path('app_transport_edit', {'id_transport': transport.idTransport}) }}" class="btn btn-dark d-inline-flex align-items-center justify-content-center rounded avatar-md">
+                        <i class="ti ti-edit fs-20"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+    <script src="{{ asset('coderthemes.com/osen/layouts/assets/js/vendor.min.js') }}"></script>
+    <script src="{{ asset('coderthemes.com/osen/layouts/assets/js/app.js') }}"></script>
+{% endblock %}

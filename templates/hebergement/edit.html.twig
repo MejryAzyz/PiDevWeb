@@ -1,0 +1,268 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier Hébergement{% endblock %}
+
+{% block css %}
+    <link href="{{ asset('coderthemes.com/osen/layouts/assets/css/app.min.css') }}" rel="stylesheet" type="text/css" id="app-style" />
+    <link href="{{ asset('coderthemes.com/osen/layouts/assets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('coderthemes.com/osen/layouts/assets/vendor/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+    <style>
+        .form-group { margin-bottom: 1.5rem; }
+        .form-control.is-invalid { border-color: #dc3545; }
+        .invalid-feedback { display: block; color: #dc3545; font-size: 0.875rem; }
+        .dropzone { min-height: 200px; border: 2px dashed #ced4da; background: #f8f9fa; }
+        .dropzone .dz-message { text-align: center; margin: 2rem 0; }
+        .card { box-shadow: 0 0.15rem 1.75rem 0 rgba(33, 40, 50, 0.15); }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="page-container py-4">
+    <div class="page-title-head d-flex align-items-center flex-column flex-sm-row gap-3 mb-4">
+        <h4 class="fs-24 fw-semibold mb-0 flex-grow-1">Modifier Hébergement</h4>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb m-0">
+                <li class="breadcrumb-item"><a href="#">MedTravel</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('app_hebergement_index') }}">Hébergement</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Modifier</li>
+            </ol>
+        </nav>
+    </div>
+
+    {{ form_start(form, {'attr': {'id': 'hebergementForm', 'class': 'needs-validation', 'novalidate': true}}) }}
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="card h-100">
+                <div class="card-header bg-soft-primary border-bottom border-dashed">
+                    <h5 class="card-title mb-0">Informations de Base</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            {{ form_label(form.nom, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.nom, {'attr': {'class': 'form-control', 'placeholder': 'Entrez le nom'}}) }}
+                            {{ form_errors(form.nom, {'attr': {'class': 'invalid-feedback'}}) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_label(form.adresse, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.adresse, {'attr': {'class': 'form-control', 'placeholder': 'Rue, Ville, Code Postal'}}) }}
+                            {{ form_errors(form.adresse, {'attr': {'class': 'invalid-feedback'}}) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_label(form.telephone, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.telephone, {'attr': {'class': 'form-control', 'placeholder': 'Entrez le numéro de téléphone'}}) }}
+                            {{ form_errors(form.telephone, {'attr': {'class': 'invalid-feedback'}}) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_label(form.email, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.email, {'attr': {'class': 'form-control', 'placeholder': 'Entrez l\'adresse email'}}) }}
+                            {{ form_errors(form.email, {'attr': {'class': 'invalid-feedback'}}) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_label(form.capacite, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.capacite, {'attr': {'class': 'form-control', 'placeholder': 'Entrez la capacité'}}) }}
+                            {{ form_errors(form.capacite, {'attr': {'class': 'invalid-feedback'}}) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_label(form.tarif_nuit, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.tarif_nuit, {'attr': {'class': 'form-control', 'placeholder': 'Entrez le tarif par nuit'}}) }}
+                            {{ form_errors(form.tarif_nuit, {'attr': {'class': 'invalid-feedback'}}) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card h-100">
+                <div class="card-header bg-soft-primary border-bottom border-dashed">
+                    <h5 class="card-title mb-0">Image de l'Hébergement</h5>
+                </div>
+                <div class="card-body">
+                    {{ form_label(form.image_url, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.image_url, {'attr': {'class': 'form-control mb-3', 'placeholder': 'Entrez l\'URL de l\'image'}}) }}
+                    {{ form_errors(form.image_url, {'attr': {'class': 'invalid-feedback'}}) }}
+                    
+                    <div class="dropzone" id="myAwesomeDropzone">
+                        <div class="dz-message needsclick">
+                            <i class="h1 ti ti-cloud-upload mb-3"></i>
+                            <h5>Déposez l'image ici ou cliquez pour télécharger</h5>
+                            <span class="text-muted fs-13">Formats acceptés : JPG, PNG, GIF (Max 1 fichier)</span>
+                        </div>
+                    </div>
+                    <div class="dropzone-previews mt-3" id="file-previews"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-end mt-4">
+        <button type="submit" class="btn btn-primary btn-lg me-2" id="submitHebergementForm">
+            <i class="ti ti-check me-1"></i> Mettre à jour l'Hébergement
+        </button>
+        <a href="{{ path('app_hebergement_index') }}" class="btn btn-outline-danger btn-lg" id="cancelButton">
+            <i class="ti ti-x me-1"></i> Annuler
+        </a>
+    </div>
+    {{ form_end(form) }}
+</div>
+{% endblock %}
+
+{% block js %}
+    <script src="{{ asset('coderthemes.com/osen/layouts/assets/js/vendor.min.js') }}"></script>
+    <script src="{{ asset('coderthemes.com/osen/layouts/assets/vendor/sweetalert2/sweetalert2.min.js') }}"></script>
+    <script src="{{ asset('coderthemes.com/osen/layouts/assets/js/app.js') }}"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof Swal === 'undefined') {
+            console.error('SweetAlert2 n\'est pas chargé');
+            return;
+        }
+
+        Dropzone.autoDiscover = false;
+        const form = document.getElementById('hebergementForm');
+        const imageUrlInput = document.getElementById('hebergement_image_url');
+
+        const myDropzone = new Dropzone("#myAwesomeDropzone", {
+            url: "https://api.imgbb.com/1/upload?key=38589e312a02b67fcd8133b20f51e63e",
+            method: "POST",
+            paramName: "image",
+            autoProcessQueue: false,
+            maxFiles: 1,
+            acceptedFiles: "image/jpeg,image/png,image/gif",
+            previewTemplate: `
+                <div class="card mt-1 mb-0 shadow-sm">
+                    <div class="p-2 d-flex align-items-center">
+                        <img data-dz-thumbnail class="avatar-sm rounded me-2">
+                        <div class="flex-grow-1">
+                            <span class="fw-medium" data-dz-name></span>
+                            <small class="text-muted d-block" data-dz-size></small>
+                        </div>
+                        <a href="#" class="btn btn-link text-danger" data-dz-remove>
+                            <i class="ti ti-trash"></i>
+                        </a>
+                    </div>
+                </div>
+            `,
+            previewsContainer: "#file-previews",
+            init: function() {
+                const dz = this;
+
+                // Afficher l'image existante si présente
+                if (imageUrlInput.value) {
+                    const mockFile = { name: "Image actuelle", size: 12345 };
+                    this.emit("addedfile", mockFile);
+                    this.emit("thumbnail", mockFile, imageUrlInput.value);
+                    this.emit("complete", mockFile);
+                }
+
+                document.getElementById('cancelButton').addEventListener('click', function(e) {
+                    e.preventDefault();
+                    Swal.fire({
+                        title: 'Confirmation d\'annulation',
+                        text: 'Êtes-vous sûr de vouloir annuler ? Les modifications non enregistrées seront perdues.',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Oui, Annuler',
+                        cancelButtonText: 'Non, Continuer',
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = '{{ path('app_hebergement_index') }}';
+                        }
+                    });
+                });
+
+                document.getElementById('submitHebergementForm').addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (!form.checkValidity()) {
+                        form.classList.add('was-validated');
+                        return;
+                    }
+
+                    if (dz.getQueuedFiles().length > 0) {
+                        Swal.fire({
+                            title: 'Téléchargement de l\'image',
+                            text: 'Veuillez patienter...',
+                            allowOutsideClick: false,
+                            didOpen: () => Swal.showLoading()
+                        });
+                        dz.processQueue();
+                    } else {
+                        submitForm();
+                    }
+                });
+
+                this.on("success", function(file, response) {
+                    if (response?.data?.url) {
+                        imageUrlInput.value = response.data.url;
+                        submitForm();
+                    }
+                });
+
+                this.on("error", function(file, error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Échec du téléchargement',
+                        text: error.message || 'Échec du téléchargement de l\'image',
+                    });
+                });
+
+                this.on("removedfile", function() {
+                    imageUrlInput.value = "";
+                });
+            }
+        });
+
+        function submitForm() {
+            Swal.fire({
+                title: 'Enregistrement...',
+                text: 'Veuillez patienter pendant que nous traitons votre demande',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
+
+            fetch(form.action, {
+                method: 'POST',
+                body: new FormData(form)
+            })
+            .then(response => {
+                if (response.ok) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Succès !',
+                        text: 'L\'hébergement a été mis à jour avec succès',
+                        timer: 1500,
+                        showConfirmButton: false
+                    }).then(() => {
+                        window.location.href = '{{ path('app_hebergement_index') }}';
+                    });
+                } else {
+                    return response.text().then(text => {
+                        throw new Error('Échec de la soumission du formulaire');
+                    });
+                }
+            })
+            .catch(error => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erreur',
+                    text: 'Veuillez vérifier vos données et réessayer',
+                });
+            });
+        }
+
+        // Validation en temps réel
+        form.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', function() {
+                if (this.checkValidity()) {
+                    this.classList.remove('is-invalid');
+                    this.classList.add('is-valid');
+                } else {
+                    this.classList.remove('is-valid');
+                    this.classList.add('is-invalid');
+                }
+            });
+        });
+    });
+    </script>
+{% endblock %}

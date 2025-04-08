@@ -1,0 +1,170 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau Transport{% endblock %}
+
+{% block css %}
+    <link href="{{ asset('coderthemes.com/osen/layouts/assets/css/app.min.css') }}" rel="stylesheet" type="text/css" id="app-style" />
+    <link href="{{ asset('coderthemes.com/osen/layouts/assets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('coderthemes.com/osen/layouts/assets/vendor/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+    <style>
+        .form-group { margin-bottom: 1.5rem; }
+        .form-control.is-invalid { border-color: #dc3545; }
+        .invalid-feedback { display: block; color: #dc3545; font-size: 0.875rem; }
+        .card { box-shadow: 0 0.15rem 1.75rem 0 rgba(33, 40, 50, 0.15); }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="page-container py-4">
+    <div class="page-title-head d-flex align-items-center flex-column flex-sm-row gap-3 mb-4">
+        <h4 class="fs-24 fw-semibold mb-0 flex-grow-1">Ajouter un Nouveau Transport</h4>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb m-0">
+                <li class="breadcrumb-item"><a href="#">MedTravel</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('app_transport_index') }}">Transports</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Nouveau</li>
+            </ol>
+        </nav>
+    </div>
+
+    {{ form_start(form, {'attr': {'id': 'transportForm', 'class': 'needs-validation', 'novalidate': true}}) }}
+    <div class="row g-4">
+        <div class="col-lg-12">
+            <div class="card h-100">
+                <div class="card-header bg-soft-primary border-bottom border-dashed">
+                    <h5 class="card-title mb-0">Informations sur le Transport</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            {{ form_label(form.type, 'Type', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.type, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.type, {'attr': {'class': 'invalid-feedback'}}) }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form_label(form.capacite, 'Capacité', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.capacite, {'attr': {'class': 'form-control', 'placeholder': 'Entrez la capacité'}}) }}
+                            {{ form_errors(form.capacite, {'attr': {'class': 'invalid-feedback'}}) }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form_label(form.tarif, 'Tarif', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.tarif, {'attr': {'class': 'form-control', 'placeholder': 'Entrez le tarif'}}) }}
+                            {{ form_errors(form.tarif, {'attr': {'class': 'invalid-feedback'}}) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-end mt-4">
+        <button type="submit" class="btn btn-primary btn-lg me-2" id="submitTransportForm">
+            <i class="ti ti-check me-1"></i> Ajouter le Transport
+        </button>
+        <a href="{{ path('app_transport_index') }}" class="btn btn-outline-danger btn-lg" id="cancelButton">
+            <i class="ti ti-x me-1"></i> Annuler
+        </a>
+    </div>
+    {{ form_end(form) }}
+</div>
+{% endblock %}
+
+{% block js %}
+    <script src="{{ asset('coderthemes.com/osen/layouts/assets/js/vendor.min.js') }}"></script>
+    <script src="{{ asset('coderthemes.com/osen/layouts/assets/vendor/sweetalert2/sweetalert2.min.js') }}"></script>
+    <script src="{{ asset('coderthemes.com/osen/layouts/assets/js/app.js') }}"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof Swal === 'undefined') {
+            console.error('SweetAlert2 n\'est pas chargé');
+            return;
+        }
+
+        const form = document.getElementById('transportForm');
+
+        document.getElementById('cancelButton').addEventListener('click', function(e) {
+            e.preventDefault();
+            Swal.fire({
+                title: 'Confirmation d\'annulation',
+                text: 'Êtes-vous sûr de vouloir annuler ? Les modifications non enregistrées seront perdues.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Oui, annuler',
+                cancelButtonText: 'Non, continuer',
+  ',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '{{ path('app_transport_index') }}';
+                }
+            });
+        });
+
+        document.getElementById('submitTransportForm').addEventListener('click', function(e) {
+            e.preventDefault();
+            if (!form.checkValidity()) {
+                form.classList.add('was-validated');
+                return;
+            }
+
+            Swal.fire({
+                title: 'Enregistrement...',
+                text: 'Veuillez patienter pendant le traitement de votre demande',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
+
+            fetch(form.action, {
+                method: 'POST',
+                body: new FormData(form)
+            })
+            .then(response => {
+                if (response.ok) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Succès !',
+                        text: 'Transport créé avec succès',
+                        timer: 1500,
+                        showConfirmButton: false
+                    }).then(() => {
+                        window.location.href = '{{ path('app_transport_index') }}';
+                    });
+                } else {
+                    return response.json().then(data => {
+                        if (data.errors) {
+                            throw new Error(JSON.stringify(data.errors));
+                        }
+                        throw new Error('Échec de la soumission du formulaire');
+                    });
+                }
+            })
+            .catch(error => {
+                let errorMessage = 'Veuillez vérifier vos saisies et réessayer';
+                try {
+                    const errors = JSON.parse(error.message);
+                    errorMessage = Object.values(errors).join('\n');
+                } catch (e) {
+                    // Utiliser le message d'erreur par défaut si l'analyse échoue
+                }
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erreur',
+                    text: errorMessage,
+                });
+            });
+        });
+
+        // Validation en temps réel
+        form.querySelectorAll('input, select').forEach(input => {
+            input.addEventListener('input', function() {
+                if (this.checkValidity()) {
+                    this.classList.remove('is-invalid');
+                    this.classList.add('is-valid');
+                } else {
+                    this.classList.remove('is-valid');
+                    this.classList.add('is-invalid');
+                }
+            });
+        });
+    });
+    </script>
+{% endblock %}
