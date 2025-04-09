@@ -31,15 +31,15 @@
             <div class="row">
                 <div class="col-lg-10 mx-auto">
                     <div class="rt-banner-searchbox trip-search">
-                        <div class="rt-input-group">
+                        <form action="{{ path('app_clinique_front_index') }}" method="get" class="rt-input-group">
                             <div class="single-input col-md-9">
-                                <input type="text" class="form-control" placeholder="Rechercher une clinique">
+                                <input type="text" class="form-control" name="search" placeholder="Rechercher une clinique" value="{{ app.request.query.get('search') }}">
                                 <span class="input-iconbadge"><i class="icofont-google-map"></i></span>
                             </div>
                             <div class="single-input col-md-3">
-                                <input type="submit" value="Rechercher" class="rt-btn rt-gradient pill text-uppercase d-block rt-Bshadow-2">
+                                <button type="submit" class="rt-btn rt-gradient pill text-uppercase d-block rt-Bshadow-2">Rechercher</button>
                             </div>
-                        </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -68,6 +68,20 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="text-center mt-4">
+                                <button type="submit" class="rt-btn rt-gradient rounded-sm rt-sm text-uppercase">Filtrer</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="rt-widget widget_specialty-filter">
+                        <h3 class="rt-widget-title">Filtrer par spécialité</h3>
+                        <form action="{{ path('app_clinique_front_index') }}" method="get" id="specialty-filter-form">
+                            <select name="specialty" class="form-control">
+                                <option value="">Toutes les spécialités</option>
+                                {% for specialite in specialites %}
+                                    <option value="{{ specialite.id_specialite }}">{{ specialite.nom }}</option>
+                                {% endfor %}
+                            </select>
                             <div class="text-center mt-4">
                                 <button type="submit" class="rt-btn rt-gradient rounded-sm rt-sm text-uppercase">Filtrer</button>
                             </div>
@@ -193,11 +207,11 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script>
         $(document).ready(function() {
-            // Récupérer les valeurs min et max depuis le contrôleur
-            const minPrice = {{ min_price|default(0) }};
-            const maxPrice = {{ max_price|default(1000) }};
-            const currentMinPrice = {{ current_min_price|default(minPrice) }};
-            const currentMaxPrice = {{ current_max_price|default(maxPrice) }};
+            // Récupérer les valeurs min et max depuis le contrôleur avec des valeurs par défaut
+            const minPrice = {{ min_price is defined ? min_price : 0 }};
+            const maxPrice = {{ max_price is defined ? max_price : 1000 }};
+            const currentMinPrice = {{ current_min_price is defined ? current_min_price : min_price is defined ? min_price : 0 }};
+            const currentMaxPrice = {{ current_max_price is defined ? current_max_price : max_price is defined ? max_price : 1000 }};
 
             $("#price-range").slider({
                 range: true,

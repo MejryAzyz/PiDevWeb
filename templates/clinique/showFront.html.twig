@@ -361,7 +361,7 @@
             };
 
             let logoImage, cliniquePhotoImg;
-            // !!!!!!!!!! ACTION REQUISE PAR VOUS : LE LOGO DOIT ÊTRE DANS public/images/ !!!!!!!!!!
+            
             const logoPath = "{{ asset('coderthemes.com/osen/layouts/assets/images/logo2.PNG') }}"; 
             const defaultCliniquePhoto = "{{ asset('images/mayoClinic.jpg') }}";
 
@@ -405,7 +405,7 @@
                 const labelColor = '#9c0322'; 
                 const specColor = '#045939';
 
-                // --- Fonctions Helper (checkPageBreak, addFooter, addHeader) --- 
+                //
                 const checkPageBreak = (heightNeeded) => {
                     const footerHeight = 18; 
                     if (currentY + heightNeeded > pageHeight - margin - footerHeight) {

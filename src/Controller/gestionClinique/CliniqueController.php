@@ -7,6 +7,7 @@ use App\Entity\Clinique_photos;
 use App\Form\CliniqueType;
 use App\Repository\CliniqueRepository;
 use App\Repository\DocteurRepository;
+use App\Repository\SpecialiteRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -247,7 +248,7 @@ final class CliniqueController extends AbstractController
 
      // ➕ Méthode front pour afficher toutes les cliniques
      #[Route('/front/liste/{page}', name: 'app_clinique_front_index', methods: ['GET'])]
-     public function indexFront(Request $request, CliniqueRepository $cliniqueRepository, int $page = 1): Response
+     public function indexFront(Request $request, CliniqueRepository $cliniqueRepository, SpecialiteRepository $specialiteRepository, int $page = 1): Response
      {
          // Nombre d'éléments par page
          $limit = 6;
@@ -266,10 +267,18 @@ final class CliniqueController extends AbstractController
          $currentMinPrice = $minPrice;
          $currentMaxPrice = $maxPrice;
 
+         // Récupérer le filtre de spécialité depuis la requête
+         $specialtyFilter = $request->query->get('specialty');
+
+         // Récupérer le terme de recherche
+         $searchTerm = $request->query->get('search');
+
          // Créer le query builder de base
          $queryBuilder = $cliniqueRepository->createQueryBuilder('c')
              ->leftJoin('c.cliniquePhotos', 'photos')
-             ->addSelect('photos');
+             ->addSelect('photos')
+             ->leftJoin('c.docteurs', 'd')
+             ->leftJoin('d.specialite', 's');
 
          // Appliquer le filtre de prix si présent
          if ($priceFilter) {
@@ -279,6 +288,20 @@ final class CliniqueController extends AbstractController
                  ->andWhere('c.prix <= :maxPrice')
                  ->setParameter('minPrice', $currentMinPrice)
                  ->setParameter('maxPrice', $currentMaxPrice);
+         }
+
+         // Appliquer le filtre de spécialité si présent
+         if ($specialtyFilter) {
+             $queryBuilder
+                 ->andWhere('s.id_specialite = :specialtyId')
+                 ->setParameter('specialtyId', $specialtyFilter);
+         }
+
+         // Appliquer la recherche si un terme est présent
+         if ($searchTerm) {
+             $queryBuilder
+                 ->andWhere('c.nom LIKE :searchTerm OR c.description LIKE :searchTerm OR c.adresse LIKE :searchTerm')
+                 ->setParameter('searchTerm', '%' . $searchTerm . '%');
          }
 
          $query = $queryBuilder->getQuery();
@@ -312,7 +335,8 @@ final class CliniqueController extends AbstractController
              'min_price' => $minPrice,
              'max_price' => $maxPrice,
              'current_min_price' => $currentMinPrice,
-             'current_max_price' => $currentMaxPrice
+             'current_max_price' => $currentMaxPrice,
+             'specialites' => $specialiteRepository->findAll(), // Passer les spécialités à la vue
          ]);
      }
     

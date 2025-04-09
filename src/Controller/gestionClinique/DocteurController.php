@@ -5,6 +5,7 @@ namespace App\Controller\gestionClinique;
 use App\Entity\Docteur;
 use App\Form\DocteurType;
 use App\Repository\DocteurRepository;
+use App\Repository\SpecialiteRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,11 +15,29 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/docteur')]
 final class DocteurController extends AbstractController
 {
-    #[Route(name: 'app_docteur_index', methods: ['GET'])]
-    public function index(DocteurRepository $docteurRepository): Response
+    #[Route('/', name: 'app_docteur_index', methods: ['GET'])]
+    public function index(DocteurRepository $docteurRepository, SpecialiteRepository $specialiteRepository): Response
     {
+        // Récupérer les statistiques par spécialité
+        $statsBySpecialite = $docteurRepository->createQueryBuilder('d')
+            ->select('s.nom as specialite_nom, COUNT(d.id_docteur) as count')
+            ->leftJoin('d.specialite', 's')
+            ->groupBy('s.id_specialite')
+            ->getQuery()
+            ->getResult();
+
+        // Récupérer les statistiques par clinique
+        $statsByClinique = $docteurRepository->createQueryBuilder('d')
+            ->select('c.nom as clinique_nom, COUNT(d.id_docteur) as count')
+            ->leftJoin('d.clinique', 'c')
+            ->groupBy('c.id_clinique')
+            ->getQuery()
+            ->getResult();
+
         return $this->render('docteur/index.html.twig', [
             'docteurs' => $docteurRepository->findAll(),
+            'statsBySpecialite' => $statsBySpecialite,
+            'statsByClinique' => $statsByClinique,
         ]);
     }
 
