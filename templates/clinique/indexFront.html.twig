@@ -2,6 +2,10 @@
 
 {% block title %}Nos Cliniques - Emigrar{% endblock %}
 
+{% block stylesheets %}
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+{% endblock %}
+
 {% block body %}
 <div class="rt-breadcump rt-breadcump-height">
     <div class="rt-page-bg rtbgprefix-cover" style="background-image: url({{ asset('coderthemes.com/osen/layouts/assets/images/backgrounds/bredcump.png') }})">
@@ -51,20 +55,23 @@
                 <div class="rt-sidebar-group">
                     <div class="rt-widget widget_range-slider">
                         <h3 class="rt-widget-title">Filtrer par prix</h3>
-                        <div class="slider-range"></div>
-                        <div class="price_slider_amount">
-                            <div class="clearfix">
-                                <div class="float-left">
-                                    <span>Prix :</span>
-                                </div>
-                                <div class="float-right">
-                                    <input type="text" class="amount" name="price" placeholder="Ajoutez votre prix" />
+                        <form action="{{ path('app_clinique_front_index') }}" method="get" id="price-filter-form">
+                            <input type="hidden" name="page" value="{{ currentPage|default(1) }}">
+                            <div class="slider-range" id="price-range"></div>
+                            <div class="price_slider_amount mt-4">
+                                <div class="clearfix">
+                                    <div class="float-left">
+                                        <span>Prix :</span>
+                                    </div>
+                                    <div class="float-right">
+                                        <input type="text" id="price-amount" readonly style="border:0; font-weight:bold;" name="price_range">
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="text-center">
-                            <input type="submit" value="Filtrer" class="rt-btn rt-gradient rounded-sm rt-sm text-uppercase" />
-                        </div>
+                            <div class="text-center mt-4">
+                                <button type="submit" class="rt-btn rt-gradient rounded-sm rt-sm text-uppercase">Filtrer</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -133,10 +140,9 @@
                                 </div>
                                 <div class="right">
                                     {% if clinique.id_clinique is not null %}
-                                    <!-- <button class="btn btn-info" disabled>Voir Détails</button> -->
                                     <div class="right">
-                                        <a href="#" class="rt-btn rt-gradient pill rt-sm3 text-uppercase text-white">View Details</a>
-                                    </div><!-- /.right -->
+                                        <a href="{{ path('app_clinique_front_show', {'id_clinique': clinique.id_clinique}) }}" class="rt-btn rt-gradient pill rt-sm3 text-uppercase text-white">Voir Détails</a>
+                                    </div>
                                     {% else %}
                                         <span class="text-muted">Détails indisponibles</span>
                                     {% endif %}
@@ -151,15 +157,71 @@
 
                 <nav aria-label="Page navigation example">
                     <ul class="pagination rt-paganation justify-content-center">
-                        <li class="page-item"><a class="page-link" href="#"><i class="icofont-rounded-double-left"></i></a></li>
-                        <li class="page-item active"><a class="page-link" href="#">01</a></li>
-                        <li class="page-item"><a class="page-link" href="#">02</a></li>
-                        <li class="page-item"><a class="page-link" href="#">03</a></li>
-                        <li class="page-item"><a class="page-link" href="#"><i class="icofont-rounded-double-right"></i></a></li>
+                        {% if currentPage > 1 %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ path('app_clinique_front_index', {'page': currentPage - 1}) }}">
+                                    <i class="icofont-rounded-double-left"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+
+                        {% for i in 1..totalPages %}
+                            <li class="page-item {{ currentPage == i ? 'active' : '' }}">
+                                <a class="page-link" href="{{ path('app_clinique_front_index', {'page': i}) }}">
+                                    {{ i }}
+                                </a>
+                            </li>
+                        {% endfor %}
+
+                        {% if currentPage < totalPages %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ path('app_clinique_front_index', {'page': currentPage + 1}) }}">
+                                    <i class="icofont-rounded-double-right"></i>
+                                </a>
+                            </li>
+                        {% endif %}
                     </ul>
                 </nav>
             </div>
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Récupérer les valeurs min et max depuis le contrôleur
+            const minPrice = {{ min_price|default(0) }};
+            const maxPrice = {{ max_price|default(1000) }};
+            const currentMinPrice = {{ current_min_price|default(minPrice) }};
+            const currentMaxPrice = {{ current_max_price|default(maxPrice) }};
+
+            $("#price-range").slider({
+                range: true,
+                min: minPrice,
+                max: maxPrice,
+                values: [currentMinPrice, currentMaxPrice],
+                slide: function(event, ui) {
+                    $("#price-amount").val(ui.values[0] + "€ - " + ui.values[1] + "€");
+                },
+                change: function(event, ui) {
+                    // Mettre à jour la valeur cachée
+                    $("input[name='price_range']").val(ui.values[0] + "," + ui.values[1]);
+                }
+            });
+
+            // Initialiser l'affichage du prix
+            $("#price-amount").val($("#price-range").slider("values", 0) +
+                "€ - " + $("#price-range").slider("values", 1) + "€");
+            
+            // Définir la valeur initiale du champ caché
+            $("input[name='price_range']").val(
+                $("#price-range").slider("values", 0) + "," + 
+                $("#price-range").slider("values", 1)
+            );
+        });
+    </script>
 {% endblock %}

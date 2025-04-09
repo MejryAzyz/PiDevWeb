@@ -140,8 +140,8 @@ final class CliniqueController extends AbstractController
                     if ($updatedPhotoCount > 0) {
                         // Only flush if we actually updated photos
                         error_log('Flushing ' . $updatedPhotoCount . ' photo updates to database');
-                        $entityManager->flush();
-                        
+            $entityManager->flush();
+
                         // Check if the flush worked
                         $stmt = $connection->prepare('SELECT id_photo, clinique_id FROM clinique_photos WHERE id_photo IN (' . implode(',', $photoIds) . ')');
                         $result = $stmt->executeQuery();
@@ -185,7 +185,7 @@ final class CliniqueController extends AbstractController
                 }
                 
                 error_log('=== CLINIQUE FORM SUBMISSION END ===');
-                return $this->redirectToRoute('app_clinique_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_clinique_index', [], Response::HTTP_SEE_OTHER);
             } catch (\Exception $e) {
                 error_log('Error in new clinique: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
                 throw $e;
@@ -246,23 +246,79 @@ final class CliniqueController extends AbstractController
     // }
 
      // ➕ Méthode front pour afficher toutes les cliniques
-     #[Route('/front/liste', name: 'app_clinique_front_index', methods: ['GET'])]
-     public function indexFront(CliniqueRepository $cliniqueRepository): Response
+     #[Route('/front/liste/{page}', name: 'app_clinique_front_index', methods: ['GET'])]
+     public function indexFront(Request $request, CliniqueRepository $cliniqueRepository, int $page = 1): Response
      {
-         $cliniques = $cliniqueRepository->createQueryBuilder('c')
-             ->leftJoin('c.cliniquePhotos', 'photos')
-             ->addSelect('photos')
+         // Nombre d'éléments par page
+         $limit = 6;
+
+         // Récupérer les prix min et max de toutes les cliniques
+         $priceRange = $cliniqueRepository->createQueryBuilder('c')
+             ->select('MIN(c.prix) as min_price, MAX(c.prix) as max_price')
              ->getQuery()
-             ->getResult();
+             ->getOneOrNullResult();
+
+         $minPrice = $priceRange['min_price'] ?? 0;
+         $maxPrice = $priceRange['max_price'] ?? 1000;
+
+         // Récupérer le filtre de prix depuis la requête
+         $priceFilter = $request->query->get('price_range');
+         $currentMinPrice = $minPrice;
+         $currentMaxPrice = $maxPrice;
+
+         // Créer le query builder de base
+         $queryBuilder = $cliniqueRepository->createQueryBuilder('c')
+             ->leftJoin('c.cliniquePhotos', 'photos')
+             ->addSelect('photos');
+
+         // Appliquer le filtre de prix si présent
+         if ($priceFilter) {
+             list($currentMinPrice, $currentMaxPrice) = array_map('floatval', explode(',', $priceFilter));
+             $queryBuilder
+                 ->andWhere('c.prix >= :minPrice')
+                 ->andWhere('c.prix <= :maxPrice')
+                 ->setParameter('minPrice', $currentMinPrice)
+                 ->setParameter('maxPrice', $currentMaxPrice);
+         }
+
+         $query = $queryBuilder->getQuery();
+
+         // Créer le paginator
+         $paginator = new \Doctrine\ORM\Tools\Pagination\Paginator($query);
+
+         // Calculer le nombre total de pages
+         $totalItems = count($paginator);
+         $totalPages = ceil($totalItems / $limit);
+
+         // Vérifier que la page demandée existe
+         if ($page < 1) {
+             $page = 1;
+         }
+         if ($page > $totalPages && $totalPages > 0) {
+             $page = $totalPages;
+         }
+
+         // Définir la pagination
+         $paginator
+             ->getQuery()
+             ->setFirstResult($limit * ($page - 1))
+             ->setMaxResults($limit);
 
          return $this->render('clinique/indexFront.html.twig', [
-             'cliniques' => $cliniques,
+             'cliniques' => $paginator,
+             'totalPages' => $totalPages,
+             'currentPage' => $page,
+             'limit' => $limit,
+             'min_price' => $minPrice,
+             'max_price' => $maxPrice,
+             'current_min_price' => $currentMinPrice,
+             'current_max_price' => $currentMaxPrice
          ]);
      }
     
 
      //upload image
-    #[Route('/upload-photo', name: 'app_clinique_upload_photo', methods: ['POST'])]
+     #[Route('/upload-photo', name: 'app_clinique_upload_photo', methods: ['POST'])]
     public function uploadPhoto(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
         // Handle OPTIONS requests for CORS preflight
@@ -289,9 +345,9 @@ final class CliniqueController extends AbstractController
             error_log('File size: ' . $file->getSize());
             error_log('File mime type: ' . $file->getMimeType());
 
-            // Validation du fichier
-            $allowedMimeTypes = ['image/jpeg', 'image/png'];
-            if (!in_array($file->getMimeType(), $allowedMimeTypes)) {
+        // Validation du fichier
+        $allowedMimeTypes = ['image/jpeg', 'image/png'];
+        if (!in_array($file->getMimeType(), $allowedMimeTypes)) {
                 error_log('Invalid file type: ' . $file->getMimeType());
                 return new JsonResponse([
                     'success' => false,
@@ -572,8 +628,8 @@ final class CliniqueController extends AbstractController
             // Try ORM approach first
             $photo->setCliniqueId($clinique);
             $entityManager->persist($photo);
-            $entityManager->flush();
-            
+        $entityManager->flush();
+
             // Check if ORM update worked
             $updatedPhoto = $entityManager->getRepository(Clinique_photos::class)->find($photoId);
             $newCliniqueId = $updatedPhoto->getCliniqueId() ? $updatedPhoto->getCliniqueId()->getId_clinique() : null;
@@ -612,5 +668,13 @@ final class CliniqueController extends AbstractController
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    #[Route('/front/{id_clinique}', name: 'app_clinique_front_show', methods: ['GET'])]
+    public function showFront(Clinique $clinique): Response
+    {
+        return $this->render('clinique/showFront.html.twig', [
+            'clinique' => $clinique,
+        ]);
     }
 }
