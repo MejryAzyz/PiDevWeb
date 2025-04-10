@@ -1,0 +1,185 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Hebergement{% endblock %}
+
+{% block css %}
+    <link href="{{ asset('coderthemes.com/osen/layouts/assets/css/app.min.css') }}" rel="stylesheet" type="text/css" id="app-style" />
+    <link href="{{ asset('coderthemes.com/osen/layouts/assets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('coderthemes.com/osen/layouts/assets/vendor/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+    <style>
+        .form-group { margin-bottom: 1.5rem; }
+        .form-control.is-invalid { border-color: #dc3545; }
+        .invalid-feedback { display: block; color: #dc3545; font-size: 0.875rem; }
+        .dropzone { min-height: 200px; border: 2px dashed #ced4da; background: #f8f9fa; }
+        .dropzone .dz-message { text-align: center; margin: 2rem 0; }
+        .card { box-shadow: 0 0.15rem 1.75rem 0 rgba(33, 40, 50, 0.15); }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="page-container py-4" >
+    <div class="page-title-head d-flex align-items-center flex-column flex-sm-row gap-3 mb-4">
+        <h4 class="fs-24 fw-semibold mb-0 flex-grow-1">Ajouter un planning</h4>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb m-0">
+                <li class="breadcrumb-item"><a href="#">MedTravel</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('app_planning_accompagnateur_index') }}">planning accompagnateur</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Ajouter planning accompagnateur</li>
+            </ol>
+        </nav>
+    </div>
+
+    {{ form_start(form, {'attr': {'id': 'planningAccompagnateurForm', 'class': 'needs-validation', 'novalidate': true}}) }}
+    <div class="row g-4 mx-0" style="max-width: 100%;">
+        <div class="col-lg-12 px-0 ">
+            <div class="card h-100">
+                <div class="card-header bg-soft-primary border-bottom border-dashed" style="text-align: center;">
+                    <h5 class="card-title mb-0">INFORMATIONS</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            {{ form_label(form.accompagnateur, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.accompagnateur, {'attr': {'class': 'form-control', 'placeholder': 'choisir accompagnateur'}}) }}
+                            {{ form_errors(form.accompagnateur, {'attr': {'class': 'invalid-feedback'}}) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_label(form.date_jour, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.date_jour, {'attr': {'class': 'form-control', 'placeholder': 'format JJ-MM-AAAA'}}) }}
+                            {{ form_errors(form.date_jour, {'attr': {'class': 'invalid-feedback'}}) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_label(form.heure_debut, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.heure_debut, {'attr': {'class': 'form-control', 'placeholder': 'format HH:mm'}}) }}
+                            {{ form_errors(form.heure_debut, {'attr': {'class': 'invalid-feedback'}}) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_label(form.heure_fin, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.heure_fin, {'attr': {'class': 'form-control', 'placeholder': 'format HH:mm'}}) }}
+                            {{ form_errors(form.heure_fin, {'attr': {'class': 'invalid-feedback'}}) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-end mt-4">
+        <button type="submit" class="btn btn-primary btn-lg me-2" id="submitPlanningForm">
+            <i class="ti ti-check me-1"></i> Ajouter planning
+        </button>
+        <a href="{{ path('app_planning_accompagnateur_index') }}" class="btn btn-outline-danger btn-lg" id="cancelButton">
+            <i class="ti ti-x me-1"></i> Cancel
+        </a>
+    </div>
+    {{ form_end(form) }}
+</div>
+{% endblock %}
+
+
+{% block js %}
+<script src="{{ asset('coderthemes.com/osen/layouts/assets/vendor/sweetalert2/sweetalert2.min.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('planningAccompagnateurForm');
+
+    // Cancel button confirmation
+    document.getElementById('cancelButton').addEventListener('click', function(e) {
+        e.preventDefault();
+        Swal.fire({
+            title: 'Cancel Confirmation',
+            text: 'Are you sure you want to cancel? Unsaved changes will be lost.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Cancel',
+            cancelButtonText: 'No, Continue',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "{{ path('app_planning_accompagnateur_index') }}";
+            }
+        });
+    });
+
+    // Form submission
+    document.getElementById('submitPlanningForm').addEventListener('click', async function(e) {
+    e.preventDefault();
+    
+    if (!form.checkValidity()) {
+        form.classList.add('was-validated');
+        return;
+    }
+
+    try {
+        const response = await fetch(form.action, {
+            method: 'POST',
+            body: new FormData(form)
+        });
+        
+        if (response.ok) {
+            window.location.href = "{{ path('app_planning_accompagnateur_index') }}";
+        } else {
+            const data = await response.json();
+            throw new Error(data.message || 'Validation failed');
+        }
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.message,
+        });
+    }
+});
+
+    // Real-time validation (optional)
+  // Validate all fields including selects and textareas
+  const validateField = (field) => {
+        const isValid = field.checkValidity();
+        
+        if (field.type === 'select-one') {
+            const parent = field.closest('.form-group') || field.closest('.col-md-6');
+            if (parent) {
+                parent.classList.toggle('is-invalid', !isValid);
+                parent.classList.toggle('is-valid', isValid);
+            }
+        } else {
+            field.classList.toggle('is-invalid', !isValid);
+            field.classList.toggle('is-valid', isValid);
+        }
+    };
+
+    // Validate on input/change
+    const validateOnInteraction = () => {
+        form.querySelectorAll('input, select, textarea').forEach(field => {
+            // Initial validation
+            validateField(field);
+            
+            // Real-time validation
+            field.addEventListener('input', () => validateField(field));
+            field.addEventListener('change', () => validateField(field));
+        });
+    };
+
+    // Special handling for date field
+    const dateField = form.querySelector('[name$="[date_jour]"]');
+    if (dateField) {
+        dateField.addEventListener('change', function() {
+            // Custom date validation
+            const dateRegex = '/^\d{2}\/\d{2}\/\d{4}$/';
+            const isValid = dateRegex.test(this.value);
+            
+            this.classList.toggle('is-invalid', !isValid);
+            this.classList.toggle('is-valid', isValid);
+            
+            if (!isValid) {
+                this.setCustomValidity('Please use DD/MM/YYYY format');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+    }
+
+    // Initialize validation
+    validateOnInteraction();
+});
+</script>
+{% endblock %}
