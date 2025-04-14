@@ -1,0 +1,128 @@
+{{ form_start(form, {
+    'attr': {
+        'id': 'offreEmploiForm',
+        'class': 'needs-validation',
+        'novalidate': true,
+        'data-turbo': 'false',
+        'enctype': 'multipart/form-data'
+    }
+}) }}
+
+<div class="row g-3 mb-4">
+    <div class="col-md-8">
+        {{ form_label(form.titre, "Titre de l'offre", {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+        {{ form_widget(form.titre, {
+            'attr': {
+                'class': 'form-control' ~ (form.titre.vars.errors|length ? ' is-invalid' : ''),
+                'placeholder': 'Ex: Développeur Symfony Senior',
+                'required': 'required'
+            }
+        }) }}
+        <div class="invalid-feedback">
+            {{ form_errors(form.titre) }}
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        {{ form_label(form.typeposte, 'Type de poste', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+        {{ form_widget(form.typeposte, {
+            'attr': {
+                'class': 'form-select' ~ (form.typeposte.vars.errors|length ? ' is-invalid' : '')
+            }
+        }) }}
+        <div class="invalid-feedback">
+            {{ form_errors(form.typeposte) }}
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        {{ form_label(form.typecontrat, 'Type de contrat', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+        {{ form_widget(form.typecontrat, {
+            'attr': {
+                'class': 'form-select' ~ (form.typecontrat.vars.errors|length ? ' is-invalid' : '')
+            }
+        }) }}
+        <div class="invalid-feedback">
+            {{ form_errors(form.typecontrat) }}
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        {{ form_label(form.emplacement, 'Lieu de travail', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+        {{ form_widget(form.emplacement, {
+            'attr': {
+                'class': 'form-select' ~ (form.emplacement.vars.errors|length ? ' is-invalid' : '')
+            }
+        }) }}
+        <div class="invalid-feedback">
+            {{ form_errors(form.emplacement) }}
+        </div>
+    </div>
+
+    <!-- Completely remove the hidden date fields from the template -->
+    <!-- They will be handled automatically by the form type -->
+
+    <div class="col-md-6">
+        {{ form_label(form.etat, 'Statut', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+        {{ form_widget(form.etat, {
+            'attr': {
+                'class': 'form-select' ~ (form.etat.vars.errors|length ? ' is-invalid' : '')
+            }
+        }) }}
+        <div class="invalid-feedback">
+            {{ form_errors(form.etat) }}
+        </div>
+    </div>
+
+    <div class="col-12">
+        {{ form_label(form.description, 'Description détaillée', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+        {{ form_widget(form.description, {
+            'attr': {
+                'class': 'form-control' ~ (form.description.vars.errors|length ? ' is-invalid' : ''),
+                'rows': 6,
+                'placeholder': 'Décrivez en détail le poste, les missions, les compétences requises...',
+                'required': 'required'
+            }
+        }) }}
+        <div class="invalid-feedback">
+            {{ form_errors(form.description) }}
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        {{ form_label(form.imageurl, 'Image illustrative', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+        {{ form_widget(form.imageurl, {
+            'attr': {
+                'class': 'form-control' ~ (form.imageurl.vars.errors|length ? ' is-invalid' : ''),
+                'accept': 'image/jpeg,image/png'
+            }
+        }) }}
+        {% if form.vars.data.imageurl %}
+            <div class="mt-2">
+                <img src="{{ asset('uploads/offres/' ~ form.vars.data.imageurl) }}"
+                     alt="Current image"
+                     class="img-thumbnail"
+                     style="max-height: 150px;">
+                <div class="form-check mt-2">
+                    <input type="checkbox" id="remove_image" name="remove_image" class="form-check-input">
+                    <label for="remove_image" class="form-check-label">Supprimer l'image actuelle</label>
+                </div>
+            </div>
+        {% endif %}
+        <div class="form-text">Formats acceptés : JPEG ou PNG (max 2MB)</div>
+        <div class="invalid-feedback">
+            {{ form_errors(form.imageurl) }}
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-end gap-3 pt-3 border-top">
+    <a href="{{ path('app_offreemploi_index') }}" class="btn btn-outline-secondary">
+        <i class="ti ti-x me-1"></i> Annuler
+    </a>
+    <button type="submit" class="btn btn-primary">
+        <i class="ti ti-check me-1"></i> {{ button_label|default('Enregistrer l\'offre') }}
+    </button>
+</div>
+
+{{ form_end(form) }}

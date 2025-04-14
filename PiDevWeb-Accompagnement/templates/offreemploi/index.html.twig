@@ -1,0 +1,154 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Job Offers Management{% endblock %}
+
+{% block body %}
+    <div class="container-fluid px-5 py-5">
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <h1 class="display-4 text-dark fw-bold">Job Offers</h1>
+                <p class="text-muted">Manage your organization's job postings</p>
+            </div>
+            <div>
+                <button type="button" class="btn btn-success shadow rounded-pill px-4 py-2"
+                        data-bs-toggle="modal" data-bs-target="#createJobModal">
+                    <i class="bi bi-plus-circle me-2"></i> New Job Offer
+                </button>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="card bg-primary text-white text-center p-3 shadow-sm rounded-4">
+                    <h6>Total Offers</h6>
+                    <h2>{{ totalOffers }}</h2>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-success text-white text-center p-3 shadow-sm rounded-4">
+                    <h6>Active Offers</h6>
+                    <h2>{{ activeOffers }}</h2>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-warning text-white text-center p-3 shadow-sm rounded-4">
+                    <h6>Closed Offers</h6>
+                    <h2>{{ closedOffers }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Job Offers Table -->
+        <div class="card shadow-lg rounded-4">
+            <div class="card-body p-4">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for offreemploi in offreemplois %}
+                            <tr>
+                                <td>#{{ offreemploi.id }}</td>
+                                <td>{{ offreemploi.titre }}</td>
+                                <td>{{ offreemploi.emplacement }}</td>
+                                <td>
+                                        <span class="badge bg-{{ offreemploi.etat == 'active' ? 'success' : 'secondary' }}">
+                                            {{ offreemploi.etat|capitalize }}
+                                        </span>
+                                </td>
+                                <td class="text-end">
+                                    <a href="{{ path('app_offreemploi_show', {'id': offreemploi.id}) }}"
+                                       class="btn btn-outline-info btn-sm">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="{{ path('app_offreemploi_edit', {'id': offreemploi.id}) }}"
+                                       class="btn btn-outline-warning btn-sm">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">No job offers found</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Job Modal -->
+    <div class="modal fade" id="createJobModal" tabindex="-1" aria-labelledby="createJobModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content shadow-lg rounded-4">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title" id="createJobModalLabel">Create New Job Offer</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <iframe id="createJobForm" src="{{ path('app_offreemploi_new') }}"
+                            style="width:100%; height:70vh; border:none;"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // Handle form success from popup
+        window.addEventListener('message', function(event) {
+            if (event.data.type === 'formSuccess') {
+                // Close modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('createJobModal'));
+                if (modal) modal.hide();
+
+                // Show success toast
+                Toastify({
+                    text: event.data.message,
+                    duration: 3000,
+                    close: true,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor: "#4CAF50",
+                    callback: function() {
+                        window.location.reload();
+                    }
+                }).showToast();
+
+                // Refresh page after delay
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            }
+        });
+
+        // Refresh iframe when modal is closed
+        document.getElementById('createJobModal').addEventListener('hidden.bs.modal', function() {
+            document.getElementById('createJobForm').src = document.getElementById('createJobForm').src;
+        });
+
+        // Initialize Toastify if not loaded
+        if (typeof Toastify === 'undefined') {
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/toastify-js';
+            document.head.appendChild(script);
+
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = 'https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css';
+            document.head.appendChild(link);
+        }
+    </script>
+{% endblock %}

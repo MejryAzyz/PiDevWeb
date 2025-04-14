@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Offreemploi{% endblock %}
+
+{% block body %}
+    <h1>Offreemploi</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ offreemploi.id }}</td>
+            </tr>
+            <tr>
+                <th>Titre</th>
+                <td>{{ offreemploi.titre }}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{ offreemploi.description }}</td>
+            </tr>
+            <tr>
+                <th>Typeposte</th>
+                <td>{{ offreemploi.typeposte }}</td>
+            </tr>
+            <tr>
+                <th>Datepublication</th>
+                <td>{{ offreemploi.datepublication ? offreemploi.datepublication|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Imageurl</th>
+                <td>{{ offreemploi.imageurl }}</td>
+            </tr>
+            <tr>
+                <th>Etat</th>
+                <td>{{ offreemploi.etat }}</td>
+            </tr>
+            <tr>
+                <th>Typecontrat</th>
+                <td>{{ offreemploi.typecontrat }}</td>
+            </tr>
+            <tr>
+                <th>Emplacement</th>
+                <td>{{ offreemploi.emplacement }}</td>
+            </tr>
+            <tr>
+                <th>Updated_at</th>
+                <td>{{ offreemploi.updatedAt ? offreemploi.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_offreemploi_index') }}">back to list</a>
+
+    <a href="{{ path('app_offreemploi_edit', {'id': offreemploi.id}) }}">edit</a>
+
+    {{ include('offreemploi/_delete_form.html.twig') }}
+{% endblock %}
