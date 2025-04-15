@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Docteur index{% endblock %}
+
+{% block body %}
+    <h1>Docteur index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>IdDocteur</th>
+                <th>Nom</th>
+                <th>Prenom</th>
+                <th>Telephone</th>
+                <th>Email</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for docteur in docteurs %}
+            <tr>
+                <td>{{ docteur.idDocteur }}</td>
+                <td>{{ docteur.nom }}</td>
+                <td>{{ docteur.prenom }}</td>
+                <td>{{ docteur.telephone }}</td>
+                <td>{{ docteur.email }}</td>
+                <td>
+                    <a href="{{ path('app_docteur_show', {'idDocteur': docteur.idDocteur}) }}">show</a>
+                    <a href="{{ path('app_docteur_edit', {'idDocteur': docteur.idDocteur}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_docteur_new') }}">Create new</a>
+{% endblock %}

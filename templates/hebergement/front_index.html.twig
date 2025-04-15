@@ -1,0 +1,457 @@
+{% extends 'baseFront.html.twig' %}
+
+{% block title %}Nos Hébergements{% endblock %}
+
+{% block body %}
+<div class="rt-breadcump rt-breadcump-height">
+    <div class="rt-page-bg rtbgprefix-cover" style="background-image: url({{ asset('coderthemes.com/osen/layouts/assets/images/backgrounds/bredcump.png') }})">
+    </div><!-- /.rt-page-bg -->
+    <div class="container">
+        <div class="row rt-breadcump-height">
+            <div class="col-12">
+                <div class="breadcrumbs-content">
+                    <h3>Nos Hébergements</h3>
+                    <div class="breadcrumbs">
+                        <span class="divider"><i class="icofont-home"></i></span>
+                        <a href="" title="Accueil">Accueil</a>
+                        <span class="divider"><i class="icofont-simple-right"></i></span>
+                        Hébergements
+                    </div><!-- /.breadcrumbs -->
+                </div><!-- /.breadcrumbs-content -->
+            </div><!-- /.col-12 -->
+        </div><!-- /.row -->
+    </div><!-- /.container -->
+
+    <div class="bredcump--search-trip">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-10 mx-auto">
+                    <form action="{{ path('app_hebergement_front_index') }}" method="get" class="rt-banner-searchbox trip-search">
+                        <div class="rt-input-group">
+                            <div class="single-input col-md-9">
+                                <input type="text" name="search" class="form-control" placeholder="Rechercher un hébergement..." value="{{ search }}">
+                                <span class="input-iconbadge"><i class="icofont-google-map"></i></span>
+                            </div><!-- /.single-input -->
+                            <div class="single-input col-md-3">
+                                <button type="submit" class="rt-btn rt-gradient pill text-uppercase d-block rt-Bshadow-2">Rechercher</button>
+                            </div><!-- /.single-input -->
+                        </div><!-- /.rt-input-group -->
+                    </form><!-- /.rt-banner-searchbox -->
+                </div><!-- /.col-lg-10 -->
+            </div><!-- /.row -->
+        </div><!-- /.container -->
+    </div>
+</div><!-- /.rt-bredcump -->
+
+<div class="spacer-bottom"></div><!-- /.spacer-bottom -->
+<section class="content-area">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 mx-auto col-md-7 mb-5 mb-lg-0">
+                <div class="rt-sidebar-group">
+                    <form action="{{ path('app_hebergement_front_index') }}" method="get" id="filter-form">
+                        <input type="hidden" name="search" value="{{ search }}">
+                        <input type="hidden" name="sort_by" value="{{ sort_by }}">
+                        <input type="hidden" name="sort_order" value="{{ sort_order }}">
+                        <input type="hidden" name="nation" value="{{ nation }}">
+                        
+                        <div class="rt-widget widget_range-slider">
+                            <h3 class="rt-widget-title">
+                                Filtrer par Prix
+                            </h3><!-- /.rt-widget-title -->
+
+                            <div class="slider-range" data-min="{{ price_range.min }}" data-max="{{ price_range.max }}" data-current-min="{{ min_price }}" data-current-max="{{ max_price }}"></div>
+                            <div class="price_slider_amount">
+                                <div class="clearfix">
+                                    <div class="float-left">
+                                        <span>Prix:</span>
+                                    </div>
+                                </div>
+                                <div class="price-inputs-container d-flex align-items-center justify-content-between mt-4">
+                                    <div class="price-input-group">
+                                        <span class="currency-symbol">€</span>
+                                        <input name="min_price" id="min_price" value="{{ min_price }}" class="modern-price-input" readonly>
+                                    </div>
+                                    <span class="price-separator">-</span>
+                                    <div class="price-input-group">
+                                        <span class="currency-symbol">€</span>
+                                        <input name="max_price" id="max_price" value="{{ max_price }}" class="modern-price-input" readonly>
+                                    </div>
+                                </div>
+
+                                <style>
+                                    .price-inputs-container {
+                                        background: #f8f9fa;
+                                        border-radius: 12px;
+                                        padding: 10px 15px;
+                                        margin: 10px 0;
+                                        box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+                                    }
+
+                                    .price-input-group {
+                                        position: relative;
+                                        display: flex;
+                                        align-items: center;
+                                    }
+
+                                    .currency-symbol {
+                                        position: absolute;
+                                        left: 8px;
+                                        color: #5e6d77;
+                                        font-weight: 500;
+                                    }
+
+                                    .modern-price-input {
+                                        border: 1px solid #e2e8f0;
+                                        border-radius: 8px;
+                                        padding: 8px 8px 8px 25px;
+                                        width: 100px;
+                                        font-size: 14px;
+                                        font-weight: 500;
+                                        color: #2d3748;
+                                        background: white;
+                                        transition: all 0.3s ease;
+                                        text-align: right;
+                                    }
+
+                                    .modern-price-input:focus {
+                                        outline: none;
+                                        border-color: #4299e1;
+                                        box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+                                    }
+
+                                    .price-separator {
+                                        margin: 0 10px;
+                                        color: #718096;
+                                        font-weight: 500;
+                                        font-size: 16px;
+                                    }
+
+                                    .modern-price-input:read-only {
+                                        background-color: white;
+                                        cursor: default;
+                                    }
+                                </style>
+                            </div>
+                            <div class="text-center">
+                                <button type="submit" class="rt-btn rt-gradient rounded-sm rt-sm text-uppercase filter-price-btn">Filtrer</button>
+                            </div><!-- /.text-center -->
+                        </div><!-- /.rt-widget -->
+                        
+                        <div class="rt-widget widget_range-slider">
+                            <h3 class="rt-widget-title">
+                                Filtrer par Capacité
+                            </h3><!-- /.rt-widget-title -->
+
+                            <div class="capacity-slider" data-min="{{ min(capacities) }}" data-max="{{ max(capacities) }}" data-current-min="{{ capacity_min }}" data-current-max="{{ capacity_max }}"></div>
+                            <div class="capacity_slider_amount">
+                                <div class="clearfix">
+                                    <div class="float-left">
+                                        <span>Capacité:</span>
+                                    </div>
+                                </div>
+                                <div class="capacity-inputs-container d-flex align-items-center justify-content-between mt-4">
+                                    <div class="capacity-input-group">
+                                        <span class="capacity-symbol">👤</span>
+                                        <input name="capacity_min" id="capacity_min" value="{{ capacity_min }}" class="modern-capacity-input" readonly>
+                                    </div>
+                                    <span class="capacity-separator">-</span>
+                                    <div class="capacity-input-group">
+                                        <span class="capacity-symbol">👤</span>
+                                        <input name="capacity_max" id="capacity_max" value="{{ capacity_max }}" class="modern-capacity-input" readonly>
+                                    </div>
+                                </div>
+
+                                <style>
+                                    .capacity-inputs-container {
+                                        background: #f8f9fa;
+                                        border-radius: 12px;
+                                        padding: 10px 15px;
+                                        margin: 10px 0;
+                                        box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+                                    }
+
+                                    .capacity-input-group {
+                                        position: relative;
+                                        display: flex;
+                                        align-items: center;
+                                    }
+
+                                    .capacity-symbol {
+                                        position: absolute;
+                                        left: 8px;
+                                        color: #5e6d77;
+                                        font-weight: 500;
+                                        font-size: 16px;
+                                    }
+
+                                    .modern-capacity-input {
+                                        border: 1px solid #e2e8f0;
+                                        border-radius: 8px;
+                                        padding: 8px 8px 8px 30px;
+                                        width: 100px;
+                                        font-size: 14px;
+                                        font-weight: 500;
+                                        color: #2d3748;
+                                        background: white;
+                                        transition: all 0.3s ease;
+                                        text-align: right;
+                                    }
+
+                                    .modern-capacity-input:focus {
+                                        outline: none;
+                                        border-color: #4299e1;
+                                        box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+                                    }
+
+                                    .capacity-separator {
+                                        margin: 0 10px;
+                                        color: #718096;
+                                        font-weight: 500;
+                                        font-size: 16px;
+                                    }
+
+                                    .modern-capacity-input:read-only {
+                                        background-color: white;
+                                        cursor: default;
+                                    }
+                                </style>
+                            </div>
+                            <div class="text-center">
+                                <button type="submit" class="rt-btn rt-gradient rounded-sm rt-sm text-uppercase filter-capacity-btn">Filtrer</button>
+                            </div><!-- /.text-center -->
+                        </div><!-- /.rt-widget -->
+                        
+                        <div class="rt-widget">
+                            <h3 class="rt-widget-title">
+                                Filtrer par Nation
+                            </h3><!-- /.rt-widget-title -->
+                            <div class="rt-widget-content">
+                                <select class="rt-selectactive" name="nation" onchange="this.form.submit()">
+                                    <option value="">Toutes les nations</option>
+                                    {% for n in nations %}
+                                        <option value="{{ n }}" {% if nation == n %}selected{% endif %}>{{ n }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div><!-- /.rt-widget-content -->
+                        </div><!-- /.rt-widget -->
+                    </form><!-- /#filter-form -->
+                </div><!-- /.rt-sidebar-group -->
+            </div><!-- /.col-lg-3 -->
+            <div class="col-lg-8">
+                <div class="box-style__1 rt-mb-30">
+                    <form action="{{ path('app_hebergement_front_index') }}" method="get" class="row">
+                        <input type="hidden" name="search" value="{{ search }}">
+                        <input type="hidden" name="min_price" value="{{ min_price }}">
+                        <input type="hidden" name="max_price" value="{{ max_price }}">
+                        <input type="hidden" name="capacity_min" value="{{ capacity_min }}">
+                        <input type="hidden" name="capacity_max" value="{{ capacity_max }}">
+                        <input type="hidden" name="nation" value="{{ nation }}">
+                        
+                        <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
+                            <button type="submit" name="sort_by" value="recommended" class="rt-btn pill rt-sm rt-gradient d-block {% if sort_by == 'recommended' %}active{% endif %}">Recommandés</button>
+                        </div><!-- /.col-lg-4 -->
+                        <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
+                            <select class="rt-selectactive banner-select" name="sort_by" style="width: 100%" onchange="this.form.submit()">
+                                <option value="price" {% if sort_by == 'price' %}selected{% endif %}>Prix</option>
+                                <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Nom</option>
+                                <option value="capacity" {% if sort_by == 'capacity' %}selected{% endif %}>Capacité</option>
+                                <option value="address" {% if sort_by == 'address' %}selected{% endif %}>Adresse</option>
+                            </select>
+                        </div><!-- /.col-lg-3 -->
+                        <div class="col-lg-3 rt-input-group mini col-md-6 mb-3 mb-md-0">
+                            <select class="rt-selectactive banner-select" name="sort_order" style="width: 100%" onchange="this.form.submit()">
+                                <option value="asc" {% if sort_order == 'asc' %}selected{% endif %}>Croissant</option>
+                                <option value="desc" {% if sort_order == 'desc' %}selected{% endif %}>Décroissant</option>
+                            </select>
+                        </div><!-- /.col-lg-3 -->
+                        <div class="col-lg-3 rt-input-group mini col-md-6">
+                            <a href="{{ path('app_hebergement_front_index') }}" class="rt-btn rt-gradient pill rt-sm3 text-uppercase d-block text-center">Réinitialiser</a>
+                        </div><!-- /.col-lg-3 -->
+                    </form>
+                </div><!-- /.flight-list-box -->
+                
+                {% if hebergements|length > 0 %}
+                    {% for hebergement in hebergements %}
+                    <div class="box-style__1 rt-mb-30">
+                        <div class="hotel-inner-content row">
+                            <div class="hotel-thumb col-md-4 mb-5 mb-md-0">
+                                <div class="hotel-bg rtbgprefix-cover" style="background-image: url({{ hebergement.imageUrl ? hebergement.imageUrl : asset('coderthemes.com/osen/layouts/assets/images/all-img/trip-1.jpg') }})">
+                                    {% if loop.index <= 3 %}
+                                    <div class="inaner-badge">
+                                        <span class="bg-gradient-primary text-white text-capitalize rt-pl-10 rt-pr-10 rt-pt-5 rt-pb-5">nouveau</span>
+                                    </div><!-- /.inaner-badge -->
+                                    {% endif %}
+                                </div>
+                            </div><!-- /.hotel-thumb -->
+                            <div class="hotel-text col-md-8">
+                                <div class="top">
+                                    <h5>{{ hebergement.nom }}</h5>
+                                    <p>{{ hebergement.adresse }}</p>
+                                </div><!-- /.top -->
+                                <div class="middle-text d-md-flex justify-content-md-between rt-mt-20">
+                                    <div class="left_column">
+                                        <span class="badge rt-gradinet-badge pill rt-mr-10">{{ hebergement.capacite }} <small>places</small></span>
+                                        <span class="primary-color">Disponible</span>
+                                        <span class="f-size-12 text-878">( {{ hebergement.telephone }} )</span>
+                                        <span class="text-555 f-size-16 d-block rt-mt-15">
+                                            <span class="rt-mr-15"><i class="icofont-users-alt-5 primary-color rt-mr-4"></i>Capacité: {{ hebergement.capacite }}</span>
+                                            <span><i class="icofont-email primary-color rt-mr-4"></i>{{ hebergement.email }}</span>
+                                        </span>
+                                    </div><!-- /.left- -->
+                                    <div class="right_column text-left text-md-right">
+                                        <span class="d-block text-primary f-size-24 rt-semiblod title-font">{{ hebergement.tarif_nuit }}€</span>
+                                        <span class="d-block f-size-12 text-878">Par Nuit</span>
+                                    </div><!-- /.right -->
+                                </div><!-- /.middle-text -->
+                                <div class="footer-elements d-flex justify-content-between align-items-center align-items-end">
+                                    <div class="left">
+                                        <a href="#">Réserver maintenant</a>
+                                    </div><!-- /.left -->
+                                    <div class="right">
+                                        <a href="{{ path('app_hebergement_front_show', {'id_hebergement': hebergement.idHebergement}) }}" class="rt-btn rt-gradient pill rt-sm3 text-uppercase">Voir Détails</a>
+                                    </div><!-- /.right -->
+                                </div><!-- /.footer-elements -->
+                            </div><!-- /.hotel-text -->
+                        </div><!-- /.hotel-inner-content -->
+                    </div><!-- /.hotel-list-box -->
+                    {% endfor %}
+                    
+                    {% if total_pages > 1 %}
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination rt-paganation justify-content-center">
+                            {% if current_page > 1 %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ path('app_hebergement_front_index', {
+                                    'page': current_page - 1,
+                                    'search': search,
+                                    'min_price': min_price,
+                                    'max_price': max_price,
+                                    'capacity_min': capacity_min,
+                                    'capacity_max': capacity_max,
+                                    'sort_by': sort_by,
+                                    'sort_order': sort_order
+                                }) }}">
+                                    <i class="icofont-rounded-double-left"></i>
+                                </a>
+                            </li>
+                            {% endif %}
+                            
+                            {% for i in 1..total_pages %}
+                            <li class="page-item {% if i == current_page %}active{% endif %}">
+                                <a class="page-link" href="{{ path('app_hebergement_front_index', {
+                                    'page': i,
+                                    'search': search,
+                                    'min_price': min_price,
+                                    'max_price': max_price,
+                                    'capacity_min': capacity_min,
+                                    'capacity_max': capacity_max,
+                                    'sort_by': sort_by,
+                                    'sort_order': sort_order
+                                }) }}">{{ i }}</a>
+                            </li>
+                            {% endfor %}
+                            
+                            {% if current_page < total_pages %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ path('app_hebergement_front_index', {
+                                    'page': current_page + 1,
+                                    'search': search,
+                                    'min_price': min_price,
+                                    'max_price': max_price,
+                                    'capacity_min': capacity_min,
+                                    'capacity_max': capacity_max,
+                                    'sort_by': sort_by,
+                                    'sort_order': sort_order
+                                }) }}">
+                                    <i class="icofont-rounded-double-right"></i>
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    {% endif %}
+                {% else %}
+                <div class="alert alert-info">
+                    Aucun hébergement ne correspond à vos critères de recherche.
+                </div>
+                {% endif %}
+            </div><!-- /.col-lg-9 -->
+        </div><!-- /.row -->
+    </div><!-- /.container -->
+</section>
+
+{% block javascripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialiser le slider de prix
+        var priceSlider = document.querySelector('.slider-range');
+        if (priceSlider) {
+            var minPrice = parseFloat(priceSlider.dataset.min);
+            var maxPrice = parseFloat(priceSlider.dataset.max);
+            var currentMin = parseFloat(priceSlider.dataset.currentMin);
+            var currentMax = parseFloat(priceSlider.dataset.currentMax);
+            
+            // S'assurer que les valeurs sont des nombres valides
+            if (isNaN(minPrice)) minPrice = 0;
+            if (isNaN(maxPrice)) maxPrice = 1000;
+            if (isNaN(currentMin)) currentMin = minPrice;
+            if (isNaN(currentMax)) currentMax = maxPrice;
+            
+            $(priceSlider).slider({
+                range: true,
+                min: minPrice,
+                max: maxPrice,
+                values: [currentMin, currentMax],
+                slide: function(event, ui) {
+                    $('#min_price').val(ui.values[0]);
+                    $('#max_price').val(ui.values[1]);
+                },
+                stop: function(event, ui) {
+                    $('#min_price').val(ui.values[0]);
+                    $('#max_price').val(ui.values[1]);
+                }
+            });
+            
+            // Set initial values
+            $('#min_price').val(currentMin);
+            $('#max_price').val(currentMax);
+        }
+        
+        // Initialiser le slider de capacité
+        var capacitySlider = document.querySelector('.capacity-slider');
+        if (capacitySlider) {
+            var minCapacity = parseFloat(capacitySlider.dataset.min);
+            var maxCapacity = parseFloat(capacitySlider.dataset.max);
+            var currentMinCapacity = parseFloat(capacitySlider.dataset.currentMin);
+            var currentMaxCapacity = parseFloat(capacitySlider.dataset.currentMax);
+            
+            // S'assurer que les valeurs sont des nombres valides
+            if (isNaN(minCapacity)) minCapacity = 0;
+            if (isNaN(maxCapacity)) maxCapacity = 1000;
+            if (isNaN(currentMinCapacity)) currentMinCapacity = minCapacity;
+            if (isNaN(currentMaxCapacity)) currentMaxCapacity = maxCapacity;
+            
+            $(capacitySlider).slider({
+                range: true,
+                min: minCapacity,
+                max: maxCapacity,
+                values: [currentMinCapacity, currentMaxCapacity],
+                slide: function(event, ui) {
+                    $('#capacity_min').val(ui.values[0]);
+                    $('#capacity_max').val(ui.values[1]);
+                },
+                stop: function(event, ui) {
+                    $('#capacity_min').val(ui.values[0]);
+                    $('#capacity_max').val(ui.values[1]);
+                }
+            });
+            
+            // Set initial values
+            $('#capacity_min').val(currentMinCapacity);
+            $('#capacity_max').val(currentMaxCapacity);
+        }
+    });
+</script>
+{% endblock %}
+{% endblock %}

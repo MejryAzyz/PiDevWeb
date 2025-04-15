@@ -1,0 +1,144 @@
+{% extends 'baseFront.html.twig' %}
+
+{% block title %}{{ hebergement.nom }} - Détails{% endblock %}
+
+{% block body %}
+<div class="rt-breadcump rt-breadcump-height">
+    <div class="rt-page-bg rtbgprefix-cover" style="background-image: url({{ asset('coderthemes.com/osen/layouts/assets/images/backgrounds/bredcump.png') }})">
+    </div><!-- /.rt-page-bg -->
+    <div class="container">
+        <div class="row rt-breadcump-height">
+            <div class="col-12">
+                <div class="breadcrumbs-content">
+                    <h3>{{ hebergement.nom }}</h3>
+                    <div class="breadcrumbs">
+                        <span class="divider"><i class="icofont-home"></i></span>
+                        <a href="" title="Accueil">Accueil</a>
+                        <span class="divider"><i class="icofont-simple-right"></i></span>
+                        <a href="{{ path('app_hebergement_front_index') }}" title="Hébergements">Hébergements</a>
+                        <span class="divider"><i class="icofont-simple-right"></i></span>
+                        {{ hebergement.nom }}
+                    </div><!-- /.breadcrumbs -->
+                </div><!-- /.breadcrumbs-content -->
+            </div><!-- /.col-12 -->
+        </div><!-- /.row -->
+    </div><!-- /.container -->
+</div><!-- /.rt-bredcump -->
+
+<div class="spacer-bottom"></div><!-- /.spacer-bottom -->
+<section class="content-area">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="rt-single-thumb">
+                    <div class="rt-single-thumb-inner rtbgprefix-cover" style="background-image: url({{ hebergement.imageUrl ? hebergement.imageUrl : asset('coderthemes.com/osen/layouts/assets/images/all-img/trip-1.jpg') }})">
+                    </div><!-- /.rt-single-thumb-inner -->
+                </div><!-- /.rt-single-thumb -->
+                
+                <div class="rt-single-content">
+                    <div class="rt-single-content-inner">
+                        <div class="rt-single-content-top">
+                            <div class="rt-single-content-top-left">
+                                <h3 class="rt-single-content-title">{{ hebergement.nom }}</h3>
+                                <div class="rt-single-content-top-left-meta">
+                                    <span><i class="icofont-location-pin"></i> {{ hebergement.adresse }}</span>
+                                    <span><i class="icofont-phone"></i> {{ hebergement.telephone }}</span>
+                                    <span><i class="icofont-envelope"></i> {{ hebergement.email }}</span>
+                                </div><!-- /.rt-single-content-top-left-meta -->
+                            </div><!-- /.rt-single-content-top-left -->
+                            <div class="rt-single-content-top-right">
+                                <div class="rt-single-content-top-right-price">
+                                    <span class="rt-single-content-top-right-price-amount">{{ hebergement.tarifNuit }}€</span>
+                                    <span class="rt-single-content-top-right-price-text">Par Nuit</span>
+                                </div><!-- /.rt-single-content-top-right-price -->
+                            </div><!-- /.rt-single-content-top-right -->
+                        </div><!-- /.rt-single-content-top -->
+                        
+                        <div class="rt-single-content-description">
+                            <h4 class="rt-single-content-description-title">Description</h4>
+                            <p>Cet hébergement offre une capacité de {{ hebergement.capacite }} places. Situé à {{ hebergement.adresse }}, il est facilement accessible et offre un excellent rapport qualité-prix.</p>
+                            <p>Pour toute information complémentaire, n'hésitez pas à nous contacter par téléphone au {{ hebergement.telephone }} ou par email à {{ hebergement.email }}.</p>
+                        </div><!-- /.rt-single-content-description -->
+                        
+                        <div class="rt-single-content-features">
+                            <h4 class="rt-single-content-features-title">Caractéristiques</h4>
+                            <ul class="rt-single-content-features-list">
+                                <li><i class="icofont-users-alt-5"></i> Capacité: {{ hebergement.capacite }} places</li>
+                                <li><i class="icofont-location-pin"></i> Adresse: {{ hebergement.adresse }}</li>
+                                <li><i class="icofont-phone"></i> Téléphone: {{ hebergement.telephone }}</li>
+                                <li><i class="icofont-envelope"></i> Email: {{ hebergement.email }}</li>
+                                <li><i class="icofont-money-bag"></i> Tarif par nuit: {{ hebergement.tarifNuit }}€</li>
+                            </ul><!-- /.rt-single-content-features-list -->
+                        </div><!-- /.rt-single-content-features -->
+                    </div><!-- /.rt-single-content-inner -->
+                </div><!-- /.rt-single-content -->
+            </div><!-- /.col-lg-8 -->
+            
+            <div class="col-lg-4">
+                <div class="rt-sidebar-group">
+                    <div class="rt-widget widget_booking">
+                        <h3 class="rt-widget-title">
+                            Réserver cet hébergement
+                        </h3><!-- /.rt-widget-title -->
+                        <form action="#" class="rt-form">
+                            <div class="rt-form-group">
+                                <label for="check-in">Date d'arrivée</label>
+                                <input type="text" class="form-control" id="check-in" placeholder="JJ/MM/AAAA">
+                            </div><!-- /.rt-form-group -->
+                            <div class="rt-form-group">
+                                <label for="check-out">Date de départ</label>
+                                <input type="text" class="form-control" id="check-out" placeholder="JJ/MM/AAAA">
+                            </div><!-- /.rt-form-group -->
+                            <div class="rt-form-group">
+                                <label for="guests">Nombre de personnes</label>
+                                <select class="form-control" id="guests">
+                                    <option value="1">1 personne</option>
+                                    <option value="2">2 personnes</option>
+                                    <option value="3">3 personnes</option>
+                                    <option value="4">4 personnes</option>
+                                    <option value="5">5 personnes</option>
+                                    <option value="6">6 personnes</option>
+                                    <option value="7">7 personnes</option>
+                                    <option value="8">8 personnes</option>
+                                </select>
+                            </div><!-- /.rt-form-group -->
+                            <div class="rt-form-group">
+                                <label for="rooms">Nombre de chambres</label>
+                                <select class="form-control" id="rooms">
+                                    <option value="1">1 chambre</option>
+                                    <option value="2">2 chambres</option>
+                                    <option value="3">3 chambres</option>
+                                    <option value="4">4 chambres</option>
+                                </select>
+                            </div><!-- /.rt-form-group -->
+                            <div class="rt-form-group">
+                                <button type="submit" class="rt-btn rt-gradient pill d-block text-uppercase">Réserver maintenant</button>
+                            </div><!-- /.rt-form-group -->
+                        </form><!-- /.rt-form -->
+                    </div><!-- /.rt-widget -->
+                    
+                    <div class="rt-widget widget_contact">
+                        <h3 class="rt-widget-title">
+                            Contactez-nous
+                        </h3><!-- /.rt-widget-title -->
+                        <ul class="rt-widget-contact-list">
+                            <li>
+                                <span class="rt-widget-contact-list-icon"><i class="icofont-location-pin"></i></span>
+                                <span class="rt-widget-contact-list-text">{{ hebergement.adresse }}</span>
+                            </li>
+                            <li>
+                                <span class="rt-widget-contact-list-icon"><i class="icofont-phone"></i></span>
+                                <span class="rt-widget-contact-list-text">{{ hebergement.telephone }}</span>
+                            </li>
+                            <li>
+                                <span class="rt-widget-contact-list-icon"><i class="icofont-envelope"></i></span>
+                                <span class="rt-widget-contact-list-text">{{ hebergement.email }}</span>
+                            </li>
+                        </ul><!-- /.rt-widget-contact-list -->
+                    </div><!-- /.rt-widget -->
+                </div><!-- /.rt-sidebar-group -->
+            </div><!-- /.col-lg-4 -->
+        </div><!-- /.row -->
+    </div><!-- /.container -->
+</section>
+{% endblock %} 
