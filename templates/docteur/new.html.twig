@@ -36,9 +36,9 @@
                     </div>
                     <div class="card-body">
                         <!-- Début du formulaire -->
-                        {{ form_start(form, {'method': 'POST', 'action': path('app_docteur_new')}) }}
+                        {{ form_start(form,{'attr': {'novalidate': 'novalidate'}}, {'method': 'POST', 'action': path('app_docteur_new')}) }}
 
-                        <div class="row">
+                         <div class="row">
                             <div class="col-lg-6">
                                 <div class="mb-3">
                                     <label for="{{ form.nom.vars.id }}" class="form-label">Nom</label>
@@ -93,13 +93,13 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                         </div>
 
-                        <!-- Boutons de soumission -->
-                        <div class="text-end mb-3">
+                         <!-- Boutons de soumission -->
+                         <div class="text-end mb-3">
                             <button type="submit" class="btn btn-primary">Ajouter le Docteur</button>
                             <a href="{{ path('app_docteur_index') }}" class="btn btn-danger">Annuler</a>
-                        </div>
+                         </div>
 
                         {{ form_end(form) }}
                     </div>

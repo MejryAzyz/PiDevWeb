@@ -36,7 +36,7 @@
                     </div>
                     <div class="card-body">
                         <!-- Début du formulaire -->
-                        {{ form_start(form, {'method': 'POST', 'action': path('app_docteur_edit', {'id_docteur': docteur.id_docteur})}) }}
+                        {{ form_start(form,{'attr': {'novalidate': 'novalidate'}}, {'method': 'POST', 'action': path('app_docteur_edit', {'id_docteur': docteur.id_docteur})}) }}
 
                         <div class="row">
                             <div class="col-lg-6">

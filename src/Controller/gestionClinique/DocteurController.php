@@ -6,6 +6,7 @@ use App\Entity\Docteur;
 use App\Form\DocteurType;
 use App\Repository\DocteurRepository;
 use App\Repository\SpecialiteRepository;
+use App\Repository\CliniqueRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -102,14 +103,21 @@ final class DocteurController extends AbstractController
     }
 
     #[Route('{id_clinique}/docteurs', name: 'app_clinique_docteurs', methods: ['GET'])]
-    public function showDoctorsByClinique(int $id_clinique, DocteurRepository $docteurRepository): Response
-     {
-      // Récupérer tous les docteurs pour la clinique donnée
-       $docteurs = $docteurRepository->findBy(['clinique' => $id_clinique]);
+    public function showDoctorsByClinique(int $id_clinique, DocteurRepository $docteurRepository, CliniqueRepository $cliniqueRepository): Response
+    {
+        // Récupérer la clinique
+        $clinique = $cliniqueRepository->find($id_clinique);
+        if (!$clinique) {
+            throw $this->createNotFoundException('Clinique non trouvée');
+        }
 
-       return $this->render('clinique/show.html.twig', [
-        'docteurs' => $docteurs,
-      ]);
+        // Récupérer tous les docteurs pour la clinique donnée
+        $docteurs = $docteurRepository->findBy(['clinique' => $id_clinique]);
+
+        return $this->render('clinique/show.html.twig', [
+            'clinique' => $clinique,
+            'docteurs' => $docteurs,
+        ]);
     }
 
 }

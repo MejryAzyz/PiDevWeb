@@ -37,7 +37,7 @@
                         <h4 class="card-title mb-0">Informations de la Spécialité</h4>
                     </div>
                     <div class="card-body">
-                        {{ form_start(form, {'method': 'POST', 'action': path('app_specialite_new')}) }}
+                        {{ form_start(form,{'attr': {'novalidate': 'novalidate'}}, {'method': 'POST', 'action': path('app_specialite_new')}) }}
 
 
                             <div class="row">

@@ -57,7 +57,7 @@
                         <h4 class="card-title mb-0">Informations de Base</h4>
                     </div>
                     <div class="card-body">
-                        {{ form_start(form, {'attr': {'id': 'cliniqueForm', 'onsubmit': 'return validateForm(event)'}}) }}
+                        {{ form_start(form, {'attr': {'id': 'cliniqueForm', 'novalidate': 'novalidate'}}) }}
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="mb-3">
@@ -99,7 +99,7 @@
                                 <div class="col-lg-12">
                                     <div class="mb-3">
                                         <label for="{{ form.adresse.vars.id }}" class="form-label">Adresse</label>
-                                        {{ form_widget(form.adresse, {'attr': {'class': 'form-control', 'rows': '3', 'placeholder': 'Entrez l\'adresse complète'}}) }}
+                                        {{ form_widget(form.adresse, {'attr': {'class': 'form-control', 'rows': '3', 'placeholder': "L'adresse doit être au format 'Rue, Ville, Code Postal' (ex. : Rue de la Paix, Paris, 75001)"}}) }}
                                         <div class="form-error">
                                             {{ form_errors(form.adresse) }}
                                         </div>
@@ -127,22 +127,7 @@
                 </div>
             </div>
             <div class="col-lg-5">
-                <!-- Test direct upload form -->
-                <div class="card mb-3">
-                    <div class="card-header border-bottom border-dashed">
-                        <h4 class="card-title mb-0">Direct Upload Test</h4>
-                    </div>
-                    <div class="card-body">
-                        <form id="directUploadForm" enctype="multipart/form-data">
-                            <div class="mb-3">
-                                <label for="testFile" class="form-label">Select File</label>
-                                <input type="file" id="testFile" name="file" class="form-control" accept="image/jpeg,image/png">
-                            </div>
-                            <button type="button" id="uploadButton" class="btn btn-primary">Upload</button>
-                        </form>
-                        <div id="directUploadResult" class="mt-3"></div>
-                    </div>
-                </div>
+                
                 
                 <!-- Dropzone upload form -->
                 <div class="card">

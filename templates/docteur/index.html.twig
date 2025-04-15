@@ -69,7 +69,6 @@
                         <table class="table table-nowrap mb-0">
                             <thead class="bg-light-subtle">
                                 <tr>
-                                    <th>ID</th>
                                     <th>Nom</th>
                                     <th>Prénom</th>
                                     <th>Téléphone</th>
@@ -82,7 +81,6 @@
                             <tbody>
                                 {% for docteur in docteurs %}
                                     <tr>
-                                        <td>{{ docteur.idDocteur }}</td>
                                         <td>{{ docteur.nom }}</td>
                                         <td>{{ docteur.prenom }}</td>
                                         <td>{{ docteur.telephone }}</td>
@@ -91,9 +89,9 @@
                                         <td>{{ docteur.clinique.nom }}</td> <!-- Affichage de la clinique -->
                                         <td class="pe-3">
                                             <div class="hstack gap-1 justify-content-end">
-                                                <a href="{{ path('app_docteur_show', {'id_docteur': docteur.id_docteur}) }}" class="btn btn-soft-primary btn-icon btn-sm rounded-circle">
+                                                <!-- <a href="{{ path('app_docteur_show', {'id_docteur': docteur.id_docteur}) }}" class="btn btn-soft-primary btn-icon btn-sm rounded-circle">
                                                     <i class="ti ti-eye"></i>
-                                                </a>
+                                                </a> -->
                                                 <a href="{{ path('app_docteur_edit', {'id_docteur': docteur.id_docteur}) }}" class="btn btn-soft-success btn-icon btn-sm rounded-circle">
                                                     <i class="ti ti-edit fs-16"></i>
                                                 </a>
