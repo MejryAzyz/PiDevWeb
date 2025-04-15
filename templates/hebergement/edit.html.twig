@@ -5,264 +5,448 @@
 {% block css %}
     <link href="{{ asset('coderthemes.com/osen/layouts/assets/css/app.min.css') }}" rel="stylesheet" type="text/css" id="app-style" />
     <link href="{{ asset('coderthemes.com/osen/layouts/assets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('coderthemes.com/osen/layouts/assets/vendor/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('coderthemes.com/osen/layouts/assets/vendor/dropzone/min/dropzone.min.css') }}" rel="stylesheet" type="text/css" />
     <style>
         .form-group { margin-bottom: 1.5rem; }
         .form-control.is-invalid { border-color: #dc3545; }
         .invalid-feedback { display: block; color: #dc3545; font-size: 0.875rem; }
-        .dropzone { min-height: 200px; border: 2px dashed #ced4da; background: #f8f9fa; }
-        .dropzone .dz-message { text-align: center; margin: 2rem 0; }
+        .dropzone { 
+            min-height: 200px; 
+            border: 2px dashed #ced4da; 
+            background: #f8f9fa; 
+            border-radius: 6px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .dropzone:hover { 
+            border-color: #6c757d;
+            background: #f1f3f5;
+        }
+        .dropzone .dz-message { 
+            text-align: center; 
+            margin: 2rem 0; 
+            color: #6c757d;
+        }
+        .dropzone .dz-preview .dz-image {
+            border-radius: 6px;
+            overflow: hidden;
+        }
         .card { box-shadow: 0 0.15rem 1.75rem 0 rgba(33, 40, 50, 0.15); }
+        /* Fix for missing icons */
+        .ti {
+            font-family: 'tabler-icons' !important;
+            font-style: normal;
+            font-weight: normal !important;
+            font-variant: normal;
+            text-transform: none;
+            line-height: 1;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .ti-cloud-upload:before {
+            content: "\ea42";
+        }
+        .ti-check:before {
+            content: "\ea1c";
+        }
+        .ti-x:before {
+            content: "\eb06";
+        }
     </style>
 {% endblock %}
 
 {% block body %}
-<div class="page-container py-4">
-    <div class="page-title-head d-flex align-items-center flex-column flex-sm-row gap-3 mb-4">
-        <h4 class="fs-24 fw-semibold mb-0 flex-grow-1">Modifier Hébergement</h4>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb m-0">
-                <li class="breadcrumb-item"><a href="#">MedTravel</a></li>
-                <li class="breadcrumb-item"><a href="{{ path('app_hebergement_index') }}">Hébergement</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Modifier</li>
-            </ol>
-        </nav>
-    </div>
+    <div class="page-container py-4">
+        <div class="page-title-head d-flex align-items-center flex-column flex-sm-row gap-3 mb-4">
+            <h4 class="fs-24 fw-semibold mb-0 flex-grow-1">Modifier Hébergement</h4>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb m-0">
+                    <li class="breadcrumb-item"><a href="#">MedTravel</a></li>
+                    <li class="breadcrumb-item"><a href="{{ path('app_hebergement_index') }}">Hébergement</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Modifier</li>
+                </ol>
+            </nav>
+        </div>
 
-    {{ form_start(form, {'attr': {'id': 'hebergementForm', 'class': 'needs-validation', 'novalidate': true}}) }}
-    <div class="row g-4">
-        <div class="col-lg-7">
-            <div class="card h-100">
-                <div class="card-header bg-soft-primary border-bottom border-dashed">
-                    <h5 class="card-title mb-0">Informations de Base</h5>
+       
+
+        {{ form_start(form, {'attr': {'id': 'hebergementForm', 'class': 'needs-validation', 'novalidate': true}}) }}
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <div class="card h-100">
+                    <div class="card-header bg-soft-primary border-bottom border-dashed">
+                        <h5 class="card-title mb-0">Informations de Base</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                {{ form_label(form.nom, null, {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.nom, {'attr': {'class': 'form-control', 'placeholder': 'Entrez le nom'}}) }}
+                                {{ form_errors(form.nom, {'attr': {'class': 'invalid-feedback'}}) }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form_label(form.rue, null, {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.rue, {'attr': {'class': 'form-control', 'placeholder': 'Entrez l\'adresse'}}) }}
+                                {{ form_errors(form.rue, {'attr': {'class': 'invalid-feedback'}}) }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form_label(form.ville, null, {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.ville, {'attr': {'class': 'form-control', 'placeholder': 'Entrez la ville'}}) }}
+                                {{ form_errors(form.ville, {'attr': {'class': 'invalid-feedback'}}) }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form_label(form.pays, null, {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.pays, {'attr': {'class': 'form-control', 'placeholder': 'Le pays sera rempli automatiquement'}}) }}
+                                {{ form_errors(form.pays, {'attr': {'class': 'invalid-feedback'}}) }}
+                            </div>
+                            {{ form_widget(form.adresse) }}
+                            <div class="col-md-6">
+                                {{ form_label(form.telephone, null, {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.telephone, {'attr': {'class': 'form-control', 'placeholder': 'Entrez le numéro de téléphone'}}) }}
+                                {{ form_errors(form.telephone, {'attr': {'class': 'invalid-feedback'}}) }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form_label(form.email, null, {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.email, {'attr': {'class': 'form-control', 'placeholder': 'Entrez l\'adresse email'}}) }}
+                                {{ form_errors(form.email, {'attr': {'class': 'invalid-feedback'}}) }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form_label(form.capacite, null, {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.capacite, {'attr': {'class': 'form-control', 'placeholder': 'Entrez la capacité'}}) }}
+                                {{ form_errors(form.capacite, {'attr': {'class': 'invalid-feedback'}}) }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form_label(form.tarif_nuit, null, {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.tarif_nuit, {'attr': {'class': 'form-control', 'placeholder': 'Entrez le tarif par nuit'}}) }}
+                                {{ form_errors(form.tarif_nuit, {'attr': {'class': 'invalid-feedback'}}) }}
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            {{ form_label(form.nom, null, {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(form.nom, {'attr': {'class': 'form-control', 'placeholder': 'Entrez le nom'}}) }}
-                            {{ form_errors(form.nom, {'attr': {'class': 'invalid-feedback'}}) }}
+            </div>
+
+            <div class="col-lg-5">
+                <div class="card mb-4">
+                    <div class="card-header bg-soft-primary border-bottom border-dashed">
+                        <h5 class="card-title mb-0">Services disponibles</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                {{ form_row(form.service.wifi, {'attr': {'class': 'form-check-input'}, 'label_attr': {'class': 'form-check-label'}}) }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form_row(form.service.climatisation, {'attr': {'class': 'form-check-input'}, 'label_attr': {'class': 'form-check-label'}}) }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form_row(form.service.menage_quotidien, {'attr': {'class': 'form-check-input'}, 'label_attr': {'class': 'form-check-label'}}) }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form_row(form.service.conciergerie, {'attr': {'class': 'form-check-input'}, 'label_attr': {'class': 'form-check-label'}}) }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form_row(form.service.linge_lit, {'attr': {'class': 'form-check-input'}, 'label_attr': {'class': 'form-check-label'}}) }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form_row(form.service.salle_bain_privee, {'attr': {'class': 'form-check-input'}, 'label_attr': {'class': 'form-check-label'}}) }}
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            {{ form_label(form.adresse, null, {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(form.adresse, {'attr': {'class': 'form-control', 'placeholder': 'Rue, Ville, Code Postal'}}) }}
-                            {{ form_errors(form.adresse, {'attr': {'class': 'invalid-feedback'}}) }}
+                    </div>
+                </div>
+
+                <div class="card h-65">
+                    <div class="card-header bg-soft-primary border-bottom border-dashed">
+                        <h5 class="card-title mb-0">Image de l'Hébergement</h5>
+                    </div>
+                    <div class="card-body">
+                        {{ form_widget(form.image_url) }}
+                        
+                        <div id="upload-status" class="alert" style="display: none;"></div>
+                        <div class="dropzone" id="myAwesomeDropzone">
+                            <div class="dz-message needsclick">
+                                <i class="h1 ti ti-cloud-upload mb-4"></i>
+                                <h4>Déposez l'image ici ou cliquez pour télécharger</h4>
+                                <span class="text-muted fs-13">Images JPG ou PNG, max 5MB</span>
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            {{ form_label(form.telephone, null, {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(form.telephone, {'attr': {'class': 'form-control', 'placeholder': 'Entrez le numéro de téléphone'}}) }}
-                            {{ form_errors(form.telephone, {'attr': {'class': 'invalid-feedback'}}) }}
-                        </div>
-                        <div class="col-md-6">
-                            {{ form_label(form.email, null, {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(form.email, {'attr': {'class': 'form-control', 'placeholder': 'Entrez l\'adresse email'}}) }}
-                            {{ form_errors(form.email, {'attr': {'class': 'invalid-feedback'}}) }}
-                        </div>
-                        <div class="col-md-6">
-                            {{ form_label(form.capacite, null, {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(form.capacite, {'attr': {'class': 'form-control', 'placeholder': 'Entrez la capacité'}}) }}
-                            {{ form_errors(form.capacite, {'attr': {'class': 'invalid-feedback'}}) }}
-                        </div>
-                        <div class="col-md-6">
-                            {{ form_label(form.tarif_nuit, null, {'label_attr': {'class': 'form-label'}}) }}
-                            {{ form_widget(form.tarif_nuit, {'attr': {'class': 'form-control', 'placeholder': 'Entrez le tarif par nuit'}}) }}
-                            {{ form_errors(form.tarif_nuit, {'attr': {'class': 'invalid-feedback'}}) }}
-                        </div>
+                        <div class="dropzone-previews mt-3" id="file-previews"></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-5">
-            <div class="card h-100">
-                <div class="card-header bg-soft-primary border-bottom border-dashed">
-                    <h5 class="card-title mb-0">Image de l'Hébergement</h5>
-                </div>
-                <div class="card-body">
-                    {{ form_label(form.image_url, null, {'label_attr': {'class': 'form-label'}}) }}
-                    {{ form_widget(form.image_url, {'attr': {'class': 'form-control mb-3', 'placeholder': 'Entrez l\'URL de l\'image'}}) }}
-                    {{ form_errors(form.image_url, {'attr': {'class': 'invalid-feedback'}}) }}
-                    
-                    <div class="dropzone" id="myAwesomeDropzone">
-                        <div class="dz-message needsclick">
-                            <i class="h1 ti ti-cloud-upload mb-3"></i>
-                            <h5>Déposez l'image ici ou cliquez pour télécharger</h5>
-                            <span class="text-muted fs-13">Formats acceptés : JPG, PNG, GIF (Max 1 fichier)</span>
-                        </div>
-                    </div>
-                    <div class="dropzone-previews mt-3" id="file-previews"></div>
-                </div>
-            </div>
+        <div class="text-end mt-4">
+            <button type="submit" class="btn btn-primary btn-lg me-2" id="submitHebergementForm">
+                <i class="ti ti-check me-1"></i> Mettre à jour l'Hébergement
+            </button>
+            <a href="{{ path('app_hebergement_index') }}" class="btn btn-outline-danger btn-lg" id="cancelButton">
+                <i class="ti ti-arrow-left me-1"></i> Annuler
+            </a>
         </div>
+        {{ form_end(form) }}
     </div>
-
-    <div class="text-end mt-4">
-        <button type="submit" class="btn btn-primary btn-lg me-2" id="submitHebergementForm">
-            <i class="ti ti-check me-1"></i> Mettre à jour l'Hébergement
-        </button>
-        <a href="{{ path('app_hebergement_index') }}" class="btn btn-outline-danger btn-lg" id="cancelButton">
-            <i class="ti ti-x me-1"></i> Annuler
-        </a>
-    </div>
-    {{ form_end(form) }}
-</div>
 {% endblock %}
 
 {% block js %}
     <script src="{{ asset('coderthemes.com/osen/layouts/assets/js/vendor.min.js') }}"></script>
-    <script src="{{ asset('coderthemes.com/osen/layouts/assets/vendor/sweetalert2/sweetalert2.min.js') }}"></script>
+    <script src="{{ asset('coderthemes.com/osen/layouts/assets/vendor/dropzone/min/dropzone.min.js') }}"></script>
     <script src="{{ asset('coderthemes.com/osen/layouts/assets/js/app.js') }}"></script>
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        if (typeof Swal === 'undefined') {
-            console.error('SweetAlert2 n\'est pas chargé');
-            return;
+        // First, completely disable auto discover before DOM is loaded
+        if (typeof Dropzone !== 'undefined') {
+            Dropzone.autoDiscover = false;
         }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Make sure Dropzone is defined
+            if (typeof Dropzone === 'undefined') {
+                console.error('Dropzone is not loaded');
+                return;
+            }
 
-        Dropzone.autoDiscover = false;
-        const form = document.getElementById('hebergementForm');
-        const imageUrlInput = document.getElementById('hebergement_image_url');
-
-        const myDropzone = new Dropzone("#myAwesomeDropzone", {
-            url: "https://api.imgbb.com/1/upload?key=38589e312a02b67fcd8133b20f51e63e",
-            method: "POST",
-            paramName: "image",
-            autoProcessQueue: false,
-            maxFiles: 1,
-            acceptedFiles: "image/jpeg,image/png,image/gif",
-            previewTemplate: `
-                <div class="card mt-1 mb-0 shadow-sm">
-                    <div class="p-2 d-flex align-items-center">
-                        <img data-dz-thumbnail class="avatar-sm rounded me-2">
-                        <div class="flex-grow-1">
-                            <span class="fw-medium" data-dz-name></span>
-                            <small class="text-muted d-block" data-dz-size></small>
-                        </div>
-                        <a href="#" class="btn btn-link text-danger" data-dz-remove>
-                            <i class="ti ti-trash"></i>
-                        </a>
-                    </div>
-                </div>
-            `,
-            previewsContainer: "#file-previews",
-            init: function() {
-                const dz = this;
-
-                // Afficher l'image existante si présente
-                if (imageUrlInput.value) {
-                    const mockFile = { name: "Image actuelle", size: 12345 };
-                    this.emit("addedfile", mockFile);
-                    this.emit("thumbnail", mockFile, imageUrlInput.value);
-                    this.emit("complete", mockFile);
-                }
-
-                document.getElementById('cancelButton').addEventListener('click', function(e) {
-                    e.preventDefault();
-                    Swal.fire({
-                        title: 'Confirmation d\'annulation',
-                        text: 'Êtes-vous sûr de vouloir annuler ? Les modifications non enregistrées seront perdues.',
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonText: 'Oui, Annuler',
-                        cancelButtonText: 'Non, Continuer',
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.location.href = '{{ path('app_hebergement_index') }}';
-                        }
-                    });
-                });
-
-                document.getElementById('submitHebergementForm').addEventListener('click', function(e) {
-                    e.preventDefault();
-                    if (!form.checkValidity()) {
-                        form.classList.add('was-validated');
-                        return;
+            // Disable auto discover again to be safe
+            Dropzone.autoDiscover = false;
+            
+            const form = document.getElementById('hebergementForm');
+            const imageUrlInput = document.querySelector('input[name="hebergement[image_url]"]');
+            const uploadStatus = document.getElementById('upload-status');
+            
+            // Remove any existing dropzone instances
+            if (Dropzone.instances && Dropzone.instances.length > 0) {
+                Dropzone.instances.forEach(instance => {
+                    try {
+                        instance.destroy();
+                    } catch (e) {
+                        console.error("Error destroying dropzone instance: " + e.message);
                     }
-
-                    if (dz.getQueuedFiles().length > 0) {
-                        Swal.fire({
-                            title: 'Téléchargement de l\'image',
-                            text: 'Veuillez patienter...',
-                            allowOutsideClick: false,
-                            didOpen: () => Swal.showLoading()
-                        });
-                        dz.processQueue();
-                    } else {
-                        submitForm();
-                    }
-                });
-
-                this.on("success", function(file, response) {
-                    if (response?.data?.url) {
-                        imageUrlInput.value = response.data.url;
-                        submitForm();
-                    }
-                });
-
-                this.on("error", function(file, error) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Échec du téléchargement',
-                        text: error.message || 'Échec du téléchargement de l\'image',
-                    });
-                });
-
-                this.on("removedfile", function() {
-                    imageUrlInput.value = "";
                 });
             }
-        });
-
-        function submitForm() {
-            Swal.fire({
-                title: 'Enregistrement...',
-                text: 'Veuillez patienter pendant que nous traitons votre demande',
-                allowOutsideClick: false,
-                didOpen: () => Swal.showLoading()
-            });
-
-            fetch(form.action, {
-                method: 'POST',
-                body: new FormData(form)
-            })
-            .then(response => {
-                if (response.ok) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Succès !',
-                        text: 'L\'hébergement a été mis à jour avec succès',
-                        timer: 1500,
-                        showConfirmButton: false
-                    }).then(() => {
-                        window.location.href = '{{ path('app_hebergement_index') }}';
+            
+            // Initialize dropzone with clear options
+            const myDropzone = new Dropzone("#myAwesomeDropzone", {
+                url: "https://api.imgbb.com/1/upload?key=38589e312a02b67fcd8133b20f51e63e",
+                method: "POST",
+                paramName: "image",
+                maxFiles: 1,
+                maxFilesize: 5,
+                acceptedFiles: ".jpeg,.jpg,.png,.gif",
+                addRemoveLinks: true,
+                dictDefaultMessage: "Déposez l'image ici ou cliquez pour télécharger",
+                dictRemoveFile: "Supprimer",
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
+                init: function() {
+                    const dz = this;
+                    
+                    // Display existing image if present
+                    if (imageUrlInput.value) {
+                        try {
+                            const mockFile = { 
+                                name: "Image actuelle",
+                                size: 12345,
+                                accepted: true,
+                                kind: 'image',
+                                status: Dropzone.SUCCESS
+                            };
+                            
+                            dz.emit("addedfile", mockFile);
+                            dz.emit("thumbnail", mockFile, imageUrlInput.value);
+                            dz.emit("complete", mockFile);
+                            dz.files.push(mockFile);
+                        } catch (e) {
+                            console.error("Error displaying existing image: " + e.message);
+                        }
+                    }
+                    
+                    // Setup event handlers
+                    dz.on("addedfile", function(file) {
+                        uploadStatus.style.display = 'none';
                     });
-                } else {
-                    return response.text().then(text => {
-                        throw new Error('Échec de la soumission du formulaire');
+                    
+                    dz.on("success", function(file, response) {
+                        if (response && response.data && response.data.url) {
+                            imageUrlInput.value = response.data.url;
+                            uploadStatus.className = 'alert alert-success';
+                            uploadStatus.textContent = 'Image téléchargée avec succès!';
+                            uploadStatus.style.display = 'block';
+                        } else {
+                            uploadStatus.className = 'alert alert-danger';
+                            uploadStatus.textContent = 'Erreur: Format de réponse invalide';
+                            uploadStatus.style.display = 'block';
+                        }
+                    });
+                    
+                    dz.on("error", function(file, message) {
+                        uploadStatus.className = 'alert alert-danger';
+                        uploadStatus.textContent = 'Erreur: ' + (typeof message === 'string' ? message : 'Erreur inconnue');
+                        uploadStatus.style.display = 'block';
+                    });
+                    
+                    dz.on("removedfile", function(file) {
+                        imageUrlInput.value = "";
+                        uploadStatus.style.display = 'none';
                     });
                 }
-            })
-            .catch(error => {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Erreur',
-                    text: 'Veuillez vérifier vos données et réessayer',
-                });
             });
-        }
-
-        // Validation en temps réel
-        form.querySelectorAll('input').forEach(input => {
-            input.addEventListener('input', function() {
-                if (this.checkValidity()) {
-                    this.classList.remove('is-invalid');
-                    this.classList.add('is-valid');
-                } else {
-                    this.classList.remove('is-valid');
-                    this.classList.add('is-invalid');
+            
+            // Handle form cancel button
+            document.getElementById('cancelButton').addEventListener('click', function(e) {
+                e.preventDefault();
+                if (confirm('Êtes-vous sûr de vouloir annuler ? Les modifications non enregistrées seront perdues.')) {
+                    window.location.href = '{{ path('app_hebergement_index') }}';
                 }
             });
+
+            // Handle form submission
+            document.getElementById('submitHebergementForm').addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Validate form
+                if (!form.checkValidity()) {
+                    form.classList.add('was-validated');
+                    return;
+                }
+                
+                // Update the adresse field before submission
+                updateAdresse();
+                
+                // Submit the form normally
+                form.submit();
+            });
+
+            // Auto-fill pays field when ville is selected
+            const villeInput = form.querySelector('input[name="hebergement[ville]"]');
+            const paysInput = form.querySelector('input[name="hebergement[pays]"]');
+            const adresseInput = form.querySelector('input[name="hebergement[adresse]"]');
+            const rueInput = form.querySelector('input[name="hebergement[rue]"]');
+
+            // Function to update the adresse field based on rue, ville, and pays
+            function updateAdresse() {
+                const rue = rueInput.value.trim();
+                const ville = villeInput.value.trim();
+                const pays = paysInput.value.trim();
+                
+                if (rue && ville && pays) {
+                    adresseInput.value = `${rue}, ${ville}, ${pays}`;
+                }
+            }
+
+            // Add event listeners to update adresse when any of the fields change
+            rueInput.addEventListener('input', updateAdresse);
+            villeInput.addEventListener('input', updateAdresse);
+            paysInput.addEventListener('input', updateAdresse);
+
+            // Add event listener to ville input to fetch country data
+            villeInput.addEventListener('change', function() {
+                const ville = this.value.trim();
+                if (ville) {
+                    // Show loading state
+                    paysInput.value = 'Chargement...';
+                    
+                    // Call the API to get country data for the city
+                    fetch(`https://api.api-ninjas.com/v1/city?name=${encodeURIComponent(ville)}`, {
+                        headers: {
+                            'X-Api-Key': '1N/wib2BwW+wT0tlkALpAg==I7WDFbatffoMojES'
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Erreur de réseau');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data && data.length > 0) {
+                            // Set the country name
+                            paysInput.value = data[0].country;
+                            updateAdresse();
+                        } else {
+                            paysInput.value = '';
+                            alert('Ville non trouvée. Veuillez entrer un nom de ville valide.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erreur lors de la récupération des données du pays:', error);
+                        paysInput.value = '';
+                        alert('Erreur lors de la récupération des données du pays. Veuillez entrer le pays manuellement.');
+                    });
+                }
+            });
+
+            // Validate specific fields based on entity assertions
+            const nom = form.querySelector('input[name="hebergement[nom]"]');
+            const rue = form.querySelector('input[name="hebergement[rue]"]');
+            const ville = form.querySelector('input[name="hebergement[ville]"]');
+            const pays = form.querySelector('input[name="hebergement[pays]"]');
+            const telephone = form.querySelector('input[name="hebergement[telephone]"]');
+            const email = form.querySelector('input[name="hebergement[email]"]');
+            const capacite = form.querySelector('input[name="hebergement[capacite]"]');
+            const tarifNuit = form.querySelector('input[name="hebergement[tarif_nuit]"]');
+
+            let isValid = true;
+
+            // Validate nom (letters and spaces only)
+            if (!/^[a-zA-ZÀ-ÿ ]+$/.test(nom.value)) {
+                nom.classList.add('is-invalid');
+                nom.nextElementSibling.textContent = 'Le nom doit contenir uniquement des lettres et espaces';
+                nom.nextElementSibling.style.display = 'block';
+                isValid = false;
+            }
+
+            // Validate rue (not empty)
+            if (!rue.value.trim()) {
+                rue.classList.add('is-invalid');
+                rue.nextElementSibling.textContent = 'La rue ne peut pas être vide';
+                rue.nextElementSibling.style.display = 'block';
+                isValid = false;
+            }
+
+            // Validate ville (not empty)
+            if (!ville.value.trim()) {
+                ville.classList.add('is-invalid');
+                ville.nextElementSibling.textContent = 'La ville ne peut pas être vide';
+                ville.nextElementSibling.style.display = 'block';
+                isValid = false;
+            }
+
+            // Validate pays (not empty)
+            if (!pays.value.trim()) {
+                pays.classList.add('is-invalid');
+                pays.nextElementSibling.textContent = 'Le pays ne peut pas être vide';
+                pays.nextElementSibling.style.display = 'block';
+                isValid = false;
+            }
+
+            // Validate telephone (8-15 digits)
+            if (!/^[0-9]{8,15}$/.test(telephone.value)) {
+                telephone.classList.add('is-invalid');
+                telephone.nextElementSibling.textContent = 'Le numéro doit contenir entre 8 et 15 chiffres';
+                telephone.nextElementSibling.style.display = 'block';
+                isValid = false;
+            }
+
+            // Validate tarif (must be a positive number)
+            if (parseFloat(tarifNuit.value) <= 0) {
+                tarifNuit.classList.add('is-invalid');
+                tarifNuit.nextElementSibling.textContent = 'Le tarif doit être supérieur à 0 DT';
+                tarifNuit.nextElementSibling.style.display = 'block';
+                isValid = false;
+            }
+
+            // Validate capacite (must be a positive number)
+            if (parseInt(capacite.value) <= 0) {
+                capacite.classList.add('is-invalid');
+                capacite.nextElementSibling.textContent = 'La capacité doit être supérieure à 0';
+                capacite.nextElementSibling.style.display = 'block';
+                isValid = false;
+            }
         });
-    });
     </script>
 {% endblock %}

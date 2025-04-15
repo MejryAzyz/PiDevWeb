@@ -137,16 +137,24 @@ final class HebergementController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // The image_url is already set on the entity by the form, no need to fetch it manually
-            // $imageUrl = $request->get('hebergement')['image_url']; // Remove this
-            // $hebergement->setImageUrl($imageUrl); // Remove this
+            try {
+                // Get form data directly from the form
+                $rue = $form->get('rue')->getData();
+                $ville = $form->get('ville')->getData();
+                $pays = $form->get('pays')->getData();
+                
+                // Format the address as "rue, ville, pays"
+                $adresse = $rue . ', ' . $ville . ', ' . $pays;
+                $hebergement->setAdresse($adresse);
 
-            $entityManager->persist($hebergement);
-            $entityManager->flush();
+                $entityManager->persist($hebergement);
+                $entityManager->flush();
 
-            $this->addFlash('success', 'Hebergement created successfully!');
-
-            return $this->redirectToRoute('app_hebergement_index', [], Response::HTTP_SEE_OTHER);
+                $this->addFlash('success', 'Hebergement created successfully!');
+                return $this->redirectToRoute('app_hebergement_index', [], Response::HTTP_SEE_OTHER);
+            } catch (\Exception $e) {
+                $this->addFlash('error', 'Error saving to database: ' . $e->getMessage());
+            }
         }
 
         // Add a flash message for invalid form submission (optional)
@@ -156,7 +164,7 @@ final class HebergementController extends AbstractController
 
         return $this->render('hebergement/new.html.twig', [
             'hebergement' => $hebergement,
-            'form' => $form->createView(), // Use createView() for clarity
+            'form' => $form->createView(),
         ]);
     }
 
@@ -172,18 +180,54 @@ final class HebergementController extends AbstractController
     public function edit(Request $request, Hebergement $hebergement, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(HebergementType::class, $hebergement);
+        
+        // Parse the existing adresse to populate rue, ville, and pays
+        $adresseParts = explode(', ', $hebergement->getAdresse());
+        if (count($adresseParts) >= 3) {
+            $rue = $adresseParts[0];
+            $ville = $adresseParts[1];
+            $pays = $adresseParts[2];
+            
+            // Set the form data for the unmapped fields
+            $form->get('rue')->setData($rue);
+            $form->get('ville')->setData($ville);
+            $form->get('pays')->setData($pays);
+        }
+        
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
+        if ($form->isSubmitted()) {
+            // Debug form submission
+            $this->addFlash('info', 'Form submitted. Valid: ' . ($form->isValid() ? 'Yes' : 'No'));
+            
+            if ($form->isValid()) {
+                try {
+                    // Get form data directly from the form
+                    $rue = $form->get('rue')->getData();
+                    $ville = $form->get('ville')->getData();
+                    $pays = $form->get('pays')->getData();
+                    
+                    // Format the address as "rue, ville, pays"
+                    $adresse = $rue . ', ' . $ville . ', ' . $pays;
+                    $hebergement->setAdresse($adresse);
+                    
+                    // Debug the address
+                    $this->addFlash('info', 'Setting address to: ' . $adresse);
 
-            $this->addFlash('success', 'Hebergement updated successfully!');
-
-            return $this->redirectToRoute('app_hebergement_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        if ($form->isSubmitted() && !$form->isValid()) {
-            $this->addFlash('error', 'Please correct the errors in the form.');
+                    $entityManager->flush();
+                    $this->addFlash('success', 'Hebergement updated successfully!');
+                    return $this->redirectToRoute('app_hebergement_index', [], Response::HTTP_SEE_OTHER);
+                } catch (\Exception $e) {
+                    $this->addFlash('error', 'Error saving to database: ' . $e->getMessage());
+                }
+            } else {
+                // Debug form errors
+                $errors = [];
+                foreach ($form->getErrors(true) as $error) {
+                    $errors[] = $error->getMessage();
+                }
+                $this->addFlash('error', 'Form validation errors: ' . implode(', ', $errors));
+            }
         }
 
         return $this->render('hebergement/edit.html.twig', [

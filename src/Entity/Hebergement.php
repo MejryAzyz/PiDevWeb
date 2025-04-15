@@ -21,17 +21,14 @@ class Hebergement
     #[ORM\Column(type: 'string', nullable: false)]
     #[Assert\NotBlank(message: "Le nom ne peut pas être vide")]
     #[Assert\Regex(
-        pattern: "/^[a-zA-Z ]+$/",
+        pattern: "/^[a-zA-ZÀ-ÿ ]+$/",
         message: "Le nom doit contenir uniquement des lettres et espaces"
     )]
     private ?string $nom = null;
 
     #[ORM\Column(type: 'string', nullable: false)]
     #[Assert\NotBlank(message: "L'adresse ne peut pas être vide")]
-    #[Assert\Regex(
-        pattern: "/^[a-zA-ZÀ-ÿ0-9\s'-]+, [a-zA-ZÀ-ÿ0-9\s'-]+, [0-9]{4,5}$/",
-        message: "L'adresse doit être au format 'Rue, Ville, Code Postal' (ex. : Rue de la Paix, Paris, 75001)"
-    )]
+    
     private ?string $adresse = null;
 
     #[ORM\Column(type: 'string', nullable: false)]
@@ -54,17 +51,17 @@ class Hebergement
     private ?string $email = null;
     #[ORM\Column(type: 'integer', nullable: false)]
     #[Assert\NotBlank(message: "La capacité ne peut pas être vide")]
-    #[Assert\GreaterThanOrEqual(
-        value: 20,
-        message: "La capacité doit être supérieure ou égale à 1"
+    #[Assert\GreaterThan(
+        value: 0,
+        message: "La capacité doit être supérieure à 0 personnes"
     )]
     private ?int $capacite = null;
 
     #[ORM\Column(type: 'float', nullable: false)]
     #[Assert\NotBlank(message: "Le tarif par nuit ne peut pas être vide")]
-    #[Assert\GreaterThanOrEqual(
-        value: 1,
-        message: "Le tarif par nuit doit être supérieur ou égal à 0"
+    #[Assert\GreaterThan(
+        value: 0,
+        message: "Le tarif par nuit doit être supérieur à 0 DT"
     )]
     private ?float $tarif_nuit = null;
 
@@ -80,6 +77,9 @@ class Hebergement
 
     #[ORM\OneToMany(targetEntity: ReservationHebergement::class, mappedBy: 'hebergement')]
     private Collection $reservationHebergements;
+
+    #[ORM\OneToOne(targetEntity: Service::class, mappedBy: 'hebergement', cascade: ['persist', 'remove'])]
+    private ?Service $service = null;
 
     public function __construct()
     {
@@ -245,6 +245,28 @@ class Hebergement
     public function setImageUrl(?string $image_url): self
     {
         $this->image_url = $image_url;
+        return $this;
+    }
+
+    public function getService(): ?Service
+    {
+        return $this->service;
+    }
+
+    public function setService(?Service $service): self
+    {
+        // unset the owning side of the relation if necessary
+        if ($service === null && $this->service !== null) {
+            $this->service->setHebergement(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($service !== null && $service->getHebergement() !== $this) {
+            $service->setHebergement($this);
+        }
+
+        $this->service = $service;
+
         return $this;
     }
 }
