@@ -20,46 +20,46 @@ class OffreemploiType extends AbstractType
             ->add('titre', TextType::class, [
                 'attr' => [
                     'class' => 'form-control',
-                    'placeholder' => 'Ex: Accompagnateur médical senior'
+                    'placeholder' => 'Enter job title'
                 ],
                 'constraints' => [
                     new Assert\NotBlank([
-                        'message' => 'Le titre est obligatoire'
+                        'message' => 'Title is required'
                     ]),
                     new Assert\Length([
-                        'min' => 5,
-                        'max' => 100,
-                        'minMessage' => 'Le titre doit contenir au moins {{ limit }} caractères',
-                        'maxMessage' => 'Le titre ne peut pas dépasser {{ limit }} caractères'
+                        'max' => 255,
+                        'maxMessage' => 'Title cannot be longer than {{ limit }} characters'
                     ])
                 ]
             ])
             ->add('description', TextareaType::class, [
                 'attr' => [
                     'class' => 'form-control',
-                    'rows' => 6,
-                    'placeholder' => 'Décrivez les missions et compétences requises...'
+                    'rows' => 4,
+                    'placeholder' => 'Enter job description'
                 ],
                 'constraints' => [
                     new Assert\NotBlank([
-                        'message' => 'La description est obligatoire'
-                    ]),
-                    new Assert\Length([
-                        'min' => 20,
-                        'minMessage' => 'La description doit contenir au moins {{ limit }} caractères'
+                        'message' => 'Description is required'
                     ])
                 ]
             ])
             ->add('typeposte', ChoiceType::class, [
                 'choices' => [
-                    'Plein temps' => 'Plein temps',
-                    'Mi-temps' => 'Mi-temps',
-                    'Temporaire' => 'Temporaire'
+                    'Full Time' => 'Full Time',
+                    'Part Time' => 'Part Time',
+                    'Contract' => 'Contract',
+                    'Internship' => 'Internship',
+                    'Temporary' => 'Temporary'
                 ],
-                'attr' => ['class' => 'form-select'],
+                'attr' => [
+                    'class' => 'form-select'
+                ],
+                'placeholder' => 'Select job type',
+                'required' => true,
                 'constraints' => [
                     new Assert\NotBlank([
-                        'message' => 'Le type de poste est obligatoire'
+                        'message' => 'Job type is required'
                     ])
                 ]
             ])
@@ -68,12 +68,17 @@ class OffreemploiType extends AbstractType
                     'CDI' => 'CDI',
                     'CDD' => 'CDD',
                     'Freelance' => 'Freelance',
-                    'Stage' => 'Stage'
+                    'Internship' => 'Internship',
+                    'Apprenticeship' => 'Apprenticeship'
                 ],
-                'attr' => ['class' => 'form-select'],
+                'attr' => [
+                    'class' => 'form-select'
+                ],
+                'placeholder' => 'Select contract type',
+                'required' => true,
                 'constraints' => [
                     new Assert\NotBlank([
-                        'message' => 'Le type de contrat est obligatoire'
+                        'message' => 'Contract type is required'
                     ])
                 ]
             ])
@@ -82,17 +87,37 @@ class OffreemploiType extends AbstractType
                     'France' => 'France',
                     'Belgique' => 'Belgique',
                     'Suisse' => 'Suisse',
+                    'Luxembourg' => 'Luxembourg',
                     'Remote' => 'Remote'
                 ],
-                'attr' => ['class' => 'form-select'],
+                'attr' => [
+                    'class' => 'form-select'
+                ],
+                'placeholder' => 'Select location',
+                'required' => true,
                 'constraints' => [
                     new Assert\NotBlank([
-                        'message' => 'L\'emplacement est obligatoire'
+                        'message' => 'Location is required'
+                    ])
+                ]
+            ])
+            ->add('etat', ChoiceType::class, [
+                'choices' => [
+                    'Active' => 'active',
+                    'Inactive' => 'inactive'
+                ],
+                'attr' => [
+                    'class' => 'form-select'
+                ],
+                'data' => 'active',
+                'required' => true,
+                'constraints' => [
+                    new Assert\NotBlank([
+                        'message' => 'Status is required'
                     ])
                 ]
             ])
             ->add('imageurl', FileType::class, [
-                'label' => 'Image de l\'offre',
                 'required' => false,
                 'mapped' => false,
                 'attr' => [
@@ -104,32 +129,23 @@ class OffreemploiType extends AbstractType
                         'maxSize' => '2M',
                         'mimeTypes' => [
                             'image/jpeg',
-                            'image/png',
+                            'image/png'
                         ],
-                        'mimeTypesMessage' => 'Veuillez uploader une image valide (JPEG ou PNG)',
-                        'maxSizeMessage' => 'L\'image ne peut pas dépasser {{ limit }}'
+                        'mimeTypesMessage' => 'Please upload a valid image (JPEG or PNG)',
+                        'maxSizeMessage' => 'The file is too large ({{ size }} {{ suffix }}). Maximum size is {{ limit }} {{ suffix }}'
                     ])
                 ]
             ])
-            ->add('etat', ChoiceType::class, [
-                'choices' => [
-                    'Active' => 'active',
-                    'Inactive' => 'inactive'
-                ],
-                'attr' => ['class' => 'form-select'],
-                'constraints' => [
-                    new Assert\NotBlank([
-                        'message' => 'Le statut est obligatoire'
-                    ])
-                ]
-            ]);
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => Offreemploi::class,
-            'attr' => ['novalidate' => 'novalidate'] // Disable HTML5 validation to use Symfony's
+            'csrf_protection' => true,
+            'csrf_field_name' => '_token',
+            'csrf_token_id' => 'offreemploi_form'
         ]);
     }
 }

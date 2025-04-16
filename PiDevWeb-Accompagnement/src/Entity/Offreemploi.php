@@ -8,42 +8,73 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Symfony\Component\HttpFoundation\File\File;
 use App\Entity\Postulation;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
 #[ORM\HasLifecycleCallbacks]
 class Offreemploi
 {
+    public const STATUS_ACTIVE = 'active';
+    public const STATUS_INACTIVE = 'inactive';
+
+    public const JOB_TYPES = [
+        'Full Time' => 'Full Time',
+        'Part Time' => 'Part Time',
+        'Contract' => 'Contract',
+        'Internship' => 'Internship',
+        'Temporary' => 'Temporary'
+    ];
+
+    public const CONTRACT_TYPES = [
+        'CDI' => 'CDI',
+        'CDD' => 'CDD',
+        'Freelance' => 'Freelance',
+        'Internship' => 'Internship',
+        'Apprenticeship' => 'Apprenticeship'
+    ];
+
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: "IDENTITY")]
     #[ORM\Column(type: "bigint")]
-    private ?string $id = null;
+    private ?int $id = null;
 
-    #[ORM\Column(type: "string", length: 255)]
+    #[ORM\Column(type: "string", length: 255, options: ["collation" => "utf8mb4_general_ci"])]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 255)]
     private string $titre = '';
 
-    #[ORM\Column(type: "text")]
+    #[ORM\Column(type: "text", options: ["collation" => "utf8mb4_general_ci"])]
+    #[Assert\NotBlank]
     private string $description = '';
 
-    #[ORM\Column(type: "string", length: 100)]
+    #[ORM\Column(type: "string", length: 100, options: ["collation" => "utf8mb4_general_ci"])]
+    #[Assert\NotBlank]
+    #[Assert\Choice(choices: self::JOB_TYPES)]
     private string $typeposte = '';
 
-    #[ORM\Column(type: "date")]
-    private ?\DateTime $datepublication = null;
+    #[ORM\Column(type: "date", nullable: true)]
+    private ?\DateTimeInterface $datepublication = null;
 
-    #[ORM\Column(type: "string", length: 255, nullable: true)]
+    #[ORM\Column(type: "string", length: 255, nullable: true, options: ["collation" => "utf8mb4_general_ci"])]
     private ?string $imageurl = null;
 
-    #[ORM\Column(type: "string", length: 255)]
-    private string $etat = '';
+    #[ORM\Column(type: "string", length: 255, options: ["collation" => "utf8mb4_general_ci"])]
+    #[Assert\NotBlank]
+    #[Assert\Choice(choices: [self::STATUS_ACTIVE, self::STATUS_INACTIVE])]
+    private string $etat = self::STATUS_ACTIVE;
 
-    #[ORM\Column(type: "string", length: 20)]
+    #[ORM\Column(type: "string", length: 20, options: ["collation" => "utf8mb4_general_ci"])]
+    #[Assert\NotBlank]
+    #[Assert\Choice(choices: self::CONTRACT_TYPES)]
     private string $typecontrat = '';
 
-    #[ORM\Column(type: "string", length: 50)]
+    #[ORM\Column(type: "string", length: 50, options: ["collation" => "utf8mb4_general_ci"])]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 50)]
     private string $emplacement = '';
 
-    #[ORM\Column(type: "datetime")]
-    private ?\DateTime $updatedAt = null;
+    #[ORM\Column(type: "datetime", nullable: true)]
+    private ?\DateTimeInterface $updated_at = null;
 
     #[ORM\OneToMany(mappedBy: "id_offre", targetEntity: Postulation::class)]
     private Collection $postulations;
@@ -57,25 +88,18 @@ class Offreemploi
     public function setTimestamps(): void
     {
         $this->datepublication = new \DateTime();
-        $this->updatedAt = new \DateTime();
+        $this->updated_at = new \DateTime();
     }
 
     #[ORM\PreUpdate]
-    public function setUpdatedAtValue(): void
+    public function updateTimestamps(): void
     {
-        $this->updatedAt = new \DateTime();
+        $this->updated_at = new \DateTime();
     }
 
-    // Getters and Setters
-    public function getId(): ?string
+    public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function setId(?string $id): self
-    {
-        $this->id = $id;
-        return $this;
     }
 
     public function getTitre(): string
@@ -111,12 +135,12 @@ class Offreemploi
         return $this;
     }
 
-    public function getDatepublication(): ?\DateTime
+    public function getDatepublication(): ?\DateTimeInterface
     {
         return $this->datepublication;
     }
 
-    public function setDatepublication(?\DateTime $datepublication): self
+    public function setDatepublication(?\DateTimeInterface $datepublication): self
     {
         $this->datepublication = $datepublication;
         return $this;
@@ -166,14 +190,14 @@ class Offreemploi
         return $this;
     }
 
-    public function getUpdatedAt(): ?\DateTime
+    public function getUpdatedAt(): ?\DateTimeInterface
     {
-        return $this->updatedAt;
+        return $this->updated_at;
     }
 
-    public function setUpdatedAt(?\DateTime $updatedAt): self
+    public function setUpdatedAt(?\DateTimeInterface $updated_at): self
     {
-        $this->updatedAt = $updatedAt;
+        $this->updated_at = $updated_at;
         return $this;
     }
 

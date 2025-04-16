@@ -1,42 +1,86 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <title>{% block title %}Popup{% endblock %}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="{{ asset('coderthemes.com/osen/layouts/assets/css/vendor.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('coderthemes.com/osen/layouts/assets/css/app.min.css') }}" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet" />
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="turbo-cache-control" content="no-cache">
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        
+        <!-- Bootstrap CSS -->
+        <link href="{{ asset('assets/css/vendor.min.css') }}" rel="stylesheet" type="text/css" />
+        <link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet" type="text/css" />
+        <link href="{{ asset('assets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
+        
+        <!-- SweetAlert2 -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        
+        <style>
+            body.popup-form {
+                background: #f5f7fb;
+                padding: 20px;
+                margin: 0;
+            }
+            .popup-card {
+                background: #fff;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+            }
+            .popup-card .card-header {
+                background: #fff;
+                border-bottom: 1px solid #e5e9f2;
+                padding: 15px 20px;
+                border-radius: 8px 8px 0 0;
+            }
+            .popup-card .card-body {
+                padding: 20px;
+            }
+            .form-label {
+                font-weight: 500;
+                margin-bottom: 0.5rem;
+                color: #344767;
+            }
+            .form-control, .form-select {
+                border-color: #e5e9f2;
+                padding: 0.5rem 0.75rem;
+                border-radius: 6px;
+            }
+            .form-control:focus, .form-select:focus {
+                border-color: #3b7ddd;
+                box-shadow: 0 0 0 0.2rem rgba(59,125,221,0.25);
+            }
+            .btn {
+                padding: 0.5rem 1rem;
+                font-weight: 500;
+                border-radius: 6px;
+            }
+            .btn-primary {
+                background-color: #3b7ddd;
+                border-color: #3b7ddd;
+            }
+            .btn-light {
+                background-color: #f5f7fb;
+                border-color: #e5e9f2;
+            }
+            .form-text {
+                color: #6c757d;
+                font-size: 0.875rem;
+                margin-top: 0.25rem;
+            }
+            .invalid-feedback {
+                color: #dc3545;
+                font-size: 0.875rem;
+                margin-top: 0.25rem;
+            }
+        </style>
+        
+        {% block stylesheets %}{% endblock %}
+    </head>
+    <body class="popup-form">
+        {% block body %}{% endblock %}
 
-    <style>
-        /* Styles comme dans ton exemple original */
-        body.popup-mode {
-            font-family: 'Inter', sans-serif;
-            background: radial-gradient(circle at top left, #f1f3f8, #dbe3ea);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-        }
-        .popup-content-wrapper {
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
-            max-width: 520px;
-            width: 100%;
-            animation: zoomIn 0.3s ease-out;
-        }
-        @keyframes zoomIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
-    </style>
-</head>
-<body class="popup-mode">
-<div class="popup-content-wrapper">
-    {% block popup_content '' %}
-</div>
-</body>
+        <!-- JAVASCRIPT -->
+        <script src="{{ asset('assets/js/vendor.min.js') }}"></script>
+        <script src="{{ asset('assets/js/app.js') }}"></script>
+        {% block javascripts %}{% endblock %}
+    </body>
 </html>

@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Accompagnateur;
+use App\Entity\Postulation;
+use App\Entity\Offreemploi;
 use App\Form\AccompagnateurType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -33,15 +35,37 @@ final class AccompagnateurController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Set default values for new accompagnateur
+            $accompagnateur->setDateInscription(new \DateTime());
+            $accompagnateur->setStatut('pending');
+            
             $entityManager->persist($accompagnateur);
+
+            // If there's a job offer ID, create a postulation
+            $offreId = $request->query->get('offre_id');
+            if ($offreId) {
+                $offre = $entityManager->getRepository(Offreemploi::class)->find($offreId);
+                if ($offre) {
+                    $postulation = new Postulation();
+                    $postulation->setIdAccompagnateur($accompagnateur);
+                    $postulation->setIdOffre($offre);
+                    $postulation->setDatePostulation(new \DateTime());
+                    $postulation->setStatut('pending');
+                    
+                    $entityManager->persist($postulation);
+                }
+            }
+
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_accompagnateur_index', [], Response::HTTP_SEE_OTHER);
+            $this->addFlash('success', 'Your application has been submitted successfully!');
+            return $this->redirectToRoute('app_front_offreemploi_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('accompagnateur/new.html.twig', [
             'accompagnateur' => $accompagnateur,
             'form' => $form,
+            'offre_id' => $request->query->get('offre_id'),
         ]);
     }
 
