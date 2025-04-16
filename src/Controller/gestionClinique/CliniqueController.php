@@ -47,23 +47,23 @@ final class CliniqueController extends AbstractController
                 error_log('=== CLINIQUE FORM SUBMISSION START ===');
                 error_log('Form submitted and valid');
                 
-                // First save the clinique
+                
                 $entityManager->persist($clinique);
                 $entityManager->flush();
                 error_log('Clinique saved with ID: ' . $clinique->getId_clinique());
 
-                // Get all request data for debugging
+                
                 $allRequestData = $request->request->all();
                 error_log('All form data: ' . print_r($allRequestData, true));
                 
-                // Get photo IDs from the request
+                
                 $photoIdsJson = $request->request->get('photo_ids');
                 error_log('Received photo_ids JSON: ' . ($photoIdsJson ?? 'none'));
 
                 $photoIds = [];
                 $foundPhotoIds = false;
                 
-                // Try to get photo IDs from the JSON input first
+                
                 if ($photoIdsJson && !empty($photoIdsJson)) {
                     try {
                         $photoIds = json_decode($photoIdsJson, true);
@@ -76,11 +76,11 @@ final class CliniqueController extends AbstractController
                     }
                 }
                 
-                // If no photo IDs from JSON, try to find recently uploaded photos as fallback
+                
                 if (!$foundPhotoIds) {
                     error_log('No photo IDs found in form data, looking for recent uploads as fallback');
                     
-                    // Find photos uploaded in the last 5 minutes with null clinique_id
+                    
                     $fiveMinutesAgo = new \DateTime('-5 minutes');
                     $recentPhotos = $entityManager->getRepository(Clinique_photos::class)
                         ->createQueryBuilder('p')
@@ -103,12 +103,12 @@ final class CliniqueController extends AbstractController
                     }
                 }
                 
-                // Process photo IDs if we found any
+                
                 if ($foundPhotoIds && count($photoIds) > 0) {
                     error_log('Processing ' . count($photoIds) . ' photo IDs');
                     $updatedPhotoCount = 0;
                     
-                    // Direct SQL check before updates
+                    
                     $connection = $entityManager->getConnection();
                     $stmt = $connection->prepare('SELECT id_photo, clinique_id FROM clinique_photos WHERE id_photo IN (' . implode(',', $photoIds) . ')');
                     $result = $stmt->executeQuery();
@@ -124,11 +124,11 @@ final class CliniqueController extends AbstractController
                             $oldCliniqueId = $photo->getCliniqueId() ? $photo->getCliniqueId()->getId_clinique() : 'null';
                             error_log('Current clinique_id: ' . $oldCliniqueId);
                             
-                            // Set the new clinique ID
+                            
                             $photo->setCliniqueId($clinique);
                             $entityManager->persist($photo);
                             
-                            // Check if the association worked
+                           
                             $newCliniqueId = $photo->getCliniqueId() ? $photo->getCliniqueId()->getId_clinique() : 'null';
                             error_log('New clinique_id set to: ' . $newCliniqueId);
                             
@@ -139,17 +139,17 @@ final class CliniqueController extends AbstractController
                     }
                     
                     if ($updatedPhotoCount > 0) {
-                        // Only flush if we actually updated photos
+                    
                         error_log('Flushing ' . $updatedPhotoCount . ' photo updates to database');
             $entityManager->flush();
 
-                        // Check if the flush worked
+                        
                         $stmt = $connection->prepare('SELECT id_photo, clinique_id FROM clinique_photos WHERE id_photo IN (' . implode(',', $photoIds) . ')');
                         $result = $stmt->executeQuery();
                         $updatedRows = $result->fetchAllAssociative();
                         error_log('DB state after updates: ' . print_r($updatedRows, true));
                         
-                        // If ORM update didn't work, try direct SQL update as a fallback
+                        
                         $anyNullCliniqueIds = false;
                         foreach ($updatedRows as $row) {
                             if (is_null($row['clinique_id'])) {
@@ -167,7 +167,7 @@ final class CliniqueController extends AbstractController
                                 error_log('Executing SQL: ' . $sql);
                                 $connection->executeStatement($sql);
                                 
-                                // Verify SQL update worked
+                                
                                 $stmt = $connection->prepare('SELECT id_photo, clinique_id FROM clinique_photos WHERE id_photo IN (' . implode(',', $photoIds) . ')');
                                 $result = $stmt->executeQuery();
                                 $finalRows = $result->fetchAllAssociative();
@@ -270,10 +270,10 @@ final class CliniqueController extends AbstractController
          // Récupérer le filtre de spécialité depuis la requête
          $specialtyFilter = $request->query->get('specialty');
 
-         // Récupérer le terme de recherche
+         
          $searchTerm = $request->query->get('search');
 
-         // Créer le query builder de base
+         
          $queryBuilder = $cliniqueRepository->createQueryBuilder('c')
              ->leftJoin('c.cliniquePhotos', 'photos')
              ->addSelect('photos')
@@ -297,7 +297,7 @@ final class CliniqueController extends AbstractController
                  ->setParameter('specialtyId', $specialtyFilter);
          }
 
-         // Appliquer la recherche si un terme est présent
+        
          if ($searchTerm) {
              $queryBuilder
                  ->andWhere('c.nom LIKE :searchTerm OR c.description LIKE :searchTerm OR c.adresse LIKE :searchTerm')
@@ -309,11 +309,11 @@ final class CliniqueController extends AbstractController
          // Créer le paginator
          $paginator = new \Doctrine\ORM\Tools\Pagination\Paginator($query);
 
-         // Calculer le nombre total de pages
+         
          $totalItems = count($paginator);
          $totalPages = ceil($totalItems / $limit);
 
-         // Vérifier que la page demandée existe
+         
          if ($page < 1) {
              $page = 1;
          }
@@ -321,7 +321,7 @@ final class CliniqueController extends AbstractController
              $page = $totalPages;
          }
 
-         // Définir la pagination
+         
          $paginator
              ->getQuery()
              ->setFirstResult($limit * ($page - 1))
@@ -439,7 +439,7 @@ final class CliniqueController extends AbstractController
         }
     }
 
-    // TEST ENDPOINTS FOR DEBUGGING
+
     
     #[Route('/test/upload-debug', name: 'app_test_upload_debug', methods: ['GET'])]
     public function testUploadDebug(): Response
@@ -453,7 +453,7 @@ final class CliniqueController extends AbstractController
         try {
             error_log('=== TEST UPLOAD START ===');
             
-            // First check if we have files
+            
             if (!$request->files->has('files')) {
                 error_log('No files in request');
                 return new JsonResponse(['success' => false, 'error' => 'No files uploaded'], 400);
@@ -462,7 +462,7 @@ final class CliniqueController extends AbstractController
             $files = $request->files->get('files');
             error_log('Received ' . count($files) . ' files');
             
-            // Get the test clinique ID if provided
+            
             $cliniqueId = $request->request->get('clinique_id');
             $clinique = null;
             
@@ -473,28 +473,28 @@ final class CliniqueController extends AbstractController
             
             $photoIds = [];
             
-            // Process each file
+            
             foreach ($files as $file) {
                 $originalName = $file->getClientOriginalName();
                 error_log('Processing file: ' . $originalName);
                 
-                // Generate a unique filename
+                
                 $newFilename = uniqid() . '.' . $file->guessExtension();
                 $uploadDir = $this->getParameter('kernel.project_dir') . '/public/uploads/cliniques';
                 
-                // Make sure the directory exists
+                
                 if (!file_exists($uploadDir)) {
                     mkdir($uploadDir, 0777, true);
                 }
                 
-                // Move the file
+                
                 $file->move($uploadDir, $newFilename);
                 error_log('File moved to: ' . $uploadDir . '/' . $newFilename);
                 
-                // Create a new photo entity
+                
                 $photo = new Clinique_photos();
                 
-                // Generate new ID
+               
                 $lastPhoto = $entityManager->getRepository(Clinique_photos::class)
                     ->findOneBy([], ['id_photo' => 'DESC']);
                 $newId = $lastPhoto ? $lastPhoto->getId_photo() + 1 : 1;
@@ -503,7 +503,7 @@ final class CliniqueController extends AbstractController
                 $photo->setPhoto_url('/uploads/cliniques/' . $newFilename);
                 $photo->setUploaded_at(new \DateTime());
                 
-                // Associate with clinique if provided
+                
                 if ($clinique) {
                     error_log('Associating with clinique ID: ' . $clinique->getId_clinique());
                     $photo->setCliniqueId($clinique);
@@ -515,11 +515,11 @@ final class CliniqueController extends AbstractController
                 $photoIds[] = $newId;
             }
             
-            // Save changes
+            
             $entityManager->flush();
             error_log('Saved ' . count($photoIds) . ' photos with IDs: ' . implode(', ', $photoIds));
             
-            // If we have a clinique, verify the association worked
+            
             if ($clinique) {
                 $connection = $entityManager->getConnection();
                 $stmt = $connection->prepare('SELECT id_photo, clinique_id FROM clinique_photos WHERE id_photo IN (' . implode(',', $photoIds) . ')');
@@ -527,7 +527,7 @@ final class CliniqueController extends AbstractController
                 $rows = $result->fetchAllAssociative();
                 error_log('DB state for new photos: ' . print_r($rows, true));
                 
-                // Check if any have null clinique_id
+                
                 $anyNullCliniqueIds = false;
                 foreach ($rows as $row) {
                     if (is_null($row['clinique_id'])) {
@@ -536,14 +536,14 @@ final class CliniqueController extends AbstractController
                     }
                 }
                 
-                // Try direct SQL update if ORM didn't work
+               
                 if ($anyNullCliniqueIds) {
                     error_log('Some photos have null clinique_id, trying direct SQL update');
                     try {
                         $sql = "UPDATE clinique_photos SET clinique_id = {$clinique->getId_clinique()} WHERE id_photo IN (" . implode(',', $photoIds) . ")";
                         $connection->executeStatement($sql);
                         
-                        // Verify the update worked
+                        
                         $stmt = $connection->prepare('SELECT id_photo, clinique_id FROM clinique_photos WHERE id_photo IN (' . implode(',', $photoIds) . ')');
                         $result = $stmt->executeQuery();
                         $finalRows = $result->fetchAllAssociative();
