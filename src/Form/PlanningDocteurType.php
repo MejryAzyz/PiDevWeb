@@ -8,6 +8,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use App\Entity\Statut;
 
 class PlanningDocteurType extends AbstractType
 {
@@ -22,6 +23,10 @@ class PlanningDocteurType extends AbstractType
             ->add('docteur', EntityType::class, [
                 'class' => Docteur::class,
 'choice_label' => 'nom',
+            ])
+            ->add('statut', EntityType::class, [
+                'class' => Statut::class,
+'choice_label' => 'type',
             ])
         ;
     }

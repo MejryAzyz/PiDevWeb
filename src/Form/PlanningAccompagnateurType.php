@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Accompagnateur;
 use App\Entity\PlanningAccompagnateur;
+use App\Entity\Statut;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -22,6 +23,10 @@ class PlanningAccompagnateurType extends AbstractType
             ->add('accompagnateur', EntityType::class, [
                 'class' => Accompagnateur::class,
 'choice_label' => 'username',
+            ])
+            ->add('statut', EntityType::class, [
+                'class' => Statut::class,
+'choice_label' => 'type',
             ])
         ;
     }

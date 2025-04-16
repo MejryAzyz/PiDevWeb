@@ -23,7 +23,7 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb m-0">
                 <li class="breadcrumb-item"><a href="#">MedTravel</a></li>
-                <li class="breadcrumb-item"><a href="{{ path('app_planning_accompagnateur_index') }}">planning docteurs</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('app_planning_docteur_index') }}">planning docteurs</a></li>
                 <li class="breadcrumb-item active" aria-current="page">modifier planning docteur</li>
             </ol>
         </nav>
@@ -57,6 +57,11 @@
                             {{ form_label(form.heure_fin, null, {'label_attr': {'class': 'form-label'}}) }}
                             {{ form_widget(form.heure_fin, {'attr': {'class': 'form-control', 'placeholder': 'format HH:mm'}}) }}
                             {{ form_errors(form.heure_fin, {'attr': {'class': 'invalid-feedback'}}) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_label(form.statut, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.statut, {'attr': {'class': 'form-control', 'placeholder': 'statut'}}) }}
+                            {{ form_errors(form.statut, {'attr': {'class': 'invalid-feedback'}}) }}
                         </div>
                     </div>
                 </div>
@@ -118,7 +123,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             
             if (response.ok) {
-                window.location.href = "{{ path('app_planning_accompagnateur_index') }}";
+                window.location.href = "{{ path('app_planning_docteur_index') }}";
             } else {
                 const data = await response.json();
                 throw new Error(data.message || 'Validation failed');

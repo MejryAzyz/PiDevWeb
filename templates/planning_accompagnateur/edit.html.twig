@@ -19,7 +19,7 @@
 {% block body %}
 <div class="page-container py-4" >
     <div class="page-title-head d-flex align-items-center flex-column flex-sm-row gap-3 mb-4">
-        <h4 class="fs-24 fw-semibold mb-0 flex-grow-1">Ajouter un planning</h4>
+        <h4 class="fs-24 fw-semibold mb-0 flex-grow-1">Modifier planning</h4>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb m-0">
                 <li class="breadcrumb-item"><a href="#">MedTravel</a></li>
@@ -57,6 +57,11 @@
                             {{ form_label(form.heure_fin, null, {'label_attr': {'class': 'form-label'}}) }}
                             {{ form_widget(form.heure_fin, {'attr': {'class': 'form-control', 'placeholder': 'format HH:mm'}}) }}
                             {{ form_errors(form.heure_fin, {'attr': {'class': 'invalid-feedback'}}) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_label(form.statut, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.statut, {'attr': {'class': 'form-control', 'placeholder': 'statut'}}) }}
+                            {{ form_errors(form.statut, {'attr': {'class': 'invalid-feedback'}}) }}
                         </div>
                     </div>
                 </div>

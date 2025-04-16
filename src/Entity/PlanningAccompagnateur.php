@@ -90,6 +90,9 @@ class PlanningAccompagnateur
     )]
     private ?string $heure_fin = null;
 
+    #[ORM\ManyToOne(inversedBy: 'PlanningAccompagnateur')]
+    private ?Statut $statut = null;
+
     public function getHeure_fin(): ?string
     {
         return $this->heure_fin;
@@ -138,6 +141,18 @@ class PlanningAccompagnateur
     public function setHeureFin(string $heure_fin): static
     {
         $this->heure_fin = $heure_fin;
+
+        return $this;
+    }
+
+    public function getStatut(): ?Statut
+    {
+        return $this->statut;
+    }
+
+    public function setStatut(?Statut $statut): static
+    {
+        $this->statut = $statut;
 
         return $this;
     }

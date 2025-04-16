@@ -51,6 +51,7 @@
                                 <th>Date Jour</th>
                                 <th>Heure Debut</th>
                                 <th>Heure Fin</th>
+                                <th>Statut</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -62,6 +63,7 @@
                                 <td>{{ planning_accompagnateur.dateJour ? planning_accompagnateur.dateJour|date('Y-m-d') : '' }}</td>
                                 <td>{{ planning_accompagnateur.heureDebut }}</td>
                                 <td>{{ planning_accompagnateur.heureFin }}</td>
+                                <td>{{ planning_accompagnateur.statut.type}}</td>
                                 <td class="pe-3">
                                     <div class="d-flex justify-content-center gap-2">
                                         <a href="{{ path('app_planning_accompagnateur_show', {'id_planning': planning_accompagnateur.id_planning}) }}" class="btn btn-soft-primary btn-icon btn-sm rounded-circle">

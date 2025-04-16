@@ -58,6 +58,11 @@
                             {{ form_widget(form.heure_fin, {'attr': {'class': 'form-control', 'placeholder': 'format HH:mm'}}) }}
                             {{ form_errors(form.heure_fin, {'attr': {'class': 'invalid-feedback'}}) }}
                         </div>
+                        <div class="col-md-6">
+                            {{ form_label(form.statut, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.statut, {'attr': {'class': 'form-control', 'placeholder': 'statut'}}) }}
+                            {{ form_errors(form.statut, {'attr': {'class': 'invalid-feedback'}}) }}
+                        </div>
                     </div>
                 </div>
             </div>
