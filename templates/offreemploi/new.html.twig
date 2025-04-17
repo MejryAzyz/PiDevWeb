@@ -1,0 +1,11 @@
+{% extends 'popup_base.html.twig' %}
+
+{% block title %}New Job Offer{% endblock %}
+
+{% block body %}
+    <div class="card border-0">
+        <div class="card-body">
+            {{ include('offreemploi/_form.html.twig') }}
+        </div>
+    </div>
+{% endblock %}

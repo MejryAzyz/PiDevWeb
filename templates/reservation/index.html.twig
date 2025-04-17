@@ -1,0 +1,183 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Les Cliniques | Osen - Responsive Bootstrap 5 Admin Dashboard{% endblock %}
+
+{% block css %}
+<!-- App css -->
+<link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet" type="text/css" id="app-style" />
+
+<!-- Icons css -->
+<link href="{{ asset('assets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+{% block body %}
+<!-- Begin page -->
+    <!-- Page Content -->
+
+        <div class="page-container">
+            <div class="page-title-head d-flex align-items-sm-center flex-sm-row flex-column gap-2">
+                <div class="flex-grow-1">
+                    <h4 class="fs-18 fw-semibold mb-0">Listes des rservations</h4>
+                </div>
+                <div class="text-end">
+                    <ol class="breadcrumb m-0 py-0">
+                        <li class="breadcrumb-item"><a href="#">Osen</a></li>
+                        <li class="breadcrumb-item"><a href="#">Hospital</a></li>
+                        <li class="breadcrumb-item active">Reservation</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="card shadow-sm border-0">
+                        
+                        <div class="card-body">
+                            <div class="table-responsive">
+
+                                <!-- Réservations Clinique -->
+                                <h5 class="my-3 text-muted">Réservations Clinique</h5>
+                                <table class="table table-striped table-hover table-bordered">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Id Réservation</th>
+                                            <th>Id Patient</th>
+                                            <th>Date Réservation</th>
+                                            <th>Statut</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for reservation in clinic_reservations %}
+                                            <tr>
+                                                <td>{{ reservation.idReservation }}
+
+                                                </td>
+                                                <td>{{ reservation.idPatient }}</td>
+                                                <td>{{ reservation.dateReservation ? reservation.dateReservation|date('Y-m-d H:i:s') : '' }}</td>
+                                                <td>{{ reservation.statut }}</td>
+                                                <td>
+                                                    {% if reservation.statut == 'accepted' %}    
+                                                        <form method="post" action="{{ path('cancel', {'idres': reservation.idReservation}) }}" style="display:inline;">
+                                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ reservation.idReservation) }}">
+                                                        <button class="btn btn-danger" type="submit">Rejeter</button>
+                                                        </form>      
+                                                       <a href="{{ path('paiement', {'x': reservation.idReservation}) }}" class="btn btn-success btn-sm">Paiement</a>
+                                                    {% else %}
+                                                        <a href="{{ path('app_reservation_edit', {'id_reservation': reservation.id_reservation}) }}" class="btn btn-warning btn-sm">Gérer</a>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% else %}
+                                            <tr>
+                                                <td colspan="7" class="text-center">Aucune réservation clinique trouvée</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+
+                                <!-- Réservations Transport -->
+                                <h5 class="my-3 text-muted">Réservations Transport</h5>
+                                <table class="table table-striped table-hover table-bordered">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Id Réservation</th>
+                                            <th>Id Patient</th>
+                                            <th>Id Transport</th>
+                                            <th>Transport Type</th>
+                                            <th>Date Départ</th>
+                                            <th>Heure Départ</th>
+                                            <th>Date Réservation</th>
+                                            <th>Statut</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for reservation in transport_reservations %}
+                                            <tr>
+                                                <td>{{ reservation.idReservation }}</td>
+                                                <td>{{ reservation.idPatient }}</td>
+                                                <td>{{ reservation.id_transport.id_transport }}</td>
+                                                <td>{{ reservation.id_transport.type }}</td>
+                                                <td>{{ reservation.dateDepart ? reservation.dateDepart|date('Y-m-d') : '' }}</td>
+                                                <td>{{ reservation.heureDepart }}</td>
+                                                <td>{{ reservation.dateReservation ? reservation.dateReservation|date('Y-m-d H:i:s') : '' }}</td>
+                                                <td>{{ reservation.statut }}</td>
+                                                <td>
+                                                    {% if reservation.statut == 'accepted' %}
+                                                            <a href="{{ path('paiement', {'x': reservation.idReservation}) }}" class="btn btn-success btn-sm">Paiement</a>
+                                                    {% else %}
+                                                        <a href="{{ path('app_reservation_edit', {'id_reservation': reservation.id_reservation}) }}" class="btn btn-warning btn-sm">Gérer</a>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% else %}
+                                            <tr>
+                                                <td colspan="7" class="text-center">Aucune réservation transport trouvée</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+
+                                <!-- Réservations Hébergement -->
+                                <h5 class="my-3 text-muted">Réservations Hébergement</h5>
+                                <table class="table table-striped table-hover table-bordered">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Id Réservation</th>
+                                            <th>Id Patient</th>
+                                            <th>Id Hébergement</th>
+                                            <th>Hébergement</th>
+                                            <th>Date Début</th>
+                                            <th>Date Fin</th>
+                                            <th>Date Réservation</th>
+                                            <th>Statut</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for reservation in hebergement_reservations %}
+                                            <tr>
+                                                <td>{{ reservation.idReservation }}</td>
+                                                <td>{{ reservation.idPatient }}</td>
+                                                <td>{{ reservation.id_hebergement.id_hebergement }}</td>
+                                                <td>{{ reservation.id_hebergement.nom }}</td>
+                                                <td>{{ reservation.dateDebut ? reservation.dateDebut|date('Y-m-d') : '' }}</td>
+                                                <td>{{ reservation.dateFin ? reservation.dateFin|date('Y-m-d') : '' }}</td>
+                                                <td>{{ reservation.dateReservation ? reservation.dateReservation|date('Y-m-d H:i:s') : '' }}</td>
+                                                <td>{{ reservation.statut }}</td>
+                                                <td>
+                                                    {% if reservation.statut == 'accepted' %}
+                                                        <a href="{{ path('paiement', {'x': reservation.idReservation}) }}" class="btn btn-success btn-sm">Paiement</a>
+                                                    {% else %}
+                                                        <a href="{{ path('app_reservation_edit', {'id_reservation': reservation.id_reservation}) }}" class="btn btn-warning btn-sm">Gérer</a>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% else %}
+                                            <tr>
+                                                <td colspan="8" class="text-center">Aucune réservation hébergement trouvée</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+        </div>
+    
+
+{% endblock %}
+
+{% block js %}
+<!-- Vendor js -->
+<script src="{{ asset('assets/js/vendor.min.js') }}"></script>
+
+<!-- App js -->
+<script src="{{ asset('assets/js/app.js') }}"></script>
+{% endblock %}

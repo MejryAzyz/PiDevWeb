@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails plannings docteurs{% endblock %}
+
+{% block body %}
+
+        <div class="col-xl-12 col-lg-12 mx-xl-auto" {#mx-xl-auto#}>
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Informations du planning :</h4>
+                    <div class="table-responsive mt-3 border border-dashed rounded px-2 py-1">
+                        <table class="table table-borderless m-0">
+                            <tbody>
+                                <tr>
+                                    <td><p class="mb-0">Id Planning</p></td>
+                                    <td class="px-2 text-dark fw-medium fs-14">{{ planning_docteur.idPlanning }}</td>
+                                </tr>
+                                <tr>
+                                    <td><p class="mb-0">Nom docteur :</p></td>
+                                    <td class="px-2 text-dark fw-medium fs-14">{{ planning_docteur.docteur.getNom }}</td>
+                                </tr>
+                                <tr>
+                                    <td><p class="mb-0">Date Jour :</p></td>
+                                    <td class="px-2 text-dark fw-medium fs-14">{{ planning_docteur.dateJour ? planning_docteur.dateJour|date('Y-m-d') : '' }}<td>
+                                </tr>
+                                <tr>
+                                    <td><p class="mb-0">Heure Debut :</p></td>
+                                    <td class="px-2 text-dark fw-medium fs-14">{{ planning_docteur.heure_debut }}</td>
+                                </tr>
+                                <tr>
+                                    <td><p class="mb-0">Heure Fin :</p></td>
+                                    <td class="px-2 text-dark fw-medium fs-14">{{ planning_docteur.heure_fin }}</td>
+                                </tr>
+                                <tr>
+                                    <td><p class="mb-0">Statut :</p></td>
+                                    <td class="px-2 text-dark fw-medium fs-14">{{ planning_docteur.statut.type }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer border-top gap-1 hstack">
+                    <a href="{{ path('app_planning_docteur_index') }}" class="btn btn-light w-100">Retour à la liste</a>
+                    <a href="{{ path('app_planning_docteur_edit', {'id_planning': planning_docteur.id_planning}) }}" class="btn btn-dark d-inline-flex align-items-center justify-content-center rounded avatar-md">
+                        <i class="ti ti-edit fs-20"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+{% endblock %}
+
+{% block js %}
+    <script src="{{ asset('assets/js/vendor.min.js') }}"></script>
+    <script src="{{ asset('assets/js/app.js') }}"></script>
+{% endblock %}
