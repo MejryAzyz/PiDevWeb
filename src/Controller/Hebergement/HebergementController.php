@@ -162,10 +162,26 @@ final class HebergementController extends AbstractController
     public function edit(Request $request, Hebergement $hebergement, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(HebergementType::class, $hebergement);
+        
+        // Extraire les données de l'adresse existante
+        $adresseParts = explode(',', $hebergement->getAdresse());
+        if (count($adresseParts) >= 3) {
+            $form->get('rue')->setData(trim($adresseParts[0]));
+            $form->get('ville')->setData(trim($adresseParts[1]));
+            $form->get('pays')->setData(trim($adresseParts[2]));
+        } else {
+            $form->get('pays')->setData('France');
+        }
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // La relation ManyToMany est gérée automatiquement par Doctrine
+            // Mettre à jour l'adresse complète
+            $rue = $form->get('rue')->getData();
+            $ville = $form->get('ville')->getData();
+            $pays = $form->get('pays')->getData();
+            $hebergement->setAdresse($rue . ', ' . $ville . ', ' . $pays);
+
             $entityManager->flush();
 
             return $this->redirectToRoute('app_hebergement_index', [], Response::HTTP_SEE_OTHER);
