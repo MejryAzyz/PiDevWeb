@@ -14,8 +14,9 @@ use Dompdf\Dompdf;
 use Dompdf\Options;
 
 #[Route('/transport')]
-final class TransportController extends AbstractController{
-    #[Route(name: 'app_transport_index', methods: ['GET'])]
+final class TransportController extends AbstractController
+{
+    #[Route('/admin', name: 'app_transport_index', methods: ['GET'])]
     public function index(TransportRepository $transportRepository): Response
     {
         $transports = $transportRepository->findAll();
@@ -34,25 +35,25 @@ final class TransportController extends AbstractController{
         ]);
     }
 
-    #[Route('/new', name: 'app_transport_new', methods: ['GET', 'POST'])]
+    #[Route('/admin/new', name: 'app_transport_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
-{
-    $transport = new Transport();
-    $form = $this->createForm(TransportType::class, $transport);
-    $form->handleRequest($request);
+    {
+        $transport = new Transport();
+        $form = $this->createForm(TransportType::class, $transport);
+        $form->handleRequest($request);
 
-    if ($form->isSubmitted() && $form->isValid()) {
-        $entityManager->persist($transport);
-        $entityManager->flush();
-        return $this->redirectToRoute('app_transport_index');
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($transport);
+            $entityManager->flush();
+            return $this->redirectToRoute('app_transport_index');
+        }
+
+        return $this->render('transport/new.html.twig', [
+            'form' => $form->createView(),
+        ]);
     }
 
-    return $this->render('transport/new.html.twig', [
-        'form' => $form->createView(),
-    ]);
-}
-
-    #[Route('/{id_transport}', name: 'app_transport_show', methods: ['GET'])]
+    #[Route('/admin/{id_transport}', name: 'app_transport_show', methods: ['GET'])]
     public function show(Transport $transport): Response
     {
         return $this->render('transport/show.html.twig', [
@@ -60,7 +61,7 @@ final class TransportController extends AbstractController{
         ]);
     }
 
-    #[Route('/{id_transport}/edit', name: 'app_transport_edit', methods: ['GET', 'POST'])]
+    #[Route('/admin/{id_transport}/edit', name: 'app_transport_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Transport $transport, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(TransportType::class, $transport);
@@ -78,7 +79,7 @@ final class TransportController extends AbstractController{
         ]);
     }
 
-    #[Route('/{id_transport}', name: 'app_transport_delete', methods: ['POST'])]
+    #[Route('/admin/{id_transport}', name: 'app_transport_delete', methods: ['POST'])]
     public function delete(Request $request, Transport $transport, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$transport->getId_transport(), $request->getPayload()->getString('_token'))) {
@@ -89,7 +90,7 @@ final class TransportController extends AbstractController{
         return $this->redirectToRoute('app_transport_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('/export/pdf', name: 'app_transport_export_pdf', methods: ['GET'])]
+    #[Route('/admin/export/pdf', name: 'app_transport_export_pdf', methods: ['GET'])]
     public function exportPdf(TransportRepository $transportRepository): Response
     {
         // Récupérer tous les transports
@@ -129,5 +130,38 @@ final class TransportController extends AbstractController{
                 'Content-Disposition' => 'attachment; filename="' . $filename . '"',
             ]
         );
+    }
+
+    #[Route('/front', name: 'app_transport_front_index', methods: ['GET'])]
+    public function frontIndex(Request $request, TransportRepository $transportRepository): Response
+    {
+        $query = $transportRepository->createQueryBuilder('t')
+            ->orderBy('t.id_transport', 'DESC')
+            ->getQuery();
+
+        $page = $request->query->getInt('page', 1);
+        $limit = 6; // Nombre d'éléments par page
+
+        $paginator = new \Doctrine\ORM\Tools\Pagination\Paginator($query);
+        $totalItems = count($paginator);
+        $pagesCount = ceil($totalItems / $limit);
+
+        $paginator->getQuery()
+            ->setFirstResult($limit * ($page - 1))
+            ->setMaxResults($limit);
+
+        return $this->render('transport/front_index.html.twig', [
+            'transports' => $paginator,
+            'currentPage' => $page,
+            'pagesCount' => $pagesCount,
+        ]);
+    }
+
+    #[Route('/front/{id_transport}', name: 'app_transport_front_show', methods: ['GET'])]
+    public function frontShow(Transport $transport): Response
+    {
+        return $this->render('transport/front_show.html.twig', [
+            'transport' => $transport,
+        ]);
     }
 }
