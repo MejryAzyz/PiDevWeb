@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Hebergement;
+use App\Entity\Service;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -11,6 +12,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 class HebergementType extends AbstractType
 {
@@ -92,6 +94,17 @@ class HebergementType extends AbstractType
             ])
             ->add('image_url', HiddenType::class, [
                 'required' => false,
+            ])
+            ->add('services', EntityType::class, [
+                'class' => Service::class,
+                'choice_label' => 'nomService',
+                'multiple' => true,
+                'expanded' => true,
+                'required' => false,
+                'label' => 'Services disponibles',
+                'attr' => [
+                    'class' => 'form-check'
+                ]
             ])
         ;
     }

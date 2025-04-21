@@ -137,6 +137,7 @@ final class HebergementController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // La relation ManyToMany est gérée automatiquement par Doctrine
             $entityManager->persist($hebergement);
             $entityManager->flush();
 
@@ -164,6 +165,7 @@ final class HebergementController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // La relation ManyToMany est gérée automatiquement par Doctrine
             $entityManager->flush();
 
             return $this->redirectToRoute('app_hebergement_index', [], Response::HTTP_SEE_OTHER);

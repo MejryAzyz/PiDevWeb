@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ServiceRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ServiceRepository::class)]
@@ -16,9 +18,16 @@ class Service
     #[ORM\Column(name: 'nom_service', length: 255)]
     private ?string $nomService = null;
 
-    #[ORM\ManyToOne(inversedBy: 'services')]
-    #[ORM\JoinColumn(name: 'id_hebergement', referencedColumnName: 'id_hebergement', nullable: false)]
-    private ?Hebergement $hebergement = null;
+    #[ORM\ManyToMany(targetEntity: Hebergement::class, inversedBy: 'services')]
+    #[ORM\JoinTable(name: 'service_hebergement')]
+    #[ORM\JoinColumn(name: 'service_id', referencedColumnName: 'id_service')]
+    #[ORM\InverseJoinColumn(name: 'hebergement_id', referencedColumnName: 'id_hebergement')]
+    private Collection $hebergements;
+
+    public function __construct()
+    {
+        $this->hebergements = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -33,17 +42,31 @@ class Service
     public function setNomService(string $nomService): static
     {
         $this->nomService = $nomService;
+
         return $this;
     }
 
-    public function getHebergement(): ?Hebergement
+    /**
+     * @return Collection<int, Hebergement>
+     */
+    public function getHebergements(): Collection
     {
-        return $this->hebergement;
+        return $this->hebergements;
     }
 
-    public function setHebergement(?Hebergement $hebergement): static
+    public function addHebergement(Hebergement $hebergement): static
     {
-        $this->hebergement = $hebergement;
+        if (!$this->hebergements->contains($hebergement)) {
+            $this->hebergements->add($hebergement);
+        }
+
+        return $this;
+    }
+
+    public function removeHebergement(Hebergement $hebergement): static
+    {
+        $this->hebergements->removeElement($hebergement);
+
         return $this;
     }
 } 

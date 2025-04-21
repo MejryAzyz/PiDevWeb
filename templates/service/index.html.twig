@@ -20,7 +20,6 @@
                     <tr>
                         <td>{{ service.id }}</td>
                         <td>{{ service.nomService }}</td>
-                        <td>{{ service.hebergement ? service.hebergement.nom : 'Non assigné' }}</td>
                         <td>
                             <a href="{{ path('app_service_show', {'id': service.id}) }}" class="btn btn-info">Voir</a>
                             <a href="{{ path('app_service_edit', {'id': service.id}) }}" class="btn btn-warning">Modifier</a>

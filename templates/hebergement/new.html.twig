@@ -134,7 +134,20 @@
                         <h5 class="card-title mb-0">Services disponibles</h5>
                     </div>
                     <div class="card-body">
-                        <p class="text-muted mb-3">Les services peuvent être ajoutés après la création de l'hébergement.</p>
+                        <div class="form-group">
+                            {{ form_label(form.services) }}
+                            <div class="row g-3">
+                                {% for service in form.services %}
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            {{ form_widget(service, {'attr': {'class': 'form-check-input'}}) }}
+                                            {{ form_label(service, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            {{ form_errors(form.services) }}
+                        </div>
                     </div>
                 </div>
 

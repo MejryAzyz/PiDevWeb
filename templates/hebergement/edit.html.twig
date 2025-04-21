@@ -129,6 +129,28 @@
             </div>
 
             <div class="col-lg-5">
+                <div class="card mb-4">
+                    <div class="card-header bg-soft-primary border-bottom border-dashed">
+                        <h5 class="card-title mb-0">Services disponibles</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            {{ form_label(form.services) }}
+                            <div class="row g-3">
+                                {% for service in form.services %}
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            {{ form_widget(service, {'attr': {'class': 'form-check-input'}}) }}
+                                            {{ form_label(service, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            {{ form_errors(form.services) }}
+                        </div>
+                    </div>
+                </div>
+
                 <div class="card h-65">
                     <div class="card-header bg-soft-primary border-bottom border-dashed">
                         <h5 class="card-title mb-0">Image de l'Hébergement</h5>

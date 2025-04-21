@@ -78,7 +78,10 @@ class Hebergement
     #[ORM\OneToMany(targetEntity: ReservationHebergement::class, mappedBy: 'hebergement')]
     private Collection $reservationHebergements;
 
-    #[ORM\OneToMany(targetEntity: Service::class, mappedBy: 'hebergement')]
+    #[ORM\ManyToMany(targetEntity: Service::class, inversedBy: 'hebergements')]
+    #[ORM\JoinTable(name: 'service_hebergement')]
+    #[ORM\JoinColumn(name: 'hebergement_id', referencedColumnName: 'id_hebergement')]
+    #[ORM\InverseJoinColumn(name: 'service_id', referencedColumnName: 'id_service')]
     private Collection $services;
 
     public function __construct()
@@ -249,6 +252,9 @@ class Hebergement
         return $this;
     }
 
+    /**
+     * @return Collection<int, Service>
+     */
     public function getServices(): Collection
     {
         return $this->services;
@@ -258,7 +264,6 @@ class Hebergement
     {
         if (!$this->services->contains($service)) {
             $this->services->add($service);
-            $service->setHebergement($this);
         }
 
         return $this;
@@ -266,12 +271,7 @@ class Hebergement
 
     public function removeService(Service $service): static
     {
-        if ($this->services->removeElement($service)) {
-            // set the owning side to null (unless already changed)
-            if ($service->getHebergement() === $this) {
-                $service->setHebergement(null);
-            }
-        }
+        $this->services->removeElement($service);
 
         return $this;
     }
