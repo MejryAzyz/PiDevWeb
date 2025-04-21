@@ -73,8 +73,6 @@
             </nav>
         </div>
 
-       
-
         {{ form_start(form, {'attr': {'id': 'hebergementForm', 'class': 'needs-validation', 'novalidate': true}}) }}
         <div class="row g-4">
             <div class="col-lg-7">
@@ -131,34 +129,6 @@
             </div>
 
             <div class="col-lg-5">
-                <div class="card mb-4">
-                    <div class="card-header bg-soft-primary border-bottom border-dashed">
-                        <h5 class="card-title mb-0">Services disponibles</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                {{ form_row(form.service.wifi, {'attr': {'class': 'form-check-input'}, 'label_attr': {'class': 'form-check-label'}}) }}
-                            </div>
-                            <div class="col-md-6">
-                                {{ form_row(form.service.climatisation, {'attr': {'class': 'form-check-input'}, 'label_attr': {'class': 'form-check-label'}}) }}
-                            </div>
-                            <div class="col-md-6">
-                                {{ form_row(form.service.menage_quotidien, {'attr': {'class': 'form-check-input'}, 'label_attr': {'class': 'form-check-label'}}) }}
-                            </div>
-                            <div class="col-md-6">
-                                {{ form_row(form.service.conciergerie, {'attr': {'class': 'form-check-input'}, 'label_attr': {'class': 'form-check-label'}}) }}
-                            </div>
-                            <div class="col-md-6">
-                                {{ form_row(form.service.linge_lit, {'attr': {'class': 'form-check-input'}, 'label_attr': {'class': 'form-check-label'}}) }}
-                            </div>
-                            <div class="col-md-6">
-                                {{ form_row(form.service.salle_bain_privee, {'attr': {'class': 'form-check-input'}, 'label_attr': {'class': 'form-check-label'}}) }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <div class="card h-65">
                     <div class="card-header bg-soft-primary border-bottom border-dashed">
                         <h5 class="card-title mb-0">Image de l'Hébergement</h5>

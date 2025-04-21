@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau Service{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1>Créer un nouveau service</h1>
+
+        {{ form_start(form) }}
+            <div class="form-group">
+                {{ form_label(form.nomService) }}
+                {{ form_widget(form.nomService, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(form.nomService) }}
+            </div>
+
+            <button type="submit" class="btn btn-primary">Créer</button>
+            <a href="{{ path('app_service_index') }}" class="btn btn-secondary">Retour à la liste</a>
+        {{ form_end(form) }}
+    </div>
+{% endblock %} 

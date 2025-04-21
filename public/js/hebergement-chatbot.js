@@ -91,10 +91,11 @@
             return 'La plupart de nos hébergements incluent : Wi-Fi gratuit, linge de lit, ménage de fin de séjour, et parking. Certains proposent des services supplémentaires comme le petit-déjeuner ou la climatisation.';
         },
         'services': (data) => {
-            if (data && data.nom) {
-                return `${data.nom} offre un ensemble de services premium : Wi-Fi haut débit, linge de lit de qualité hôtelière, ménage quotidien sur demande, parking sécurisé, climatisation, et service de conciergerie. Certains services complémentaires peuvent être arrangés moyennant un supplément.`;
+            if (data.services && data.services.length > 0) {
+                const servicesList = data.services.map(service => service.nomService).join(', ');
+                return `${data.nom} propose les services suivants : ${servicesList}.`;
             }
-            return 'Nos services standard comprennent le Wi-Fi, le linge de lit et le ménage de fin de séjour. Des services premium comme le petit-déjeuner ou le transfert depuis l\'aéroport sont disponibles dans certains établissements.';
+            return `${data.nom} n'a pas encore de services configurés. Veuillez nous contacter pour plus d'informations.`;
         },
         'wifi': (data) => {
             if (data && data.nom) {

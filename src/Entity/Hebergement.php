@@ -78,13 +78,14 @@ class Hebergement
     #[ORM\OneToMany(targetEntity: ReservationHebergement::class, mappedBy: 'hebergement')]
     private Collection $reservationHebergements;
 
-    #[ORM\OneToOne(targetEntity: Service::class, mappedBy: 'hebergement', cascade: ['persist', 'remove'])]
-    private ?Service $service = null;
+    #[ORM\OneToMany(targetEntity: Service::class, mappedBy: 'hebergement')]
+    private Collection $services;
 
     public function __construct()
     {
         $this->hebergementPhotos = new ArrayCollection();
         $this->reservationHebergements = new ArrayCollection();
+        $this->services = new ArrayCollection();
     }
 
     // Getters and Setters remain the same, just adding validation above
@@ -248,24 +249,29 @@ class Hebergement
         return $this;
     }
 
-    public function getService(): ?Service
+    public function getServices(): Collection
     {
-        return $this->service;
+        return $this->services;
     }
 
-    public function setService(?Service $service): self
+    public function addService(Service $service): static
     {
-        // unset the owning side of the relation if necessary
-        if ($service === null && $this->service !== null) {
-            $this->service->setHebergement(null);
-        }
-
-        // set the owning side of the relation if necessary
-        if ($service !== null && $service->getHebergement() !== $this) {
+        if (!$this->services->contains($service)) {
+            $this->services->add($service);
             $service->setHebergement($this);
         }
 
-        $this->service = $service;
+        return $this;
+    }
+
+    public function removeService(Service $service): static
+    {
+        if ($this->services->removeElement($service)) {
+            // set the owning side to null (unless already changed)
+            if ($service->getHebergement() === $this) {
+                $service->setHebergement(null);
+            }
+        }
 
         return $this;
     }

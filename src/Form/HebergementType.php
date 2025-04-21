@@ -93,10 +93,6 @@ class HebergementType extends AbstractType
             ->add('image_url', HiddenType::class, [
                 'required' => false,
             ])
-            ->add('service', ServiceType::class, [
-                'label' => false,
-                'required' => false,
-            ])
         ;
     }
 

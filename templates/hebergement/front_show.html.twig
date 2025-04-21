@@ -158,71 +158,19 @@
                                     </div><!-- /.row -->
                                     
                                     <h5 class="f-18 rt-strong mb-4 mt-2 border-bottom pb-2">Services inclus</h5>
-                                    <div class="row">
-                                        {% if hebergement.service %}
-                                            {% if hebergement.service.wifi %}
-                                            <div class="col-lg-4 col-md-6 mb-3">
-                                                <div class="amenity-item d-flex align-items-center">
-                                                    <div class="icon-box bg-primary-light rounded-circle p-2 mr-3">
-                                                        <i class="icofont-wifi text-primary"></i>
+                                    <div class="row g-3">
+                                        {% if hebergement.services|length > 0 %}
+                                            {% for service in hebergement.services %}
+                                                <div class="col-md-4">
+                                                    <div class="service-item">
+                                                        <i class="ti ti-check text-success"></i>
+                                                        <span class="fw-medium">{{ service.nomService }}</span>
                                                     </div>
-                                                    <span>Wi-Fi gratuit</span>
                                                 </div>
-                                            </div>
-                                            {% endif %}
-                                            {% if hebergement.service.climatisation %}
-                                            <div class="col-lg-4 col-md-6 mb-3">
-                                                <div class="amenity-item d-flex align-items-center">
-                                                    <div class="icon-box bg-primary-light rounded-circle p-2 mr-3">
-                                                        <i class="icofont-snow text-primary"></i>
-                                                    </div>
-                                                    <span>Climatisation</span>
-                                                </div>
-                                            </div>
-                                            {% endif %}
-                                            {% if hebergement.service.menageQuotidien %}
-                                            <div class="col-lg-4 col-md-6 mb-3">
-                                                <div class="amenity-item d-flex align-items-center">
-                                                    <div class="icon-box bg-primary-light rounded-circle p-2 mr-3">
-                                                        <i class="icofont-cleaning text-primary"></i>
-                                                    </div>
-                                                    <span>Ménage quotidien</span>
-                                                </div>
-                                            </div>
-                                            {% endif %}
-                                            {% if hebergement.service.conciergerie %}
-                                            <div class="col-lg-4 col-md-6 mb-3">
-                                                <div class="amenity-item d-flex align-items-center">
-                                                    <div class="icon-box bg-primary-light rounded-circle p-2 mr-3">
-                                                        <i class="icofont-bell-alt text-primary"></i>
-                                                    </div>
-                                                    <span>Service de conciergerie</span>
-                                                </div>
-                                            </div>
-                                            {% endif %}
-                                            {% if hebergement.service.lingeLit %}
-                                            <div class="col-lg-4 col-md-6 mb-3">
-                                                <div class="amenity-item d-flex align-items-center">
-                                                    <div class="icon-box bg-primary-light rounded-circle p-2 mr-3">
-                                                        <i class="icofont-bed text-primary"></i>
-                                                    </div>
-                                                    <span>Linge de lit</span>
-                                                </div>
-                                            </div>
-                                            {% endif %}
-                                            {% if hebergement.service.salleBainPrivee %}
-                                            <div class="col-lg-4 col-md-6 mb-3">
-                                                <div class="amenity-item d-flex align-items-center">
-                                                    <div class="icon-box bg-primary-light rounded-circle p-2 mr-3">
-                                                        <i class="icofont-bathtub text-primary"></i>
-                                                    </div>
-                                                    <span>Salles de bain privées</span>
-                                                </div>
-                                            </div>
-                                            {% endif %}
+                                            {% endfor %}
                                         {% else %}
                                             <div class="col-12">
-                                                <p class="text-muted">Aucun service n'est configuré pour cet hébergement.</p>
+                                                <p class="text-muted mb-0">Aucun service n'est configuré pour cet hébergement.</p>
                                             </div>
                                         {% endif %}
                                     </div>

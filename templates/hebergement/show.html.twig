@@ -101,43 +101,15 @@
                             <h4 class="card-title mt-4">Services disponibles :</h4>
                             <div class="table-responsive mt-3 border border-dashed rounded px-2 py-1">
                                 <div class="row g-3">
-                                    {% if hebergement.service %}
-                                        <div class="col-md-4">
-                                            <div class="service-item">
-                                                <i class="ti ti-wifi {{ hebergement.service.wifi ? 'text-success' : 'text-muted' }}"></i>
-                                                <span class="{{ hebergement.service.wifi ? 'fw-medium' : 'text-muted' }}">Wi-Fi</span>
+                                    {% if hebergement.services|length > 0 %}
+                                        {% for service in hebergement.services %}
+                                            <div class="col-md-4">
+                                                <div class="service-item">
+                                                    <i class="ti ti-check text-success"></i>
+                                                    <span class="fw-medium">{{ service.nomService }}</span>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="service-item">
-                                                <i class="ti ti-snowflake {{ hebergement.service.climatisation ? 'text-success' : 'text-muted' }}"></i>
-                                                <span class="{{ hebergement.service.climatisation ? 'fw-medium' : 'text-muted' }}">Climatisation</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="service-item">
-                                                <i class="ti ti-brush {{ hebergement.service.menageQuotidien ? 'text-success' : 'text-muted' }}"></i>
-                                                <span class="{{ hebergement.service.menageQuotidien ? 'fw-medium' : 'text-muted' }}">Ménage quotidien</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="service-item">
-                                                <i class="ti ti-bell-ringing {{ hebergement.service.conciergerie ? 'text-success' : 'text-muted' }}"></i>
-                                                <span class="{{ hebergement.service.conciergerie ? 'fw-medium' : 'text-muted' }}">Service de conciergerie</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="service-item">
-                                                <i class="ti ti-bed {{ hebergement.service.lingeLit ? 'text-success' : 'text-muted' }}"></i>
-                                                <span class="{{ hebergement.service.lingeLit ? 'fw-medium' : 'text-muted' }}">Linge de lit</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="service-item">
-                                                <i class="ti ti-bath {{ hebergement.service.salleBainPrivee ? 'text-success' : 'text-muted' }}"></i>
-                                                <span class="{{ hebergement.service.salleBainPrivee ? 'fw-medium' : 'text-muted' }}">Salle de bain privée</span>
-                                            </div>
-                                        </div>
+                                        {% endfor %}
                                     {% else %}
                                         <div class="col-12">
                                             <p class="text-muted mb-0">Aucun service n'est configuré pour cet hébergement.</p>
