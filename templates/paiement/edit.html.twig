@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Paiement{% endblock %}
+
+{% block body %}
+    <br>
+    <h1>Modifier Paiement</h1>
+
+    {{ include('paiement/_form.html.twig', {'button_label': 'Valider'}) }}
+    <br>
+    <a href="{{ path('app_reservation_index') }}">back to list</a>
+{% endblock %}

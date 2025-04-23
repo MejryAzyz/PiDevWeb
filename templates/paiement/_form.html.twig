@@ -1,0 +1,15 @@
+{{ form_start(form) }}
+    <div class="form-group">
+        {{ form_label(form.montant, null, {'label_attr': {'class': 'form-label'}}) }} {# Custom label class #}
+        
+        {# Render the input with the Bootstrap 'form-control' class #}
+        {{ form_widget(form.montant, {'attr': {'class': 'form-control' }}) }}
+        
+        {# Render the error messages inside a 'invalid-feedback' container #}
+        <div class="invalid-feedback">
+            {{ form_errors(form.montant) }}
+        </div>
+    </div>
+    <br>
+    <button type="submit" class="btn btn-primary">{{ button_label|default('Valider') }}</button>
+{{ form_end(form) }}

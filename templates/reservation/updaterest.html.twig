@@ -1,0 +1,53 @@
+{# templates/front/transport_reservation_edit.html.twig #}
+{% extends 'baseFront.html.twig' %}
+
+{% block title %}Réservation Transport{% endblock %}
+
+{% block body %}
+<div class="rt-breadcump rt-breadcump-height">
+    <div class="rt-page-bg rtbgprefix-cover" style="background-image: url({{ asset('coderthemes.com/osen/layouts/assets/images/backgrounds/bredcump.png') }})"></div>
+    <div class="container">
+        <div class="row rt-breadcump-height">
+            <div class="col-12">
+                <div class="breadcrumbs-content">
+                    <h3>Mes reservation</h3>
+                    <div class="breadcrumbs">
+                        <span class="divider"><i class="icofont-home"></i></span>
+                        <a href="" title="Accueil">Accueil</a>
+                        <span class="divider"><i class="icofont-simple-right"></i></span>
+                        Reservation
+                    </div><!-- /.breadcrumbs -->
+                </div><!-- /.breadcrumbs-content -->
+            </div><!-- /.col-12 -->
+        </div><!-- /.row -->
+    </div><!-- /.container -->
+</div>
+
+<section class="content-area">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6 col-md-8">
+                <div class="card p-4 mt-4 shadow-sm">
+                    <h5 class="text-center mb-4">les informations de réservation</h5>
+                    {{ form_start(form) }}
+                        <div class="mb-3">
+                            {{ form_label(form.dateDepart, 'Date de Départ') }}
+                            {{ form_widget(form.dateDepart, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.dateDepart) }}  <!-- Affiche les erreurs pour la date -->
+                        </div>
+                        <div class="mb-3">
+                            {{ form_label(form.heureDepart, 'Heure de Départ') }}
+                            {{ form_widget(form.heureDepart, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.heureDepart) }}  <!-- Affiche les erreurs pour l'heure -->
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">Enregistrer</button>
+                        </div>
+                    {{ form_end(form) }}
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
