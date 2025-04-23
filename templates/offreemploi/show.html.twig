@@ -1,0 +1,273 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Job Offer Details{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4 class="card-title mb-0">Job Offer Details</h4>
+                            <div class="btn-group">
+                                <a href="{{ path('app_offreemploi_index') }}" class="btn btn-light">
+                                    <i class="ti ti-arrow-left me-1"></i> Back to List
+                                </a>
+                                <a href="{{ path('app_offreemploi_edit', {'id': offreemploi.id}) }}" class="btn btn-primary">
+                                    <i class="ti ti-edit me-1"></i> Edit
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <!-- Left Column - Job Details -->
+                            <div class="col-md-8">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center mb-4">
+                                            {% if offreemploi.imageurl %}
+                                                <img src="{{ asset('uploads/offers/' ~ offreemploi.imageurl) }}" 
+                                                     alt="Job image" 
+                                                     class="rounded-circle me-3"
+                                                     width="64">
+                                            {% else %}
+                                                <div class="avatar-lg me-3">
+                                                    <span class="avatar-title bg-primary-subtle text-primary rounded-circle">
+                                                        {{ offreemploi.titre|first|upper }}
+                                                    </span>
+                                                </div>
+                                            {% endif %}
+                                            <div>
+                                                <h3 class="mb-1">{{ offreemploi.titre }}</h3>
+                                                <p class="text-muted mb-0">
+                                                    <i class="ti ti-map-pin me-1"></i>{{ offreemploi.emplacement }}
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div class="row mb-4">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label text-muted">Job Type</label>
+                                                    <p class="mb-0">
+                                                        <span class="badge bg-primary-subtle text-primary">
+                                                            {{ offreemploi.typeposte }}
+                                                        </span>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label text-muted">Contract Type</label>
+                                                    <p class="mb-0">
+                                                        <span class="badge bg-info-subtle text-info">
+                                                            {{ offreemploi.typecontrat }}
+                                                        </span>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-4">
+                                            <label class="form-label text-muted">Description</label>
+                                            <div class="p-3 bg-light rounded">
+                                                {{ offreemploi.description|nl2br }}
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label text-muted">Publication Date</label>
+                                                    <p class="mb-0">{{ offreemploi.datepublication ? offreemploi.datepublication|date('Y-m-d') : '' }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label text-muted">Status</label>
+                                                    <p class="mb-0">
+                                                        <span class="badge bg-{{ offreemploi.etat == 'active' ? 'success' : 'danger' }}-subtle 
+                                                                     text-{{ offreemploi.etat == 'active' ? 'success' : 'danger' }}">
+                                                            {{ offreemploi.etat|capitalize }}
+                                                        </span>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right Column - Additional Info -->
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title mb-4">Quick Actions</h5>
+                                        <div class="d-grid gap-2">
+                                            <button type="button" class="btn btn-light" onclick="toggleOfferStatus({{ offreemploi.id }}, '{{ offreemploi.etat }}')">
+                                                <i class="ti ti-{{ offreemploi.etat == 'active' ? 'x' : 'check' }} me-1"></i>
+                                                {{ offreemploi.etat == 'active' ? 'Deactivate' : 'Activate' }} Offer
+                                            </button>
+                                            <button type="button" class="btn btn-danger" onclick="deleteJobOffer({{ offreemploi.id }})">
+                                                <i class="ti ti-trash me-1"></i> Delete Offer
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card mt-4">
+                                    <div class="card-body">
+                                        <h5 class="card-title mb-4">Offer Information</h5>
+                                        <div class="table-responsive">
+                                            <table class="table table-borderless mb-0">
+        <tbody>
+            <tr>
+                                                        <th scope="row" class="text-muted">ID</th>
+                                                        <td>#{{ offreemploi.id }}</td>
+            </tr>
+            <tr>
+                                                        <th scope="row" class="text-muted">Last Updated</th>
+                                                        <td>{{ offreemploi.updatedAt ? offreemploi.updatedAt|date('Y-m-d H:i') : 'N/A' }}</td>
+            </tr>
+        </tbody>
+    </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .avatar-lg {
+            height: 4rem;
+            width: 4rem;
+        }
+        .avatar-title {
+            align-items: center;
+            display: flex;
+            font-weight: 500;
+            height: 100%;
+            justify-content: center;
+            width: 100%;
+            font-size: 1.5rem;
+        }
+        .table-borderless td, .table-borderless th {
+            border: none;
+            padding: 0.5rem 0;
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        function toggleOfferStatus(id, currentStatus) {
+            const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+            const message = currentStatus === 'active' ? 'deactivate' : 'activate';
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: `Do you want to ${message} this job offer?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, proceed!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const url = `/offreemploi/${id}/toggle-status`;
+                    
+                    fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Status Updated',
+                                text: data.message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            throw new Error(data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Failed to update the job offer status. Please try again.'
+                        });
+                    });
+                }
+            });
+        }
+
+        function deleteJobOffer(id) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const url = `/offreemploi/${id}`;
+                    const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                    
+                    fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: `_token=${token}`
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Deleted!',
+                                text: data.message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then(() => {
+                                window.location.href = '/offreemploi';
+                            });
+                        } else {
+                            throw new Error(data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Failed to delete the job offer. Please try again.'
+                        });
+                    });
+                }
+            });
+        }
+    </script>
+{% endblock %}

@@ -1,0 +1,61 @@
+{# templates/front/transport_reservation_edit.html.twig #}
+{% extends 'baseFront.html.twig' %}
+
+{% block title %}Modifier Réservation Transport{% endblock %}
+
+{% block body %}
+<div class="rt-breadcump rt-breadcump-height">
+    <div class="rt-page-bg rtbgprefix-cover" style="background-image: url({{ asset('coderthemes.com/osen/layouts/assets/images/backgrounds/bredcump.png') }})"></div>
+    <div class="container">
+        <div class="row rt-breadcump-height">
+            <div class="col-12">
+                <div class="breadcrumbs-content">
+                    <h3>Mes reservation</h3>
+                    <div class="breadcrumbs">
+                        <span class="divider"><i class="icofont-home"></i></span>
+                        <a href="" title="Accueil">Accueil</a>
+                        <span class="divider"><i class="icofont-simple-right"></i></span>
+                        Reservation
+                    </div><!-- /.breadcrumbs -->
+                </div><!-- /.breadcrumbs-content -->
+            </div><!-- /.col-12 -->
+        </div><!-- /.row -->
+    </div><!-- /.container -->
+</div>
+
+<section class="content-area">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6 col-md-8">
+                <div class="card p-4 mt-4 shadow-sm">
+                    <h5 class="text-center mb-4">Historique de paiements </h5>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Id_paiement</th>
+                                <th>Montant</th>
+                                <th>Date_paiement</th>
+                                <th>Methode</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for paiement in paiements %}
+                            <tr>
+                                <td>{{ paiement.idPaiement }}</td>
+                                <td>{{ paiement.montant }}</td>
+                                <td>{{ paiement.datePaiement ? paiement.datePaiement|date('Y-m-d H:i:s') : '' }}</td>
+                                <td>{{ paiement.methode }}</td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="5">no records found</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

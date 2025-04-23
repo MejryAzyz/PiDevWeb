@@ -25,6 +25,7 @@
     </div><!-- /.container -->
 </div><!-- /.rt-bredcump -->
 
+<<<<<<< HEAD
 <div class="spacer-bottom"></div><!-- /.spacer-bottom -->
 <section class="content-area">
     <div class="container">
@@ -141,4 +142,376 @@
         </div><!-- /.row -->
     </div><!-- /.container -->
 </section>
+=======
+<section class="content-area">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-8 col-lg-7">
+                <!-- Hero Image with Price Badge -->
+                <div class="rt-duel-slider-main position-relative rounded-lg overflow-hidden shadow-lg mb-4">
+                    <div class="single-main rtbgprefix-cover" style="background-image: url({{ hebergement.imageUrl ? hebergement.imageUrl : asset('coderthemes.com/osen/layouts/assets/images/all-img/trip-1.jpg') }}); min-height: 400px;">
+                        <div class="inner-badge badge-bg rounded-pill px-4 py-2 font-weight-bold">{{ hebergement.tarifNuit }}€ / Nuit</div>
+                    </div>
+                </div><!-- /.rt-duel-slider-main -->
+                
+                <div class="hotel-inner-content bg-white rounded-lg shadow-sm p-4">
+                    <div class="hotel-top-meta d-flex flex-md-row flex-column justify-content-md-between align-items-md-center mb-4">
+                        <div class="hotel-name">
+                            <h4 class="mb-2 font-weight-bold">{{ hebergement.nom }}</h4>
+                            <div class="f-14 text-555">
+                                <i class="icofont-location-pin text-primary"></i> {{ hebergement.adresse }}
+                            </div>
+                        </div><!-- /.hotel-name -->
+                        <div class="hotel-rating text-center mt-3 mt-md-0">
+                            <span class="badge badge-pill badge-success px-3 py-2 mb-2">Excellent</span>
+                            <div class="d-block text-warning f-16">
+                                <i class="icofont-star"></i>
+                                <i class="icofont-star"></i>
+                                <i class="icofont-star"></i>
+                                <i class="icofont-star"></i>
+                                <i class="icofont-star"></i>
+                            </div>
+                        </div><!-- /.hotel-rating -->
+                    </div><!-- /.hotel-top-meta -->
+                    
+                    <!-- Summary Card -->
+                    <div class="property-highlights rounded bg-light p-4 mb-4">
+                        <div class="row text-center">
+                            <div class="col-4">
+                                <div class="p-3">
+                                    <i class="icofont-users-alt-5 text-primary f-32"></i>
+                                    <h5 class="mt-2 mb-0 f-18">{{ hebergement.capacite }}</h5>
+                                    <p class="text-muted mb-0 f-14">Capacité</p>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="p-3">
+                                    <i class="icofont-money-bag text-primary f-32"></i>
+                                    <h5 class="mt-2 mb-0 f-18">{{ hebergement.tarifNuit }}€</h5>
+                                    <p class="text-muted mb-0 f-14">Par nuit</p>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="p-3">
+                                    <i class="icofont-star text-primary f-32"></i>
+                                    <h5 class="mt-2 mb-0 f-18">5.0</h5>
+                                    <p class="text-muted mb-0 f-14">Note</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="hotel-inner-tabs">
+                        <ul class="nav nav-tabs nav-pills nav-fill mb-4" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active rounded-pill" data-toggle="tab" href="#description" role="tab">Description</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link rounded-pill" data-toggle="tab" href="#amenities" role="tab">Caractéristiques</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link rounded-pill" data-toggle="tab" href="#contact" role="tab">Contact</a>
+                            </li>
+                        </ul>
+                        
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="description" role="tabpanel">
+                                <div class="hotel-description">
+                                    <h5 class="f-18 rt-strong mb-4 border-bottom pb-2">Description de l'hébergement</h5>
+                                    <p>
+                                        <strong>{{ hebergement.nom }}</strong> est un hébergement de qualité, offrant une capacité de <span class="badge badge-primary">{{ hebergement.capacite }} places</span>.
+                                    </p>
+                                    <p>Situé dans un emplacement idéal à <strong>{{ hebergement.adresse }}</strong>, cet hébergement vous propose un séjour confortable à un prix abordable de <strong>{{ hebergement.tarifNuit }}€</strong> par nuit.</p>
+                                    <p>Idéalement situé, cet hébergement vous permet d'accéder facilement à toutes les commodités locales et attractions touristiques. Que vous soyez en voyage d'affaires ou en vacances, vous trouverez ici le confort dont vous avez besoin pour un séjour réussi.</p>
+                                    
+                                    <div class="cta-box text-center bg-light rounded p-4 mt-4">
+                                        <h5 class="mb-3">Vous êtes intéressé par cet hébergement?</h5>
+                                        <a href="tel:{{ hebergement.telephone }}" class="btn btn-primary btn-lg rounded-pill px-4">
+                                            <i class="icofont-phone mr-2"></i> Appeler maintenant
+                                        </a>
+                                        <a href="mailto:{{ hebergement.email }}" class="btn btn-outline-primary btn-lg rounded-pill px-4 ml-2">
+                                            <i class="icofont-envelope mr-2"></i> Contacter par email
+                                        </a>
+                                    </div>
+                                </div><!-- /.hotel-description -->
+                            </div><!-- /.tab-pane -->
+                            
+                            <div class="tab-pane fade" id="amenities" role="tabpanel">
+                                <div class="rt-mt-10">
+                                    <h5 class="f-18 rt-strong mb-4 border-bottom pb-2">Caractéristiques principales</h5>
+                                    <div class="row">
+                                        <div class="col-lg-4 col-md-6 mb-4">
+                                            <div class="media bg-light p-3 rounded">
+                                                <div class="rt-mr-16">
+                                                    <i class="icofont-users-alt-5 text-primary f-24"></i>
+                                                </div>
+                                                <div class="media-body">
+                                                    <h6 class="f-16 rt-medium">Capacité</h6>
+                                                    <p class="mb-0">{{ hebergement.capacite }} places</p>
+                                                </div>
+                                            </div>
+                                        </div><!-- /.col-lg-4 -->
+                                        <div class="col-lg-4 col-md-6 mb-4">
+                                            <div class="media bg-light p-3 rounded">
+                                                <div class="rt-mr-16">
+                                                    <i class="icofont-money-bag text-primary f-24"></i>
+                                                </div>
+                                                <div class="media-body">
+                                                    <h6 class="f-16 rt-medium">Tarif</h6>
+                                                    <p class="mb-0">{{ hebergement.tarifNuit }}€ par nuit</p>
+                                                </div>
+                                            </div>
+                                        </div><!-- /.col-lg-4 -->
+                                        <div class="col-lg-4 col-md-6 mb-4">
+                                            <div class="media bg-light p-3 rounded">
+                                                <div class="rt-mr-16">
+                                                    <i class="icofont-building-alt text-primary f-24"></i>
+                                                </div>
+                                                <div class="media-body">
+                                                    <h6 class="f-16 rt-medium">Type</h6>
+                                                    <p class="mb-0">Hébergement de qualité</p>
+                                                </div>
+                                            </div>
+                                        </div><!-- /.col-lg-4 -->
+                                    </div><!-- /.row -->
+                                    
+                                    <h5 class="f-18 rt-strong mb-4 mt-2 border-bottom pb-2">Services inclus</h5>
+                                    <div class="row">
+                                        {% if hebergement.service %}
+                                            {% if hebergement.service.wifi %}
+                                            <div class="col-lg-4 col-md-6 mb-3">
+                                                <div class="amenity-item d-flex align-items-center">
+                                                    <div class="icon-box bg-primary-light rounded-circle p-2 mr-3">
+                                                        <i class="icofont-wifi text-primary"></i>
+                                                    </div>
+                                                    <span>Wi-Fi gratuit</span>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                            {% if hebergement.service.climatisation %}
+                                            <div class="col-lg-4 col-md-6 mb-3">
+                                                <div class="amenity-item d-flex align-items-center">
+                                                    <div class="icon-box bg-primary-light rounded-circle p-2 mr-3">
+                                                        <i class="icofont-snow text-primary"></i>
+                                                    </div>
+                                                    <span>Climatisation</span>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                            {% if hebergement.service.menageQuotidien %}
+                                            <div class="col-lg-4 col-md-6 mb-3">
+                                                <div class="amenity-item d-flex align-items-center">
+                                                    <div class="icon-box bg-primary-light rounded-circle p-2 mr-3">
+                                                        <i class="icofont-cleaning text-primary"></i>
+                                                    </div>
+                                                    <span>Ménage quotidien</span>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                            {% if hebergement.service.conciergerie %}
+                                            <div class="col-lg-4 col-md-6 mb-3">
+                                                <div class="amenity-item d-flex align-items-center">
+                                                    <div class="icon-box bg-primary-light rounded-circle p-2 mr-3">
+                                                        <i class="icofont-bell-alt text-primary"></i>
+                                                    </div>
+                                                    <span>Service de conciergerie</span>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                            {% if hebergement.service.lingeLit %}
+                                            <div class="col-lg-4 col-md-6 mb-3">
+                                                <div class="amenity-item d-flex align-items-center">
+                                                    <div class="icon-box bg-primary-light rounded-circle p-2 mr-3">
+                                                        <i class="icofont-bed text-primary"></i>
+                                                    </div>
+                                                    <span>Linge de lit</span>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                            {% if hebergement.service.salleBainPrivee %}
+                                            <div class="col-lg-4 col-md-6 mb-3">
+                                                <div class="amenity-item d-flex align-items-center">
+                                                    <div class="icon-box bg-primary-light rounded-circle p-2 mr-3">
+                                                        <i class="icofont-bathtub text-primary"></i>
+                                                    </div>
+                                                    <span>Salles de bain privées</span>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                        {% else %}
+                                            <div class="col-12">
+                                                <p class="text-muted">Aucun service n'est configuré pour cet hébergement.</p>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div><!-- /.tab-pane -->
+                            
+                            <div class="tab-pane fade" id="contact" role="tabpanel">
+                                <div class="rt-mt-10">
+                                    <h5 class="f-18 rt-strong mb-4 border-bottom pb-2">Informations de contact</h5>
+                                    <div class="contact-info-box bg-light p-4 rounded">
+                                        <div class="row">
+                                            <div class="col-lg-6 col-md-6 mb-4">
+                                                <div class="media align-items-center">
+                                                    <div class="icon-box bg-primary rounded-circle p-3 mr-3">
+                                                        <i class="icofont-location-pin text-white f-24"></i>
+                                                    </div>
+                                                    <div class="media-body">
+                                                        <h6 class="f-16 rt-medium">Adresse</h6>
+                                                        <p class="mb-0">{{ hebergement.adresse }}</p>
+                                                    </div>
+                                                </div>
+                                            </div><!-- /.col-lg-6 -->
+                                            <div class="col-lg-6 col-md-6 mb-4">
+                                                <div class="media align-items-center">
+                                                    <div class="icon-box bg-primary rounded-circle p-3 mr-3">
+                                                        <i class="icofont-phone text-white f-24"></i>
+                                                    </div>
+                                                    <div class="media-body">
+                                                        <h6 class="f-16 rt-medium">Téléphone</h6>
+                                                        <p class="mb-0">
+                                                            <a href="tel:{{ hebergement.telephone }}" class="text-body">{{ hebergement.telephone }}</a>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div><!-- /.col-lg-6 -->
+                                            <div class="col-lg-6 col-md-6">
+                                                <div class="media align-items-center">
+                                                    <div class="icon-box bg-primary rounded-circle p-3 mr-3">
+                                                        <i class="icofont-envelope text-white f-24"></i>
+                                                    </div>
+                                                    <div class="media-body">
+                                                        <h6 class="f-16 rt-medium">Email</h6>
+                                                        <p class="mb-0">
+                                                            <a href="mailto:{{ hebergement.email }}" class="text-body">{{ hebergement.email }}</a>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div><!-- /.col-lg-6 -->
+                                        </div><!-- /.row -->
+                                    </div><!-- /.contact-info-box -->
+                                </div>
+                            </div><!-- /.tab-pane -->
+                        </div><!-- /.tab-content -->
+                    </div><!-- /.hotel-inner-tabs -->
+                </div><!-- /.hotel-inner-content -->
+            </div><!-- /.col-xl-8 -->
+            
+            <div class="col-xl-4 col-lg-5">
+                <div class="sidebar sticky-sidebar">
+                    <div class="sidebar-widget bg-white rounded-lg shadow-sm p-4 mb-4">
+                        <div class="price-card text-center">
+                            <div class="price-badge bg-primary text-white py-2 px-4 rounded-pill d-inline-block mb-4">
+                                <h4 class="mb-0">{{ hebergement.tarifNuit }}€ <small>/nuit</small></h4>
+                                </div>
+                            <p class="text-muted">Réservez directement pour obtenir le meilleur tarif</p>
+                            <hr>
+                            <div class="d-grid gap-2">
+                                <a href="tel:{{ hebergement.telephone }}" class="btn btn-primary btn-lg rounded-pill mb-3">
+                                    <i class="icofont-phone mr-2"></i> Appeler pour réserver
+                                </a>
+                                <a href="mailto:{{ hebergement.email }}?subject=Réservation - {{ hebergement.nom }}" class="btn btn-outline-primary rounded-pill">
+                                    <i class="icofont-envelope mr-2"></i> Demander par email
+                                </a>
+                                </div>
+                                </div>
+                    </div><!-- /.sidebar-widget -->
+                    
+                    <div class="sidebar-widget bg-white rounded-lg shadow-sm p-4 mb-4">
+                        <h5 class="widget-title border-bottom pb-2 mb-3">Détails rapides</h5>
+                        <ul class="list-unstyled property-details">
+                            <li class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <span class="property-label"><i class="icofont-users-alt-5 text-primary mr-2"></i> Capacité</span>
+                                <span class="property-value font-weight-bold">{{ hebergement.capacite }} personnes</span>
+                            </li>
+                            <li class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <span class="property-label"><i class="icofont-money-bag text-primary mr-2"></i> Prix par nuit</span>
+                                <span class="property-value font-weight-bold">{{ hebergement.tarifNuit }}€</span>
+                            </li>
+                            <li class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <span class="property-label"><i class="icofont-ui-home text-primary mr-2"></i> Type</span>
+                                <span class="property-value">Hébergement de qualité</span>
+                            </li>
+                            <li class="d-flex justify-content-between align-items-center py-2">
+                                <span class="property-label"><i class="icofont-star text-primary mr-2"></i> Évaluation</span>
+                                <span class="property-value text-warning">
+                                    <i class="icofont-star"></i>
+                                    <i class="icofont-star"></i>
+                                    <i class="icofont-star"></i>
+                                    <i class="icofont-star"></i>
+                                    <i class="icofont-star"></i>
+                                </span>
+                            </li>
+                        </ul>
+                        <a href="/reservation/new?type=hebergement&&id={{ hebergement.id_hebergement }}" class="btn btn-primary btn-lg rounded-pill mb-3">Réserver</a>
+                    </div><!-- /.sidebar-widget -->
+                    
+                    <div class="sidebar-widget bg-white rounded-lg shadow-sm overflow-hidden mb-4">
+                        <div class="map-area">
+                            <h5 class="widget-title border-bottom p-3 mb-0">Localisation</h5>
+                            <div class="contact-map">
+                                <iframe src="https://maps.google.com/maps?q={{ hebergement.adresse|url_encode }}&output=embed" frameborder="0" style="width: 100%; height: 300px; border:0;" allowfullscreen="" loading="lazy"></iframe>
+                            </div>
+                        </div><!-- /.map-area -->
+                    </div><!-- /.sidebar-widget -->
+                    
+                    <div class="sidebar-widget bg-white rounded-lg shadow-sm p-4">
+                        <h5 class="widget-title border-bottom pb-2 mb-3">Besoin d'aide ?</h5>
+                        <div class="help-box">
+                            <p>Notre équipe est disponible 24/7 pour vous aider avec votre réservation</p>
+                            <div class="media align-items-center mb-3 pb-3 border-bottom">
+                                <div class="icon-box bg-primary-light rounded-circle p-3 mr-3">
+                                    <i class="icofont-phone text-primary"></i>
+                                </div>
+                                <div class="media-body">
+                                    <h6 class="mb-1">Téléphone</h6>
+                                    <a href="tel:{{ hebergement.telephone }}" class="text-body">{{ hebergement.telephone }}</a>
+                                </div>
+                            </div>
+                            <div class="media align-items-center">
+                                <div class="icon-box bg-primary-light rounded-circle p-3 mr-3">
+                                    <i class="icofont-envelope text-primary"></i>
+                                </div>
+                                <div class="media-body">
+                                    <h6 class="mb-1">Email</h6>
+                                    <a href="mailto:{{ hebergement.email }}" class="text-body">{{ hebergement.email }}</a>
+                                </div>
+                            </div>
+                        </div><!-- /.help-box -->
+                    </div><!-- /.sidebar-widget -->
+                </div><!-- /.sidebar -->
+            </div><!-- /.col-xl-4 -->
+        </div><!-- /.row -->
+    </div><!-- /.container -->
+</section>
+
+<!-- Chatbot Component -->
+<div class="chatbot-wrapper">
+    <button id="chatbot-toggle" class="chatbot-toggle">
+        <i class="icofont-robot"></i>
+    </button>
+    <div id="chatbot-container" class="chatbot-container chatbot-hidden">
+        <div class="chatbot-header">
+            <div class="chatbot-title-container">
+                <h5 class="chatbot-title">Assistant Hébergement</h5>
+                <p class="chatbot-subtitle">Posez-moi vos questions</p>
+            </div>
+        </div>
+        <div id="chatbot-messages" class="chatbot-messages"></div>
+        <div class="chatbot-input-container">
+            <input type="text" id="chatbot-input" class="chatbot-input" placeholder="Écrivez votre message...">
+            <button id="chatbot-send" class="chatbot-send">
+                <i class="icofont-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+{% block javascripts %}
+<!-- Chatbot Script -->
+<link rel="stylesheet" href="{{ asset('js/hebergement-chatbot.css') }}">
+<script src="{{ asset('js/hebergement-chatbot.js') }}"></script>
+{% endblock %}
+>>>>>>> c4098f6 (bundle)
 {% endblock %} 

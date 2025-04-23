@@ -5,13 +5,30 @@ doctrine:
         # IMPORTANT: You MUST configure your server version,
         # either here or in the DATABASE_URL env var (see .env file)
         #server_version: '16'
+<<<<<<< HEAD
         use_savepoints: true
     orm:
         auto_generate_proxy_classes: true
+=======
+
+        profiling_collect_backtrace: '%kernel.debug%'
+        use_savepoints: true
+        mapping_types:
+            enum: string
+    orm:
+        auto_generate_proxy_classes: true
+        enable_lazy_ghost_objects: true
+        report_fields_where_declared: true
+        validate_xml_mapping: true
+>>>>>>> c4098f6 (bundle)
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
         auto_mapping: true
         mappings:
             App:
+<<<<<<< HEAD
+=======
+                type: attribute
+>>>>>>> c4098f6 (bundle)
                 is_bundle: false
                 dir: '%kernel.project_dir%/src/Entity'
                 prefix: 'App\Entity'
@@ -41,4 +58,8 @@ when@prod:
                 doctrine.result_cache_pool:
                     adapter: cache.app
                 doctrine.system_cache_pool:
+<<<<<<< HEAD
                     adapter: cache.system
+=======
+                    adapter: cache.system
+>>>>>>> c4098f6 (bundle)

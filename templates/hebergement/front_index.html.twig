@@ -26,14 +26,22 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-10 mx-auto">
+<<<<<<< HEAD
                     <form action="{{ path('app_hebergement_front_index') }}" method="get" class="rt-banner-searchbox trip-search">
+=======
+                    <form action="{{ path('app_hebergement_front_index') }}" method="get" class="rt-banner-searchbox trip-search bg-white shadow-sm rounded-lg p-4">
+>>>>>>> c4098f6 (bundle)
                         <div class="rt-input-group">
                             <div class="single-input col-md-9">
                                 <input type="text" name="search" class="form-control" placeholder="Rechercher un hébergement..." value="{{ search }}">
                                 <span class="input-iconbadge"><i class="icofont-google-map"></i></span>
                             </div><!-- /.single-input -->
                             <div class="single-input col-md-3">
+<<<<<<< HEAD
                                 <button type="submit" class="rt-btn rt-gradient pill text-uppercase d-block rt-Bshadow-2">Rechercher</button>
+=======
+                                <button type="submit" class="rt-btn rt-gradient pill text-uppercase d-block rt-Bshadow-2 w-100">Rechercher</button>
+>>>>>>> c4098f6 (bundle)
                             </div><!-- /.single-input -->
                         </div><!-- /.rt-input-group -->
                     </form><!-- /.rt-banner-searchbox -->
@@ -55,16 +63,26 @@
                         <input type="hidden" name="sort_order" value="{{ sort_order }}">
                         <input type="hidden" name="nation" value="{{ nation }}">
                         
+<<<<<<< HEAD
                         <div class="rt-widget widget_range-slider">
                             <h3 class="rt-widget-title">
                                 Filtrer par Prix
+=======
+                        <div class="rt-widget widget_range-slider bg-white shadow-sm rounded-lg p-4 mb-4">
+                            <h3 class="rt-widget-title border-bottom pb-3 mb-4">
+                                <i class="icofont-money-bag text-primary mr-2"></i> Filtrer par Prix
+>>>>>>> c4098f6 (bundle)
                             </h3><!-- /.rt-widget-title -->
 
                             <div class="slider-range" data-min="{{ price_range.min }}" data-max="{{ price_range.max }}" data-current-min="{{ min_price }}" data-current-max="{{ max_price }}"></div>
                             <div class="price_slider_amount">
                                 <div class="clearfix">
                                     <div class="float-left">
+<<<<<<< HEAD
                                         <span>Prix:</span>
+=======
+                                        <span class="text-muted">Prix:</span>
+>>>>>>> c4098f6 (bundle)
                                     </div>
                                 </div>
                                 <div class="price-inputs-container d-flex align-items-center justify-content-between mt-4">
@@ -133,6 +151,7 @@
                                     }
                                 </style>
                             </div>
+<<<<<<< HEAD
                             <div class="text-center">
                                 <button type="submit" class="rt-btn rt-gradient rounded-sm rt-sm text-uppercase filter-price-btn">Filtrer</button>
                             </div><!-- /.text-center -->
@@ -141,13 +160,27 @@
                         <div class="rt-widget widget_range-slider">
                             <h3 class="rt-widget-title">
                                 Filtrer par Capacité
+=======
+                            <div class="text-center mt-4">
+                                <button type="submit" class="rt-btn rt-gradient rounded-pill rt-sm text-uppercase filter-price-btn w-100">Appliquer le filtre</button>
+                            </div><!-- /.text-center -->
+                        </div><!-- /.rt-widget -->
+                        
+                        <div class="rt-widget widget_range-slider bg-white shadow-sm rounded-lg p-4 mb-4">
+                            <h3 class="rt-widget-title border-bottom pb-3 mb-4">
+                                <i class="icofont-users-alt-5 text-primary mr-2"></i> Filtrer par Capacité
+>>>>>>> c4098f6 (bundle)
                             </h3><!-- /.rt-widget-title -->
 
                             <div class="capacity-slider" data-min="{{ min(capacities) }}" data-max="{{ max(capacities) }}" data-current-min="{{ capacity_min }}" data-current-max="{{ capacity_max }}"></div>
                             <div class="capacity_slider_amount">
                                 <div class="clearfix">
                                     <div class="float-left">
+<<<<<<< HEAD
                                         <span>Capacité:</span>
+=======
+                                        <span class="text-muted">Capacité:</span>
+>>>>>>> c4098f6 (bundle)
                                     </div>
                                 </div>
                                 <div class="capacity-inputs-container d-flex align-items-center justify-content-between mt-4">
@@ -217,6 +250,7 @@
                                     }
                                 </style>
                             </div>
+<<<<<<< HEAD
                             <div class="text-center">
                                 <button type="submit" class="rt-btn rt-gradient rounded-sm rt-sm text-uppercase filter-capacity-btn">Filtrer</button>
                             </div><!-- /.text-center -->
@@ -228,6 +262,19 @@
                             </h3><!-- /.rt-widget-title -->
                             <div class="rt-widget-content">
                                 <select class="rt-selectactive" name="nation" onchange="this.form.submit()">
+=======
+                            <div class="text-center mt-4">
+                                <button type="submit" class="rt-btn rt-gradient rounded-pill rt-sm text-uppercase filter-capacity-btn w-100">Appliquer le filtre</button>
+                            </div><!-- /.text-center -->
+                        </div><!-- /.rt-widget -->
+                        
+                        <div class="rt-widget bg-white shadow-sm rounded-lg p-4 mb-4">
+                            <h3 class="rt-widget-title border-bottom pb-3 mb-4">
+                                <i class="icofont-map-pins text-primary mr-2"></i> Filtrer par Nation
+                            </h3><!-- /.rt-widget-title -->
+                            <div class="rt-widget-content">
+                                <select class="form-control custom-select rounded-pill" name="nation" onchange="this.form.submit()">
+>>>>>>> c4098f6 (bundle)
                                     <option value="">Toutes les nations</option>
                                     {% for n in nations %}
                                         <option value="{{ n }}" {% if nation == n %}selected{% endif %}>{{ n }}</option>
@@ -239,8 +286,13 @@
                 </div><!-- /.rt-sidebar-group -->
             </div><!-- /.col-lg-3 -->
             <div class="col-lg-8">
+<<<<<<< HEAD
                 <div class="box-style__1 rt-mb-30">
                     <form action="{{ path('app_hebergement_front_index') }}" method="get" class="row">
+=======
+                <div class="box-style__1 bg-white shadow-sm rounded-lg p-3 rt-mb-30">
+                    <form action="{{ path('app_hebergement_front_index') }}" method="get" class="row align-items-center">
+>>>>>>> c4098f6 (bundle)
                         <input type="hidden" name="search" value="{{ search }}">
                         <input type="hidden" name="min_price" value="{{ min_price }}">
                         <input type="hidden" name="max_price" value="{{ max_price }}">
@@ -249,10 +301,17 @@
                         <input type="hidden" name="nation" value="{{ nation }}">
                         
                         <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
+<<<<<<< HEAD
                             <button type="submit" name="sort_by" value="recommended" class="rt-btn pill rt-sm rt-gradient d-block {% if sort_by == 'recommended' %}active{% endif %}">Recommandés</button>
                         </div><!-- /.col-lg-4 -->
                         <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
                             <select class="rt-selectactive banner-select" name="sort_by" style="width: 100%" onchange="this.form.submit()">
+=======
+                            <button type="submit" name="sort_by" value="recommended" class="rt-btn pill rt-sm rt-gradient d-block w-100 {% if sort_by == 'recommended' %}active{% endif %}">Recommandés</button>
+                        </div><!-- /.col-lg-4 -->
+                        <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
+                            <select class="form-control custom-select rounded-pill" name="sort_by" onchange="this.form.submit()">
+>>>>>>> c4098f6 (bundle)
                                 <option value="price" {% if sort_by == 'price' %}selected{% endif %}>Prix</option>
                                 <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Nom</option>
                                 <option value="capacity" {% if sort_by == 'capacity' %}selected{% endif %}>Capacité</option>
@@ -260,19 +319,28 @@
                             </select>
                         </div><!-- /.col-lg-3 -->
                         <div class="col-lg-3 rt-input-group mini col-md-6 mb-3 mb-md-0">
+<<<<<<< HEAD
                             <select class="rt-selectactive banner-select" name="sort_order" style="width: 100%" onchange="this.form.submit()">
+=======
+                            <select class="form-control custom-select rounded-pill" name="sort_order" onchange="this.form.submit()">
+>>>>>>> c4098f6 (bundle)
                                 <option value="asc" {% if sort_order == 'asc' %}selected{% endif %}>Croissant</option>
                                 <option value="desc" {% if sort_order == 'desc' %}selected{% endif %}>Décroissant</option>
                             </select>
                         </div><!-- /.col-lg-3 -->
                         <div class="col-lg-3 rt-input-group mini col-md-6">
+<<<<<<< HEAD
                             <a href="{{ path('app_hebergement_front_index') }}" class="rt-btn rt-gradient pill rt-sm3 text-uppercase d-block text-center">Réinitialiser</a>
+=======
+                            <a href="{{ path('app_hebergement_front_index') }}" class="rt-btn rt-gradient pill rt-sm3 text-uppercase d-block text-center w-100">Réinitialiser</a>
+>>>>>>> c4098f6 (bundle)
                         </div><!-- /.col-lg-3 -->
                     </form>
                 </div><!-- /.flight-list-box -->
                 
                 {% if hebergements|length > 0 %}
                     {% for hebergement in hebergements %}
+<<<<<<< HEAD
                     <div class="box-style__1 rt-mb-30">
                         <div class="hotel-inner-content row">
                             <div class="hotel-thumb col-md-4 mb-5 mb-md-0">
@@ -310,6 +378,51 @@
                                     </div><!-- /.left -->
                                     <div class="right">
                                         <a href="{{ path('app_hebergement_front_show', {'id_hebergement': hebergement.idHebergement}) }}" class="rt-btn rt-gradient pill rt-sm3 text-uppercase">Voir Détails</a>
+=======
+                    <div class="box-style__1 bg-white shadow-sm rounded-lg overflow-hidden rt-mb-30">
+                        <div class="hotel-inner-content row m-0">
+                            <div class="hotel-thumb col-md-4 p-0 position-relative">
+                                <div class="hotel-bg rtbgprefix-cover h-100" style="background-image: url({{ hebergement.imageUrl ? hebergement.imageUrl : asset('coderthemes.com/osen/layouts/assets/images/all-img/trip-1.jpg') }})">
+                                    {% if loop.index <= 3 %}
+                                    <div class="inaner-badge">
+                                        <span class="bg-gradient-primary text-white text-capitalize rounded-pill px-3 py-1">nouveau</span>
+                                    </div><!-- /.inaner-badge -->
+                                    {% endif %}
+                                    <div class="price-badge position-absolute bottom-0 end-0 m-3">
+                                        <span class="bg-primary text-white rounded-pill px-3 py-2 font-weight-bold">{{ hebergement.tarif_nuit }}€ / Nuit</span>
+                                    </div>
+                                </div>
+                            </div><!-- /.hotel-thumb -->
+                            <div class="hotel-text col-md-8 p-4">
+                                <div class="top">
+                                    <h5 class="mb-2 font-weight-bold">{{ hebergement.nom }}</h5>
+                                    <p class="text-muted mb-2"><i class="icofont-location-pin text-primary mr-1"></i>{{ hebergement.adresse }}</p>
+                                </div><!-- /.top -->
+                                <div class="middle-text d-md-flex justify-content-md-between align-items-center mt-3 mb-3">
+                                    <div class="left_column">
+                                        <div class="feature-badges mb-3">
+                                            <span class="badge badge-pill badge-primary mr-2">{{ hebergement.capacite }} places</span>
+                                            <span class="badge badge-pill badge-success">Disponible</span>
+                                        </div>
+                                        <div class="contact-info text-muted">
+                                            <div class="mb-1"><i class="icofont-phone text-primary mr-2"></i>{{ hebergement.telephone }}</div>
+                                            <div><i class="icofont-envelope text-primary mr-2"></i>{{ hebergement.email }}</div>
+                                        </div>
+                                    </div><!-- /.left- -->
+                                </div><!-- /.middle-text -->
+                                <div class="footer-elements d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+                                    <div class="rating">
+                                        <span class="text-warning">
+                                            <i class="icofont-star"></i>
+                                            <i class="icofont-star"></i>
+                                            <i class="icofont-star"></i>
+                                            <i class="icofont-star"></i>
+                                            <i class="icofont-star"></i>
+                                        </span>
+                                    </div>
+                                    <div class="right">
+                                        <a href="{{ path('app_hebergement_front_show', {'id_hebergement': hebergement.idHebergement}) }}" class="rt-btn rt-gradient rounded-pill rt-sm3 text-uppercase">Voir Détails</a>
+>>>>>>> c4098f6 (bundle)
                                     </div><!-- /.right -->
                                 </div><!-- /.footer-elements -->
                             </div><!-- /.hotel-text -->
@@ -322,7 +435,11 @@
                         <ul class="pagination rt-paganation justify-content-center">
                             {% if current_page > 1 %}
                             <li class="page-item">
+<<<<<<< HEAD
                                 <a class="page-link" href="{{ path('app_hebergement_front_index', {
+=======
+                                <a class="page-link rounded-circle mr-2" href="{{ path('app_hebergement_front_index', {
+>>>>>>> c4098f6 (bundle)
                                     'page': current_page - 1,
                                     'search': search,
                                     'min_price': min_price,
@@ -339,7 +456,11 @@
                             
                             {% for i in 1..total_pages %}
                             <li class="page-item {% if i == current_page %}active{% endif %}">
+<<<<<<< HEAD
                                 <a class="page-link" href="{{ path('app_hebergement_front_index', {
+=======
+                                <a class="page-link rounded-circle mr-2" href="{{ path('app_hebergement_front_index', {
+>>>>>>> c4098f6 (bundle)
                                     'page': i,
                                     'search': search,
                                     'min_price': min_price,
@@ -354,7 +475,11 @@
                             
                             {% if current_page < total_pages %}
                             <li class="page-item">
+<<<<<<< HEAD
                                 <a class="page-link" href="{{ path('app_hebergement_front_index', {
+=======
+                                <a class="page-link rounded-circle" href="{{ path('app_hebergement_front_index', {
+>>>>>>> c4098f6 (bundle)
                                     'page': current_page + 1,
                                     'search': search,
                                     'min_price': min_price,
@@ -372,8 +497,16 @@
                     </nav>
                     {% endif %}
                 {% else %}
+<<<<<<< HEAD
                 <div class="alert alert-info">
                     Aucun hébergement ne correspond à vos critères de recherche.
+=======
+                <div class="alert alert-info rounded-lg shadow-sm">
+                    <div class="d-flex align-items-center">
+                        <i class="icofont-info-circle text-primary mr-3 f-24"></i>
+                        <p class="mb-0">Aucun hébergement ne correspond à vos critères de recherche.</p>
+                    </div>
+>>>>>>> c4098f6 (bundle)
                 </div>
                 {% endif %}
             </div><!-- /.col-lg-9 -->
@@ -381,6 +514,31 @@
     </div><!-- /.container -->
 </section>
 
+<<<<<<< HEAD
+=======
+<!-- Chatbot Component -->
+<div class="chatbot-wrapper">
+    <button id="chatbot-toggle" class="chatbot-toggle">
+        <i class="icofont-robot"></i>
+    </button>
+    <div id="chatbot-container" class="chatbot-container chatbot-hidden">
+        <div class="chatbot-header">
+            <div class="chatbot-title-container">
+                <h5 class="chatbot-title">Assistant Hébergement</h5>
+                <p class="chatbot-subtitle">Posez-moi vos questions</p>
+            </div>
+        </div>
+        <div id="chatbot-messages" class="chatbot-messages"></div>
+        <div class="chatbot-input-container">
+            <input type="text" id="chatbot-input" class="chatbot-input" placeholder="Écrivez votre message...">
+            <button id="chatbot-send" class="chatbot-send">
+                <i class="icofont-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+>>>>>>> c4098f6 (bundle)
 {% block javascripts %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -453,5 +611,12 @@
         }
     });
 </script>
+<<<<<<< HEAD
+=======
+
+<!-- Chatbot Script -->
+<link rel="stylesheet" href="{{ asset('js/hebergement-chatbot.css') }}">
+<script src="{{ asset('js/hebergement-chatbot.js') }}"></script>
+>>>>>>> c4098f6 (bundle)
 {% endblock %}
 {% endblock %}

@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 <form method="post" action="{{ path('app_docteur_delete', {'idDocteur': docteur.idDocteur}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');">
     <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ docteur.idDocteur) }}">
+=======
+<form method="post" action="{{ path('app_docteur_delete', {'id_docteur': docteur.id_docteur}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ docteur.id_docteur) }}">
+>>>>>>> c4098f6 (bundle)
     <button class="btn">Delete</button>
 </form>

@@ -185,5 +185,52 @@ class HebergementRepository extends ServiceEntityRepository
         return $qb;
     }
 
+<<<<<<< HEAD
+=======
+    /**
+     * Find hébergements with specific services
+     */
+    public function findByServices(array $services = []): array
+    {
+        $qb = $this->createQueryBuilder('h')
+            ->leftJoin('h.services', 's');
+
+        if (!empty($services)) {
+            $conditions = [];
+            $parameters = [];
+            
+            foreach ($services as $index => $service) {
+                $paramName = 'service_' . $index;
+                if ($service === true) {
+                    $conditions[] = "s.$paramName = true";
+                    $parameters[$paramName] = true;
+                }
+            }
+            
+            if (!empty($conditions)) {
+                $qb->andWhere(implode(' AND ', $conditions))
+                   ->setParameters($parameters);
+            }
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Find hébergements with all specified services
+     */
+    public function findByAllServices(array $requiredServices): array
+    {
+        $qb = $this->createQueryBuilder('h')
+            ->leftJoin('h.services', 's');
+
+        foreach ($requiredServices as $service) {
+            $qb->andWhere("s.$service = true");
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+>>>>>>> c4098f6 (bundle)
     // Add custom methods as needed
 }

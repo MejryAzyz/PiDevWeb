@@ -63,10 +63,13 @@
                                 <table class="table table-borderless m-0">
                                     <tbody>
                                         <tr>
+<<<<<<< HEAD
                                             <td><p class="mb-0">ID :</p></td>
                                             <td class="px-2 text-dark fw-medium fs-14">{{ hebergement.idHebergement }}</td>
                                         </tr>
                                         <tr>
+=======
+>>>>>>> c4098f6 (bundle)
                                             <td><p class="mb-0">Nom :</p></td>
                                             <td class="px-2 text-dark fw-medium fs-14">{{ hebergement.nom }}</td>
                                         </tr>
@@ -101,6 +104,57 @@
                                     </tbody>
                                 </table>
                             </div>
+<<<<<<< HEAD
+=======
+
+                            <h4 class="card-title mt-4">Services disponibles :</h4>
+                            <div class="table-responsive mt-3 border border-dashed rounded px-2 py-1">
+                                <div class="row g-3">
+                                    {% if hebergement.service %}
+                                        <div class="col-md-4">
+                                            <div class="service-item">
+                                                <i class="ti ti-wifi {{ hebergement.service.wifi ? 'text-success' : 'text-muted' }}"></i>
+                                                <span class="{{ hebergement.service.wifi ? 'fw-medium' : 'text-muted' }}">Wi-Fi</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="service-item">
+                                                <i class="ti ti-snowflake {{ hebergement.service.climatisation ? 'text-success' : 'text-muted' }}"></i>
+                                                <span class="{{ hebergement.service.climatisation ? 'fw-medium' : 'text-muted' }}">Climatisation</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="service-item">
+                                                <i class="ti ti-brush {{ hebergement.service.menageQuotidien ? 'text-success' : 'text-muted' }}"></i>
+                                                <span class="{{ hebergement.service.menageQuotidien ? 'fw-medium' : 'text-muted' }}">Ménage quotidien</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="service-item">
+                                                <i class="ti ti-bell-ringing {{ hebergement.service.conciergerie ? 'text-success' : 'text-muted' }}"></i>
+                                                <span class="{{ hebergement.service.conciergerie ? 'fw-medium' : 'text-muted' }}">Service de conciergerie</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="service-item">
+                                                <i class="ti ti-bed {{ hebergement.service.lingeLit ? 'text-success' : 'text-muted' }}"></i>
+                                                <span class="{{ hebergement.service.lingeLit ? 'fw-medium' : 'text-muted' }}">Linge de lit</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="service-item">
+                                                <i class="ti ti-bath {{ hebergement.service.salleBainPrivee ? 'text-success' : 'text-muted' }}"></i>
+                                                <span class="{{ hebergement.service.salleBainPrivee ? 'fw-medium' : 'text-muted' }}">Salle de bain privée</span>
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <div class="col-12">
+                                            <p class="text-muted mb-0">Aucun service n'est configuré pour cet hébergement.</p>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+>>>>>>> c4098f6 (bundle)
                         </div>
                         <div class="card-footer border-top gap-1 hstack">
                             <a href="{{ path('app_hebergement_index') }}" class="btn btn-light w-100">Retour à la liste</a>

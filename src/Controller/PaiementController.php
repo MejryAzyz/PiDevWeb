@@ -18,7 +18,11 @@ final class PaiementController extends AbstractController
     #[Route(name: 'app_paiement_index', methods: ['GET'])]
     public function index(PaiementRepository $paiementRepository): Response
     {
+<<<<<<< HEAD
         return $this->render('paiement/index.html.twig', [
+=======
+        return $this->render('reservation/paiements.html.twig', [
+>>>>>>> c4098f6 (bundle)
             'paiements' => $paiementRepository->findAll(),
         ]);
     }
@@ -61,7 +65,58 @@ final class PaiementController extends AbstractController
         ]);
     }
 
+<<<<<<< HEAD
 
+=======
+    #[Route('/stripe/payment/{id}', name: 'stripe_payment')]
+    public function stripePayment(int $id, Request $request, Reservation $reservation, PaiementRepository $paiementRepository): Response
+    {
+        // Optional: Check reservation status
+        if ($reservation->getStatut() !== 'accepted') {
+            $this->addFlash('warning', 'Seules les réservations acceptées peuvent être payées.');
+            return $this->redirectToRoute('mesReservation'); // Adjust if needed
+        }
+
+        $paiements = $paiementRepository->findAllByIdreservation($id);
+
+        if (empty($paiements)) {
+            $this->addFlash('error', 'Aucun paiement trouvé pour cette réservation.');
+            return $this->redirectToRoute('mesReservation');
+        }
+
+        // Assuming you want the amount of the first payment (adjust if necessary)
+        $amount = $paiements[0]->getMontant(); // Use getter properly
+        $id = $paiements[0]->getId_paiement(); // Use getter properly
+        return $this->render('reservation/mock_stripe.html.twig', [
+            'reservation' => $reservation,
+            'amount' => $amount,
+            'id' => $id,
+        ]);
+    }
+
+    #[Route('/stripe/submit/{id}', name: 'stripe_payment_submit')]
+    public function handleStripePayment(
+        int $id,
+        PaiementRepository $paiementRepository,
+        EntityManagerInterface $em
+    ): Response {
+        // Get related payment
+        $paiement = $paiementRepository->find($id);
+
+        if (!$paiement) {
+            $this->addFlash('error', 'Paiement introuvable pour cette réservation.');
+            return $this->redirectToRoute('mesReservation');
+        }
+
+        // Simulate successful payment
+        $paiement->setMethode('carte bancaire');
+        $em->persist($paiement);
+        $em->flush();
+
+        $this->addFlash('success', 'Paiement enregistré avec succès !');
+        return $this->redirectToRoute('app_paiement_index'); // Replace with your actual route
+    }
+>>>>>>> c4098f6 (bundle)
 
     #[Route('/{id_paiement}', name: 'app_paiement_show', methods: ['GET'])]
     public function show(Paiement $paiement): Response

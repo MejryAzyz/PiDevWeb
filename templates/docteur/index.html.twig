@@ -1,5 +1,6 @@
 {% extends 'base.html.twig' %}
 
+<<<<<<< HEAD
 {% block title %}Docteur index{% endblock %}
 
 {% block body %}
@@ -38,4 +39,294 @@
     </table>
 
     <a href="{{ path('app_docteur_new') }}">Create new</a>
+=======
+{% block title %}Les Docteurs | Osen - Responsive Bootstrap 5 Admin Dashboard{% endblock %}
+
+{% block css %}
+<!-- App css -->
+<link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet" type="text/css" id="app-style" />
+
+<!-- Icons css -->
+<link href="{{ asset('assets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+{% block body %}
+<!-- Begin page -->
+    <!-- Page Content -->
+    <div class="page-container">
+        <div class="page-title-head d-flex align-items-sm-center flex-sm-row flex-column gap-2">
+            <div class="flex-grow-1">
+                <h4 class="fs-18 fw-semibold mb-0">Les Docteurs</h4>
+            </div>
+            <div class="text-end">
+                <ol class="breadcrumb m-0 py-0">
+                    <li class="breadcrumb-item"><a href="#">Osen</a></li>
+                    <li class="breadcrumb-item"><a href="#">Hospital</a></li>
+                    <li class="breadcrumb-item active">Docteurs</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Statistiques -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="header-title">Répartition par Spécialité</h4>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="specialiteChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="header-title">Répartition par Clinique</h4>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="cliniqueChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center justify-content-between border-bottom border-light">
+                        <h4 class="header-title">Liste des docteurs</h4>
+                        <div>
+                            <a href="{{ path('app_docteur_new') }}" class="btn btn-success bg-gradient">
+                                <i class="ti ti-plus me-1"></i> Ajouter docteur
+                            </a>
+                            <a href="#" class="btn btn-secondary bg-gradient">
+                                <i class="ti ti-file-import me-1"></i> Importer
+                            </a>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-nowrap mb-0">
+                            <thead class="bg-light-subtle">
+                                <tr>
+                                    <th>Nom</th>
+                                    <th>Prénom</th>
+                                    <th>Téléphone</th>
+                                    <th>Email</th>
+                                    <th>Spécialité</th>
+                                    <th>Clinique</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for docteur in docteurs %}
+                                    <tr>
+                                        <td>{{ docteur.nom }}</td>
+                                        <td>{{ docteur.prenom }}</td>
+                                        <td>{{ docteur.telephone }}</td>
+                                        <td>{{ docteur.email }}</td>
+                                        <td>{{ docteur.specialite.nom }}</td> <!-- Affichage de la spécialité -->
+                                        <td>{{ docteur.clinique.nom }}</td> <!-- Affichage de la clinique -->
+                                        <td class="pe-3">
+                                            <div class="hstack gap-1 justify-content-end">
+                                                <!-- <a href="{{ path('app_docteur_show', {'id_docteur': docteur.id_docteur}) }}" class="btn btn-soft-primary btn-icon btn-sm rounded-circle">
+                                                    <i class="ti ti-eye"></i>
+                                                </a> -->
+                                                <a href="{{ path('app_docteur_edit', {'id_docteur': docteur.id_docteur}) }}" class="btn btn-soft-success btn-icon btn-sm rounded-circle">
+                                                    <i class="ti ti-edit fs-16"></i>
+                                                </a>
+                                                <button class="btn btn-soft-danger btn-icon btn-sm rounded-circle delete-btn"
+                                                    data-id="{{ docteur.id_docteur }}"
+                                                    data-url="{{ path('app_docteur_delete', {'id_docteur': docteur.id_docteur}) }}"
+                                                    data-token="{{ csrf_token('delete' ~ docteur.id_docteur) }}">
+                                                    <i class="ti ti-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="6" class="text-center">Aucun docteur trouvé.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+{% endblock %}
+
+{% block js %}
+<!-- Vendor js -->
+<script src="{{ asset('assets/js/vendor.min.js') }}"></script>
+
+<!-- App js -->
+<script src="{{ asset('assets/js/vendor.min.js') }}"></script>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    // Données pour les graphiques
+    const specialiteData = {
+        labels: {{ statsBySpecialite|map(s => s.specialite_nom)|json_encode|raw }},
+        datasets: [{
+            label: 'Nombre de docteurs',
+            data: {{ statsBySpecialite|map(s => s.count)|json_encode|raw }},
+            backgroundColor: [
+                'rgb(106, 199, 90, 0.7)',
+                'rgba(54, 162, 235, 0.7)',
+                'rgb(134, 101, 200, 0.7)',
+                'rgba(75, 192, 192, 0.7)',
+                'rgba(153, 102, 255, 0.7)',
+                'rgba(255, 159, 64, 0.7)'
+            ],
+            borderColor: [
+                'rgb(106, 199, 90, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgb(134, 101, 200, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    };
+
+    const cliniqueData = {
+        labels: {{ statsByClinique|map(c => c.clinique_nom)|json_encode|raw }},
+        datasets: [{
+            label: 'Nombre de docteurs',
+            data: {{ statsByClinique|map(c => c.count)|json_encode|raw }},
+            backgroundColor: [
+                'rgb(106, 199, 90, 0.7)',
+                'rgba(54, 162, 235, 0.7)',
+                'rgb(134, 101, 200, 0.7)',
+                'rgba(75, 192, 192, 0.7)',
+                'rgba(153, 102, 255, 0.7)',
+                'rgba(255, 159, 64, 0.7)'
+            ],
+            borderColor: [
+                'rgb(106, 199, 90, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgb(134, 101, 200, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    };
+
+    // Configuration des graphiques
+    const chartConfig = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    };
+
+    // Création des graphiques
+    document.addEventListener('DOMContentLoaded', function() {
+        // Graphique des spécialités
+        const specialiteCtx = document.getElementById('specialiteChart').getContext('2d');
+        new Chart(specialiteCtx, {
+            type: 'pie',
+            data: specialiteData,
+            options: chartConfig
+        });
+
+        // Graphique des cliniques
+        const cliniqueCtx = document.getElementById('cliniqueChart').getContext('2d');
+        new Chart(cliniqueCtx, {
+            type: 'bar',
+            data: cliniqueData,
+            options: {
+                ...chartConfig,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Code existant pour la suppression
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const deleteUrl = this.getAttribute('data-url');
+                const docteurId = this.getAttribute('data-id');
+                const csrfToken = this.getAttribute('data-token');
+
+                Swal.fire({
+                    title: 'Êtes-vous sûr ?',
+                    text: "Cette action est irréversible !",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Oui, supprimer',
+                    cancelButtonText: 'Annuler'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Créer un formulaire pour soumettre la requête POST
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = deleteUrl;
+
+                        // Ajouter le token CSRF
+                        const tokenInput = document.createElement('input');
+                        tokenInput.type = 'hidden';
+                        tokenInput.name = '_token';
+                        tokenInput.value = csrfToken;
+                        form.appendChild(tokenInput);
+
+                        document.body.appendChild(form);
+
+                        fetch(deleteUrl, {
+                            method: 'POST',
+                            body: new FormData(form)
+                        }).then(response => {
+                            if (response.ok) {
+                                Swal.fire(
+                                    'Supprimé !',
+                                    'Le docteur a été supprimé avec succès.',
+                                    'success'
+                                ).then(() => {
+                                    button.closest('tr').remove();
+                                });
+                            } else {
+                                Swal.fire(
+                                    'Erreur !',
+                                    "Une erreur s'est produite lors de la suppression du docteur.",
+                                    'error'
+                                );
+                            }
+                        }).catch(error => {
+                            Swal.fire(
+                                'Erreur !',
+                                "Une erreur s'est produite lors de la suppression du docteur.",
+                                'error'
+                            );
+                        }).finally(() => {
+                            document.body.removeChild(form);
+                        });
+                    }
+                });
+            });
+        });
+    });
+</script>
+
+>>>>>>> c4098f6 (bundle)
 {% endblock %}

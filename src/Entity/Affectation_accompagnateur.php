@@ -2,7 +2,10 @@
 
 namespace App\Entity;
 
+<<<<<<< HEAD
 use Doctrine\DBAL\Types\Types;
+=======
+>>>>>>> c4098f6 (bundle)
 use Doctrine\ORM\Mapping as ORM;
 
 use App\Entity\Reservation;
@@ -15,6 +18,7 @@ class Affectation_accompagnateur
     #[ORM\Column(type: "integer")]
     private int $id_affectation;
 
+<<<<<<< HEAD
         #[ORM\ManyToOne(targetEntity: Accompagnateur::class, inversedBy: "affectation_accompagnateurs")]
     #[ORM\JoinColumn(name: 'id_accompagnateur', referencedColumnName: 'id_accompagnateur', onDelete: 'CASCADE')]
     private Accompagnateur $id_accompagnateur;
@@ -23,6 +27,8 @@ class Affectation_accompagnateur
     #[ORM\JoinColumn(name: 'id_reservation', referencedColumnName: 'id_reservation', onDelete: 'CASCADE')]
     private Reservation $id_reservation;
 
+=======
+>>>>>>> c4098f6 (bundle)
     #[ORM\Column(type: "date")]
     private \DateTimeInterface $date_debut;
 
@@ -32,6 +38,17 @@ class Affectation_accompagnateur
     #[ORM\Column(type: "string", length: 255)]
     private string $statut;
 
+<<<<<<< HEAD
+=======
+        #[ORM\ManyToOne(targetEntity: Accompagnateur::class, inversedBy: "affectation_accompagnateurs")]
+    #[ORM\JoinColumn(name: 'id_accompagnateur', referencedColumnName: 'id_accompagnateur', onDelete: 'CASCADE')]
+    private Accompagnateur $id_accompagnateur;
+
+        #[ORM\ManyToOne(targetEntity: Reservation::class, inversedBy: "affectation_accompagnateurs")]
+    #[ORM\JoinColumn(name: 'id_reservation', referencedColumnName: 'id_reservation', onDelete: 'CASCADE')]
+    private Reservation $id_reservation;
+
+>>>>>>> c4098f6 (bundle)
     public function getId_affectation()
     {
         return $this->id_affectation;
@@ -42,6 +59,7 @@ class Affectation_accompagnateur
         $this->id_affectation = $value;
     }
 
+<<<<<<< HEAD
     public function getId_accompagnateur()
     {
         return $this->id_accompagnateur;
@@ -62,6 +80,8 @@ class Affectation_accompagnateur
         $this->id_reservation = $value;
     }
 
+=======
+>>>>>>> c4098f6 (bundle)
     public function getDate_debut()
     {
         return $this->date_debut;
@@ -92,6 +112,7 @@ class Affectation_accompagnateur
         $this->statut = $value;
     }
 
+<<<<<<< HEAD
     public function getIdAffectation(): ?int
     {
         return $this->id_affectation;
@@ -122,10 +143,14 @@ class Affectation_accompagnateur
     }
 
     public function getIdAccompagnateur(): ?Accompagnateur
+=======
+    public function getId_accompagnateur()
+>>>>>>> c4098f6 (bundle)
     {
         return $this->id_accompagnateur;
     }
 
+<<<<<<< HEAD
     public function setIdAccompagnateur(?Accompagnateur $id_accompagnateur): static
     {
         $this->id_accompagnateur = $id_accompagnateur;
@@ -134,14 +159,28 @@ class Affectation_accompagnateur
     }
 
     public function getIdReservation(): ?Reservation
+=======
+    public function setId_accompagnateur($value)
+    {
+        $this->id_accompagnateur = $value;
+    }
+
+    public function getId_reservation()
+>>>>>>> c4098f6 (bundle)
     {
         return $this->id_reservation;
     }
 
+<<<<<<< HEAD
     public function setIdReservation(?Reservation $id_reservation): static
     {
         $this->id_reservation = $id_reservation;
 
         return $this;
+=======
+    public function setId_reservation($value)
+    {
+        $this->id_reservation = $value;
+>>>>>>> c4098f6 (bundle)
     }
 }
