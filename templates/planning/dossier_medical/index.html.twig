@@ -1,0 +1,165 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dossiers Médicaux{% endblock %}
+
+{% block css %}
+<!-- App css -->
+<link href="{{ asset('coderthemes.com/osen/layouts/assets/css/app.min.css') }}" rel="stylesheet" type="text/css" id="app-style" />
+
+<!-- Icons css -->
+<link href="{{ asset('coderthemes.com/osen/layouts/assets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
+
+<!-- Sweet Alert css -->
+<link href="{{ asset('coderthemes.com/osen/layouts/assets/vendor/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+{% block body %}
+<div class="page-container">
+    
+    <div class="page-title-head d-flex align-items-sm-center flex-sm-row flex-column gap-2">
+        <div class="flex-grow-1">
+            <h4 class="fs-18 fw-semibold mb-0">Dossiers Médicaux</h4>
+        </div>
+        <div class="text-end">
+            <ol class="breadcrumb m-0 py-0">
+                <li class="breadcrumb-item"><a href="#">MedTravel</a></li>
+                <li class="breadcrumb-item active">Dossiers médicaux</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex align-items-center justify-content-between border-bottom border-light">
+                    <h4 class="header-title">Liste des dossiers médicaux</h4>
+                    <div>
+                        <a href="{{ path('app_planning_dossier_medical_new') }}" class="btn btn-success bg-gradient">
+                            <i class="ti ti-plus me-1"></i> Ajouter dossier
+                        </a>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table text-center align-middle">
+                        <thead>
+                            <tr>
+                                <th class="fs-12">ID</th>
+                                <th class="fs-12">Nom Patient</th>
+                                <th class="fs-12">Tests Médicaux</th>
+                                <th class="fs-12">Antécédents</th>
+                                <th class="fs-12">Allergies</th>
+                                <th class="fs-12">Restrictions Alimentaires</th>
+                                <th class="fs-12">Planning Docteur</th>
+                                <th class="fs-12">Planning Accompagnateur</th>
+                                <th class="fs-12">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for dossier_medical in dossier_medicals %}
+                            <tr>
+                                <td class="fs-12">{{ dossier_medical.id }}</td>
+                                <td class="fs-12">{{ dossier_medical.nomPatient }}</td>
+                                <td class="fs-12">{{ dossier_medical.testsMedicaux|slice(0, 30) ~ '...' }}</td>
+                                <td class="fs-12">{{ dossier_medical.antecedents|slice(0, 30) ~ '...' }}</td>
+                                <td class="fs-12">{{ dossier_medical.allergies|slice(0, 30) ~ '...' }}</td>
+                                <td class="fs-12">{{ dossier_medical.restrictionsAlimentaires|slice(0, 30) ~ '...' }}</td>
+                                <td class="fs-12">
+                                    {% if dossier_medical.planningDocteurs|length > 0 %}
+                                        <a href="{{ path('app_planning_docteur_show', {'id_planning': dossier_medical.planningDocteurs|first.idPlanning}) }}" class="text-primary">
+                                            Voir planning docteur
+                                        </a>
+                                    {% else %}
+                                        <span class="text-muted">Non assigné</span>
+                                    {% endif %}
+                                </td>
+                                <td class="fs-12">
+                                    {% if dossier_medical.planningAccompagnateurs|length > 0 %}
+                                        <a href="{{ path('app_planning_accompagnateur_show', {'id_planning': dossier_medical.planningAccompagnateurs|first.idPlanning}) }}" class="text-primary">
+                                            Voir planning accompagnateur
+                                        </a>
+                                    {% else %}
+                                        <span class="text-muted">Non assigné</span>
+                                    {% endif %}
+                                </td>
+                                <td class="fs-12">
+                                    <div class="btn-group">
+                                        <a href="{{ path('app_planning_dossier_medical_show', {'id': dossier_medical.id}) }}" class="btn btn-info btn-sm">
+                                            <i class="ti ti-eye"></i>
+                                        </a>
+                                        <a href="{{ path('app_planning_dossier_medical_edit', {'id': dossier_medical.id}) }}" class="btn btn-warning btn-sm">
+                                            <i class="ti ti-edit"></i>
+                                        </a>
+                                        <button class="btn btn-danger btn-sm delete-btn" 
+                                                data-id="{{ dossier_medical.id }}"
+                                                data-url="{{ path('app_planning_dossier_medical_delete', {'id': dossier_medical.id}) }}"
+                                                data-token="{{ csrf_token('delete' ~ dossier_medical.id) }}">
+                                            <i class="ti ti-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="9" class="fs-12">Aucun dossier médical trouvé</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<!-- Vendor js -->
+<script src="{{ asset('coderthemes.com/osen/layouts/assets/vendor/apexcharts/apexcharts.min.js') }}"></script>
+<script src="{{ asset('coderthemes.com/osen/layouts/assets/js/vendor.min.js') }}"></script>
+
+<!-- Sweet Alerts js -->
+<script src="{{ asset('coderthemes.com/osen/layouts/assets/vendor/sweetalert2/sweetalert2.min.js') }}"></script>
+
+<!-- App js -->
+<script src="{{ asset('coderthemes.com/osen/layouts/assets/js/app.js') }}"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteButtons = document.querySelectorAll('.delete-btn');
+        
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const id = this.dataset.id;
+                const url = this.dataset.url;
+                const token = this.dataset.token;
+                
+                Swal.fire({
+                    title: 'Êtes-vous sûr?',
+                    text: "Cette action est irréversible!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Oui, supprimer!',
+                    cancelButtonText: 'Annuler'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = url;
+                        
+                        const tokenInput = document.createElement('input');
+                        tokenInput.type = 'hidden';
+                        tokenInput.name = '_token';
+                        tokenInput.value = token;
+                        
+                        form.appendChild(tokenInput);
+                        document.body.appendChild(form);
+                        form.submit();
+                    }
+                });
+            });
+        });
+    });
+</script>
+{% endblock %} 

@@ -90,9 +90,6 @@ class PlanningDocteur
     )]
     private ?string $heure_fin = null;
 
-    #[ORM\ManyToOne(inversedBy: 'PlanningDocteur')]
-    private ?Statut $statut = null;
-
     public function getHeure_fin(): ?string
     {
         return $this->heure_fin;
@@ -145,16 +142,18 @@ class PlanningDocteur
         return $this;
     }
 
-    public function getStatut(): ?Statut
+    #[ORM\ManyToOne(inversedBy: 'planningDocteurs', targetEntity: DossierMedical::class)]
+    #[ORM\JoinColumn(name: 'dossier_medical_id', referencedColumnName: 'id')]
+    private ?DossierMedical $dossierMedical = null;
+
+    public function getDossierMedical(): ?DossierMedical
     {
-        return $this->statut;
+        return $this->dossierMedical;
     }
 
-    public function setStatut(?Statut $statut): static
+    public function setDossierMedical(?DossierMedical $dossierMedical): static
     {
-        $this->statut = $statut;
-
+        $this->dossierMedical = $dossierMedical;
         return $this;
     }
-
 }

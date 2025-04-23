@@ -1,0 +1,6 @@
+<form method="post" action="{{ path('app_planning_dossier_medical_delete', {'id': dossier_medical.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce dossier médical ?');" class="mt-4">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ dossier_medical.id) }}">
+    <button class="btn btn-danger btn-lg">
+        <i class="ti ti-trash me-1"></i> Supprimer le dossier médical
+    </button>
+</form> 
