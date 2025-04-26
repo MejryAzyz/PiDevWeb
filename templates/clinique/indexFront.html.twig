@@ -48,6 +48,46 @@
         .search-col {
             padding: 0 10px;
         }
+        /* Pagination KNP personnalisée */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            padding: 0;
+            list-style: none;
+            margin-top: 20px;
+        }
+        .pagination li {
+            margin: 0 3px;
+        }
+        .pagination li a,
+        .pagination li span {
+            display: inline-block;
+            min-width: 32px;
+            min-height: 32px;
+            line-height: 32px;
+            text-align: center;
+            background: #2563eb;
+            color: #fff !important;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 18px;
+            text-decoration: none;
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+            cursor: pointer;
+            border: none;
+        }
+        .pagination li.active span,
+        .pagination li.active a {
+            background: #1e40af;
+            color: #fff !important;
+            box-shadow: 0 2px 8px rgba(30,64,175,0.15);
+        }
+        .pagination li a:hover,
+        .pagination li span:hover {
+            background: #1e40af;
+            color: #fff !important;
+        }
     </style>
 {% endblock %}
 
@@ -157,11 +197,11 @@
                 <div class="box-style__1 rt-mb-30">
                     <form action="{{ path('app_clinique_front_index') }}" method="get" class="row">
                         <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
-                            <select name="sort" class="rt-selectactive banner-select" style="width: 100%">
-                                <option value="recommande" {% if app.request.query.get('sort') == 'recommande' %}selected{% endif %}>Recommandé</option>
-                                <option value="prix_asc" {% if app.request.query.get('sort') == 'prix_asc' %}selected{% endif %}>Prix croissant</option>
-                                <option value="prix_desc" {% if app.request.query.get('sort') == 'prix_desc' %}selected{% endif %}>Prix décroissant</option>
-                                <option value="docteurs" {% if app.request.query.get('sort') == 'docteurs' %}selected{% endif %}>Nombre de docteurs</option>
+                            <select name="sort" id="sort-select" class="rt-selectactive banner-select" style="width: 100%">
+                                <option value="c.id_clinique" {% if app.request.query.get('sort') == 'c.id_clinique' %}selected{% endif %}>Recommandé</option>
+                                <option value="c.prix" {% if app.request.query.get('sort') == 'c.prix' %}selected{% endif %}>Prix croissant</option>
+                                <option value="c.prix" {% if app.request.query.get('sort') == 'c.prix' and app.request.query.get('direction') == 'desc' %}selected{% endif %}>Prix décroissant</option>
+                                <option value="docteurCount" {% if app.request.query.get('sort') == 'docteurCount' %}selected{% endif %}>Nombre de docteurs</option>
                             </select>
                         </div>
                         <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
@@ -193,6 +233,23 @@
                         {% endif %}
                     </form>
                 </div>
+
+                <input type="hidden" name="direction" id="sort-direction" value="{{ app.request.query.get('direction', 'asc') }}">
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const sortSelect = document.getElementById('sort-select');
+                        const directionInput = document.getElementById('sort-direction');
+                        sortSelect.addEventListener('change', function() {
+                            if (sortSelect.selectedIndex === 1) { // Prix croissant
+                                directionInput.value = 'asc';
+                            } else if (sortSelect.selectedIndex === 2) { // Prix décroissant
+                                directionInput.value = 'desc';
+                            } else {
+                                directionInput.value = 'asc';
+                            }
+                        });
+                    });
+                </script>
 
                 {% for clinique in cliniques %}
                 <div class="box-style__1 rt-mb-30">
@@ -246,29 +303,7 @@
 
                 <nav aria-label="Page navigation example">
                     <ul class="pagination rt-paganation justify-content-center">
-                        {% if currentPage > 1 %}
-                            <li class="page-item">
-                                <a class="page-link" href="{{ path('app_clinique_front_index', {'page': currentPage - 1}) }}">
-                                    <i class="icofont-rounded-double-left"></i>
-                                </a>
-                            </li>
-                        {% endif %}
-
-                        {% for i in 1..totalPages %}
-                            <li class="page-item {{ currentPage == i ? 'active' : '' }}">
-                                <a class="page-link" href="{{ path('app_clinique_front_index', {'page': i}) }}">
-                                    {{ i }}
-                                </a>
-                            </li>
-                        {% endfor %}
-
-                        {% if currentPage < totalPages %}
-                            <li class="page-item">
-                                <a class="page-link" href="{{ path('app_clinique_front_index', {'page': currentPage + 1}) }}">
-                                    <i class="icofont-rounded-double-right"></i>
-                                </a>
-                            </li>
-                        {% endif %}
+                        {{ knp_pagination_render(cliniques) }}
                     </ul>
                 </nav>
             </div>

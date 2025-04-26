@@ -20,6 +20,7 @@ use Endroid\QrCode\Encoding\Encoding;
 use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelHigh;
 use Endroid\QrCode\Color\Color;
 use Endroid\QrCode\Writer\PngWriter;
+use Knp\Component\Pager\PaginatorInterface;
 
 #[Route('/clinique')]
 final class CliniqueController extends AbstractController
@@ -253,116 +254,40 @@ final class CliniqueController extends AbstractController
 
      // ➕ Méthode front pour afficher toutes les cliniques
      #[Route('/front/liste/{page}', name: 'app_clinique_front_index', methods: ['GET'])]
-     public function indexFront(Request $request, CliniqueRepository $cliniqueRepository, SpecialiteRepository $specialiteRepository, int $page = 1): Response
+     public function indexFront(Request $request, CliniqueRepository $cliniqueRepository, SpecialiteRepository $specialiteRepository, \Knp\Component\Pager\PaginatorInterface $paginator, int $page = 1): Response
      {
-         // Nombre d'éléments par page
-         $limit = 6;
+        // Récupérer les filtres depuis la requête
+        $filters = [
+            'price_range' => $request->query->get('price_range'),
+            'pays' => $request->query->get('pays'),
+            'specialty' => $request->query->get('specialty'),
+            'sort' => $request->query->get('sort', 'recommande')
+        ];
 
-         // Récupérer les prix min et max de toutes les cliniques
-         $priceRange = $cliniqueRepository->createQueryBuilder('c')
-             ->select('MIN(c.prix) as min_price, MAX(c.prix) as max_price')
-             ->getQuery()
-             ->getOneOrNullResult();
+        // Utiliser la méthode du repository
+        $result = $cliniqueRepository->findFilteredCliniques($filters);
 
-         $minPrice = $priceRange['min_price'] ?? 0;
-         $maxPrice = $priceRange['max_price'] ?? 1000;
+        // Pagination avec KnpPaginatorBundle
+        $sortField = $request->query->get('sort', 'c.id_clinique');
+        $sortDirection = $request->query->get('direction', 'asc');
+        $pagination = $paginator->paginate(
+            $result['query'],
+            $page,
+            4,
+            [
+                'defaultSortFieldName' => $sortField,
+                'defaultSortDirection' => $sortDirection,
+            ]
+        );
 
-         // Récupérer les filtres depuis la requête
-         $priceFilter = $request->query->get('price_range');
-         $paysFilter = $request->query->get('pays');
-         $specialtyFilter = $request->query->get('specialty');
-         $sortFilter = $request->query->get('sort', 'recommande'); 
-
-         $currentMinPrice = $minPrice;
-         $currentMaxPrice = $maxPrice;
-
-         // Créer le QueryBuilder de base
-         $queryBuilder = $cliniqueRepository->createQueryBuilder('c')
-             ->leftJoin('c.cliniquePhotos', 'photos')
-             ->addSelect('photos')
-             ->leftJoin('c.docteurs', 'd')
-             ->leftJoin('d.specialite', 's')
-             ->groupBy('c.id_clinique');
-
-         //  le tri
-         switch ($sortFilter) {
-             case 'prix_asc':
-                 $queryBuilder->orderBy('c.prix', 'ASC');
-                 break;
-             case 'prix_desc':
-                 $queryBuilder->orderBy('c.prix', 'DESC');
-                 break;
-             case 'docteurs':
-                 $queryBuilder->addSelect('COUNT(d.id_docteur) as HIDDEN docteurCount')
-                            ->orderBy('docteurCount', 'DESC');
-                 break;
-             case 'recommande':
-             default:
-                 
-                 $queryBuilder->addSelect('COUNT(d.id_docteur) as HIDDEN docteurCount')
-                            ->orderBy('docteurCount', 'DESC')
-                            ->addOrderBy('c.prix', 'ASC');
-                 break;
-         }
-
-         // Appliquer le filtre de prix 
-         if ($priceFilter) {
-             list($currentMinPrice, $currentMaxPrice) = array_map('floatval', explode(',', $priceFilter));
-             $queryBuilder
-                 ->andWhere('c.prix >= :minPrice')
-                 ->andWhere('c.prix <= :maxPrice')
-                 ->setParameter('minPrice', $currentMinPrice)
-                 ->setParameter('maxPrice', $currentMaxPrice);
-         }
-
-         // le filtre de pays 
-         if ($paysFilter) {
-             $queryBuilder
-                 ->andWhere('c.adresse LIKE :pays')
-                 ->setParameter('pays', '%' . $paysFilter . '%');
-         }
-
-         //  le filtre de spécialité 
-         if ($specialtyFilter) {
-             $queryBuilder
-                 ->andWhere('s.id_specialite = :specialtyId')
-                 ->setParameter('specialtyId', $specialtyFilter);
-         }
-
-         $query = $queryBuilder->getQuery();
-
-         
-         $paginator = new \Doctrine\ORM\Tools\Pagination\Paginator($query);
-
-         
-         $totalItems = count($paginator);
-         $totalPages = ceil($totalItems / $limit);
-
-         
-         if ($page < 1) {
-             $page = 1;
-         }
-         if ($page > $totalPages && $totalPages > 0) {
-             $page = $totalPages;
-         }
-
-         
-         $paginator
-             ->getQuery()
-             ->setFirstResult($limit * ($page - 1))
-             ->setMaxResults($limit);
-
-         return $this->render('clinique/indexFront.html.twig', [
-             'cliniques' => $paginator,
-             'totalPages' => $totalPages,
-             'currentPage' => $page,
-             'limit' => $limit,
-             'min_price' => $minPrice,
-             'max_price' => $maxPrice,
-             'current_min_price' => $currentMinPrice,
-             'current_max_price' => $currentMaxPrice,
-             'specialites' => $specialiteRepository->findAll(),
-         ]);
+        return $this->render('clinique/indexFront.html.twig', [
+            'cliniques' => $pagination,
+            'min_price' => $result['min_price'],
+            'max_price' => $result['max_price'],
+            'current_min_price' => $result['current_min_price'],
+            'current_max_price' => $result['current_max_price'],
+            'specialites' => $specialiteRepository->findAll(),
+        ]);
      }
     
 
@@ -370,12 +295,12 @@ final class CliniqueController extends AbstractController
      #[Route('/upload-photo', name: 'app_clinique_upload_photo', methods: ['POST'])]
     public function uploadPhoto(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
-        // Handle OPTIONS requests for CORS preflight
+        
         if ($request->isMethod('OPTIONS')) {
             return new JsonResponse([], Response::HTTP_OK);
         }
         
-        // Check if this is a test request without a file
+        
         if (!$request->files->has('file') && $request->headers->get('X-Requested-With') === 'XMLHttpRequest') {
             return new JsonResponse(['message' => 'Upload endpoint is working'], Response::HTTP_OK);
         }
@@ -425,10 +350,10 @@ final class CliniqueController extends AbstractController
             }
 
             try {
-                // Create new Clinique_photos entry
+                
                 $cliniquePhoto = new Clinique_photos();
                 
-                // Generate new ID
+                
                 $lastPhoto = $entityManager->getRepository(Clinique_photos::class)
                     ->findOneBy([], ['id_photo' => 'DESC']);
                 $newId = $lastPhoto ? $lastPhoto->getId_photo() + 1 : 1;
@@ -751,13 +676,13 @@ final class CliniqueController extends AbstractController
         // Obtenir le contenu du PDF
         $pdfContent = $dompdf->output();
 
-        // Encoder directement en base64
+       
         $base64Pdf = base64_encode($pdfContent);
         
-        // Créer une data URI pour le PDF qui sera directement affichée/téléchargée sur mobile
+        
         $dataUri = 'data:application/pdf;filename=clinique.pdf;base64,' . $base64Pdf;
         
-        // Générer le QR code avec une taille optimale
+        
         $result = $qrBuilder
             ->data($dataUri)
             ->encoding(new Encoding('UTF-8'))
