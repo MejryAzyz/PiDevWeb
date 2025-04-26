@@ -352,9 +352,22 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Localisation</h5>
-                        <div class="embed-responsive embed-responsive-16by9">
-                            <!-- Vous pouvez ajouter une carte Google Maps ici -->
-                            <iframe class="embed-responsive-item" src="https://www.google.com/maps/embed/v1/place?key=YOUR_API_KEY&q={{ clinique.adresse|url_encode }}" allowfullscreen></iframe>
+                        <div class="map-container" style="position: relative; margin-bottom: 15px;">
+                            <a href="https://www.openstreetmap.org/search?query={{ clinique.adresse|url_encode }}" target="_blank" style="display: block;">
+                                <img src="https://nominatim.openstreetmap.org/search?format=json&q={{ clinique.adresse|url_encode }}" 
+                                     onerror="this.onerror=null; this.src='https://static-maps.yandex.ru/1.x/?lang=fr_FR&ll=2.1734,41.3851&z=12&l=map&size=600,400&pt=2.1734,41.3851,pm2rdm'" 
+                                     alt="Carte de localisation de {{ clinique.nom }}"
+                                     class="img-fluid rounded"
+                                     style="width: 100%; height: 300px; object-fit: cover;">
+                            </a>
+                            <div class="map-marker" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                                <i class="icofont-location-pin text-danger" style="font-size: 2rem;"></i>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <a href="https://www.openstreetmap.org/search?query={{ clinique.adresse|url_encode }}" target="_blank" class="btn btn-outline-primary">
+                                <i class="icofont-map"></i> Voir sur OpenStreetMap
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -365,7 +378,7 @@
                 <div class="qr-code-container">
                     <h4 class="text-center mb-3">Scanner pour voir les informations de la clinique</h4>
                     <div class="qr-code">
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data={{ (clinique.nom ~ ' ' ~ clinique.adresse ~ ' ' ~ clinique.telephone ~ ' ' ~ clinique.email ~ ' ' ~ clinique.prix ~ '€')|url_encode }}"
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data={{ ( clinique.nom ~ ' ' ~ clinique.adresse ~ ' ' ~ clinique.telephone ~ ' ' ~ clinique.email ~ ' ' ~ clinique.prix ~ '€')|url_encode }}"
                              alt="QR Code {{ clinique.nom }}">
                     </div>
                     <div class="qr-label">{{ clinique.nom }}</div>
@@ -392,11 +405,33 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
         $(document).ready(function() {
-            // Initialisation de Select2
             $('.select2').select2({
                 placeholder: "Sélectionnez une spécialité",
                 allowClear: true
             });
+
+            // Géocodification de l'adresse
+            const address = "{{ clinique.adresse|raw|escape('js') }}";
+            const nominatimUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1&accept-language=fr`;
+            
+            fetch(nominatimUrl)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        const { lat, lon } = data[0];
+                        const staticMapUrl = `https://static-maps.yandex.ru/1.x/?lang=fr_FR&ll=${lon},${lat}&z=15&l=map&size=600,400&pt=${lon},${lat},pm2rdm&lang=fr_FR`;
+                        $('.map-container img').attr('src', staticMapUrl);
+                        
+                        
+                        const osmUrl = `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}&zoom=15&layers=M`;
+                        $('.map-container a').attr('href', osmUrl);
+                        $('.btn-outline-primary').attr('href', osmUrl);
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur lors de la géocodification:', error);
+                    $('.map-container img').attr('src', 'https://static-maps.yandex.ru/1.x/?lang=fr_FR&ll=2.1734,41.3851&z=12&l=map&size=600,400&pt=2.1734,41.3851,pm2rdm&lang=fr_FR');
+                });
         });
         // Fonction pour échapper les caractères pour JavaScript
         function escapeJs(str) {
@@ -419,7 +454,7 @@
             button.innerHTML = '<i class="icofont-spinner icofont-spin"></i> Génération Fiche Pro...';
             button.disabled = true;
 
-            // --- Récupération des données --- 
+            
             const clinique = {
                 nom: "{{ clinique.nom|raw|escape('js') }}",
                 description: "{{ clinique.description|raw|escape('js') }}",
@@ -647,41 +682,40 @@
                 doc.setFontSize(13);
                 doc.setTextColor(primaryColor);
                 doc.text("Notre Équipe Médicale", margin, currentY);
-                currentY += 10; // Espace après titre
+                currentY += 10; 
 
                 if (clinique.docteurs.length > 0) {
-                    const docLabelX = margin + 5; // Indentation pour les labels du docteur
-                    const docValueX = docLabelX + 25; // Indentation pour les valeurs (plus d'espace)
-                    const docMaxWidth = contentWidth - 30; // Largeur max pour les valeurs
-                    const docLineHeight = 6; // Hauteur de ligne pour les détails docteur
-                    const blockPadding = 4; // Padding vertical dans le bloc docteur
+                    const docLabelX = margin + 5; 
+                    const docValueX = docLabelX + 25; 
+                    const docMaxWidth = contentWidth - 30; 
+                    const docLineHeight = 6; 
+                    const blockPadding = 4; 
 
                     clinique.docteurs.forEach((docData, index) => {
                         let doctorBlockStartY = currentY;
-                        let estimatedHeight = 8 + (docLineHeight * 3) + (blockPadding * 2) + 6; // Nom + Spé + Tél + Email + Paddings + Ligne
+                        let estimatedHeight = 8 + (docLineHeight * 3) + (blockPadding * 2) + 6; 
                         if (checkPageBreak(estimatedHeight)) {
                              currentY = margin + 22 + 10; 
                              doc.setFont('helvetica', 'bold'); doc.setFontSize(13); doc.setTextColor(primaryColor);
                              doc.text("Notre Équipe Médicale", margin, currentY);
                              currentY += 10;
-                             doctorBlockStartY = currentY; // Mettre à jour le début du bloc après saut
+                             doctorBlockStartY = currentY; 
                         }
                         
-                        currentY += blockPadding; // Espace haut du bloc
-
-                        // Nom Docteur (en gras, taille standard)
+                        currentY += blockPadding; 
+                        // Nom Docteur 
                         doc.setFont('helvetica', 'bold');
                         doc.setFontSize(11);
                         doc.setTextColor(textDefaultColor); 
                         doc.text(`Dr. ${docData.prenom} ${docData.nom}`, margin, currentY);
                         currentY += docLineHeight;
                         
-                        // Spécialité (en gras, couleur primaire)
+                        // Spécialité 
                         doc.setFont('helvetica', 'bold');
                         doc.setFontSize(10);
                         doc.setTextColor(specColor); 
-                        doc.text(docData.specialite, margin + 5, currentY); // Léger retrait pour la spé
-                        currentY += docLineHeight + 1; // Espace après spécialité
+                        doc.text(docData.specialite, margin + 5, currentY); 
+                        currentY += docLineHeight + 1; 
                         
                         // Ligne Contact Tél
                         doc.setFont('helvetica', 'bold');
@@ -693,8 +727,7 @@
                         doc.text(docData.telephone, docValueX, currentY, { maxWidth: docMaxWidth });
                         currentY += docLineHeight - 1;
 
-                        // Ligne Contact Email
-                        // checkPageBreak interne peu probable ici vu la faible hauteur, mais on peut l'ajouter si besoin
+                        
                         doc.setFont('helvetica', 'bold');
                         doc.setFontSize(9);
                         doc.setTextColor(labelColor); 
@@ -702,19 +735,18 @@
                         doc.setFont('helvetica', 'normal');
                         doc.setTextColor(secondaryColor); 
                         doc.text(docData.email, docValueX, currentY, { maxWidth: docMaxWidth });
-                        currentY += docLineHeight -1 + blockPadding; // Espace bas du bloc
-
-                        // Optionnel : Boîte autour de chaque docteur
+                        currentY += docLineHeight -1 + blockPadding; 
+                        
                          doc.setDrawColor(borderColor);
                          doc.setLineWidth(0.1);
                          doc.rect(margin, doctorBlockStartY, contentWidth, currentY - doctorBlockStartY); 
 
-                        // Ligne séparatrice (plus esthétique)
+                        
                         if (index < clinique.docteurs.length - 1) {
                             doc.setDrawColor(borderColor);
                             doc.setLineWidth(0.1);
-                            doc.line(margin + 10, currentY, pageWidth - margin - 10, currentY); // Ligne encore plus courte
-                            currentY += 5; // Espace après ligne
+                            doc.line(margin + 10, currentY, pageWidth - margin - 10, currentY); 
+                            currentY += 5; 
                         }
                     });
                 } else {

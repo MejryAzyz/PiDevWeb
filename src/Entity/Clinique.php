@@ -52,8 +52,8 @@ class Clinique
     // )]
     #[Assert\NotBlank(message: "L'adresse ne peut pas être vide")]
     #[Assert\Regex(
-        pattern: "/^[a-zA-ZÀ-ÿ0-9\s'-]+, [a-zA-ZÀ-ÿ0-9\s'-]+, [0-9]{5}$/",
-        message: "L'adresse doit être au format 'Rue, Ville, Code Postal' (ex. : Rue de la Paix, Paris, 75001)"
+        pattern: "/^[a-zA-ZÀ-ÿ0-9\s'-]+, [a-zA-ZÀ-ÿ0-9\s'-]+, [0-9]{4}$/",
+        message: "L'adresse doit être au format 'Rue, Ville, Code Postal' (ex. : Rue de la Paix, Paris, 7501)"
     )]
 
     #[ORM\Column(type: 'text', nullable: false)]
