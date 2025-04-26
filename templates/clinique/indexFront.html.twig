@@ -4,6 +4,51 @@
 
 {% block stylesheets %}
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <style>
+        .search-input {
+            position: relative;
+            height: 100%;
+        }
+        .search-input i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            z-index: 1;
+        }
+        .search-input select, 
+        .search-input input,
+        .search-button {
+            height: 50px !important;
+            padding-left: 40px !important;
+        }
+        .search-button {
+            width: 100%;
+            height: 50px !important;
+            padding: 0 !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        .search-button i {
+            margin-right: 8px;
+        }
+        .rt-banner-searchbox {
+            padding: 15px;
+            background: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+        .search-row {
+            margin: 0 -10px;
+        }
+        .search-col {
+            padding: 0 10px;
+        }
+    </style>
 {% endblock %}
 
 {% block body %}
@@ -32,12 +77,31 @@
                 <div class="col-lg-10 mx-auto">
                     <div class="rt-banner-searchbox trip-search">
                         <form action="{{ path('app_clinique_front_index') }}" method="get" class="rt-input-group">
-                            <div class="single-input col-md-9">
-                                <input type="text" class="form-control" name="search" placeholder="Rechercher une clinique" value="{{ app.request.query.get('search') }}">
-                                <span class="input-iconbadge"><i class="icofont-google-map"></i></span>
-                            </div>
-                            <div class="single-input col-md-3">
-                                <button type="submit" class="rt-btn rt-gradient pill text-uppercase d-block rt-Bshadow-2">Rechercher</button>
+                            <div class="row search-row">
+                                <div class="col-md-5 search-col">
+                                    <div class="search-input">
+                                        <i class="icofont-world"></i>
+                                        <input type="text" class="form-control" name="pays" placeholder="Rechercher par pays" value="{{ app.request.query.get('pays') }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-4 search-col">
+                                    <div class="search-input">
+                                        <i class="icofont-doctor"></i>
+                                        <select name="specialty" class="form-control">
+                                            <option value="">Toutes les spécialités</option>
+                                            {% for specialite in specialites %}
+                                                <option value="{{ specialite.id_specialite }}" {% if app.request.query.get('specialty') == specialite.id_specialite %}selected{% endif %}>
+                                                    {{ specialite.nom }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 search-col">
+                                    <button type="submit" class="rt-btn rt-gradient pill text-uppercase search-button">
+                                        <i class="icofont-search"></i> Rechercher
+                                    </button>
+                                </div>
                             </div>
                         </form>
                     </div>
@@ -91,31 +155,42 @@
             </div>
             <div class="col-lg-9">
                 <div class="box-style__1 rt-mb-30">
-                    <form action="#" class="row">
+                    <form action="{{ path('app_clinique_front_index') }}" method="get" class="row">
                         <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
-                            <button class="rt-btn pill rt-sm rt-gradient d-block">Recommandé</button>
+                            <select name="sort" class="rt-selectactive banner-select" style="width: 100%">
+                                <option value="recommande" {% if app.request.query.get('sort') == 'recommande' %}selected{% endif %}>Recommandé</option>
+                                <option value="prix_asc" {% if app.request.query.get('sort') == 'prix_asc' %}selected{% endif %}>Prix croissant</option>
+                                <option value="prix_desc" {% if app.request.query.get('sort') == 'prix_desc' %}selected{% endif %}>Prix décroissant</option>
+                                <option value="docteurs" {% if app.request.query.get('sort') == 'docteurs' %}selected{% endif %}>Nombre de docteurs</option>
+                            </select>
                         </div>
                         <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
-                            <select class="rt-selectactive banner-select" name="from" style="width: 100%">
-                                <option value="1">Prix</option>
-                                <option value="2">100</option>
-                                <option value="3">100</option>
-                                <option value="4">400</option>
-                                <option value="5">500</option>
+                            <select name="pays" class="rt-selectactive banner-select" style="width: 100%">
+                                <option value="">Tous les pays</option>
+                                <option value="France" {% if app.request.query.get('pays') == 'France' %}selected{% endif %}>France</option>
+                                <option value="Allemagne" {% if app.request.query.get('pays') == 'Allemagne' %}selected{% endif %}>Allemagne</option>
+                                <option value="Espagne" {% if app.request.query.get('pays') == 'Espagne' %}selected{% endif %}>Espagne</option>
+                                <option value="Italie" {% if app.request.query.get('pays') == 'Italie' %}selected{% endif %}>Italie</option>
                             </select>
                         </div>
                         <div class="col-lg-3 rt-input-group mini col-md-6 mb-3 mb-md-0">
-                            <select class="rt-selectactive banner-select" name="from" style="width: 100%">
-                                <option value="1" selected>étoiles</option>
-                                <option value="2">100</option>
-                                <option value="3">100</option>
-                                <option value="4">400</option>
-                                <option value="5">500</option>
+                            <select name="specialty" class="rt-selectactive banner-select" style="width: 100%">
+                                <option value="">Toutes les spécialités</option>
+                                {% for specialite in specialites %}
+                                    <option value="{{ specialite.id_specialite }}" {% if app.request.query.get('specialty') == specialite.id_specialite %}selected{% endif %}>
+                                        {{ specialite.nom }}
+                                    </option>
+                                {% endfor %}
                             </select>
                         </div>
-                        <div class="col-lg-3 rt-input-group mini col-md-6">
-                            <input type="text" class="form-control" placeholder="Mots-clés (optionnel)">
+                        <div class="col-lg-3 col-md-6">
+                            <button type="submit" class="rt-btn rt-gradient pill rt-sm text-uppercase d-block w-100">Appliquer</button>
                         </div>
+
+                        {# Garder les autres paramètres de recherche #}
+                        {% if app.request.query.get('price_range') %}
+                            <input type="hidden" name="price_range" value="{{ app.request.query.get('price_range') }}">
+                        {% endif %}
                     </form>
                 </div>
 

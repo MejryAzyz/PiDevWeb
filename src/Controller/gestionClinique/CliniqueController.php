@@ -15,6 +15,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Endroid\QrCode\Builder\BuilderInterface;
+use Endroid\QrCode\Encoding\Encoding;
+use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelHigh;
+use Endroid\QrCode\Color\Color;
+use Endroid\QrCode\Writer\PngWriter;
 
 #[Route('/clinique')]
 final class CliniqueController extends AbstractController
@@ -262,25 +267,45 @@ final class CliniqueController extends AbstractController
          $minPrice = $priceRange['min_price'] ?? 0;
          $maxPrice = $priceRange['max_price'] ?? 1000;
 
-         // Récupérer le filtre de prix depuis la requête
+         // Récupérer les filtres depuis la requête
          $priceFilter = $request->query->get('price_range');
+         $paysFilter = $request->query->get('pays');
+         $specialtyFilter = $request->query->get('specialty');
+         $sortFilter = $request->query->get('sort', 'recommande'); 
+
          $currentMinPrice = $minPrice;
          $currentMaxPrice = $maxPrice;
 
-         // Récupérer le filtre de spécialité depuis la requête
-         $specialtyFilter = $request->query->get('specialty');
-
-         
-         $searchTerm = $request->query->get('search');
-
-         
+         // Créer le QueryBuilder de base
          $queryBuilder = $cliniqueRepository->createQueryBuilder('c')
              ->leftJoin('c.cliniquePhotos', 'photos')
              ->addSelect('photos')
              ->leftJoin('c.docteurs', 'd')
-             ->leftJoin('d.specialite', 's');
+             ->leftJoin('d.specialite', 's')
+             ->groupBy('c.id_clinique');
 
-         // Appliquer le filtre de prix si présent
+         //  le tri
+         switch ($sortFilter) {
+             case 'prix_asc':
+                 $queryBuilder->orderBy('c.prix', 'ASC');
+                 break;
+             case 'prix_desc':
+                 $queryBuilder->orderBy('c.prix', 'DESC');
+                 break;
+             case 'docteurs':
+                 $queryBuilder->addSelect('COUNT(d.id_docteur) as HIDDEN docteurCount')
+                            ->orderBy('docteurCount', 'DESC');
+                 break;
+             case 'recommande':
+             default:
+                 
+                 $queryBuilder->addSelect('COUNT(d.id_docteur) as HIDDEN docteurCount')
+                            ->orderBy('docteurCount', 'DESC')
+                            ->addOrderBy('c.prix', 'ASC');
+                 break;
+         }
+
+         // Appliquer le filtre de prix 
          if ($priceFilter) {
              list($currentMinPrice, $currentMaxPrice) = array_map('floatval', explode(',', $priceFilter));
              $queryBuilder
@@ -290,23 +315,23 @@ final class CliniqueController extends AbstractController
                  ->setParameter('maxPrice', $currentMaxPrice);
          }
 
-         // Appliquer le filtre de spécialité si présent
+         // le filtre de pays 
+         if ($paysFilter) {
+             $queryBuilder
+                 ->andWhere('c.adresse LIKE :pays')
+                 ->setParameter('pays', '%' . $paysFilter . '%');
+         }
+
+         //  le filtre de spécialité 
          if ($specialtyFilter) {
              $queryBuilder
                  ->andWhere('s.id_specialite = :specialtyId')
                  ->setParameter('specialtyId', $specialtyFilter);
          }
 
-        
-         if ($searchTerm) {
-             $queryBuilder
-                 ->andWhere('c.nom LIKE :searchTerm OR c.description LIKE :searchTerm OR c.adresse LIKE :searchTerm')
-                 ->setParameter('searchTerm', '%' . $searchTerm . '%');
-         }
-
          $query = $queryBuilder->getQuery();
 
-         // Créer le paginator
+         
          $paginator = new \Doctrine\ORM\Tools\Pagination\Paginator($query);
 
          
@@ -336,7 +361,7 @@ final class CliniqueController extends AbstractController
              'max_price' => $maxPrice,
              'current_min_price' => $currentMinPrice,
              'current_max_price' => $currentMaxPrice,
-             'specialites' => $specialiteRepository->findAll(), // Passer les spécialités à la vue
+             'specialites' => $specialiteRepository->findAll(),
          ]);
      }
     
@@ -695,10 +720,84 @@ final class CliniqueController extends AbstractController
     }
 
     #[Route('/front/{id_clinique}', name: 'app_clinique_front_show', methods: ['GET'])]
-    public function showFront(Clinique $clinique): Response
+    public function showFront(Clinique $clinique, SpecialiteRepository $specialiteRepository): Response
     {
         return $this->render('clinique/showFront.html.twig', [
             'clinique' => $clinique,
+            'specialites' => $specialiteRepository->findAll(),
         ]);
+    }
+
+    #[Route('/qr-code/{id_clinique}', name: 'app_clinique_qr_code', methods: ['GET'])]
+    public function generateQrCode(Clinique $clinique, BuilderInterface $qrBuilder): Response
+    {
+        // Générer le contenu HTML pour le PDF
+        $html = $this->renderView('clinique/pdf_template.html.twig', [
+            'clinique' => $clinique
+        ]);
+
+        // Configurer Dompdf avec des options optimisées pour mobile
+        $options = new \Dompdf\Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isPhpEnabled', true);
+        $options->set('dpi', 72); // Basse résolution pour fichier plus petit
+        $options->set('defaultFont', 'Arial');
+
+        $dompdf = new \Dompdf\Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        // Obtenir le contenu du PDF
+        $pdfContent = $dompdf->output();
+
+        // Encoder directement en base64
+        $base64Pdf = base64_encode($pdfContent);
+        
+        // Créer une data URI pour le PDF qui sera directement affichée/téléchargée sur mobile
+        $dataUri = 'data:application/pdf;filename=clinique.pdf;base64,' . $base64Pdf;
+        
+        // Générer le QR code avec une taille optimale
+        $result = $qrBuilder
+            ->data($dataUri)
+            ->encoding(new Encoding('UTF-8'))
+            ->errorCorrectionLevel(new ErrorCorrectionLevelHigh())
+            ->size(1000) // Grande taille pour contenir toutes les données
+            ->margin(10)
+            ->foregroundColor(new Color(0, 0, 0))
+            ->backgroundColor(new Color(255, 255, 255))
+            ->build();
+
+        // Retourner le QR code comme image PNG
+        $response = new Response($result->getString());
+        $response->headers->set('Content-Type', 'image/png');
+        
+        return $response;
+    }
+
+    #[Route('/clinique/pdf/{id_clinique}', name: 'app_clinique_pdf', methods: ['GET'])]
+    public function generatePdf(Clinique $clinique): Response
+    {
+        // Générer le contenu HTML
+        $html = $this->renderView('clinique/pdf_template.html.twig', [
+            'clinique' => $clinique
+        ]);
+
+        // Configurer Dompdf
+        $options = new \Dompdf\Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isPhpEnabled', true);
+
+        $dompdf = new \Dompdf\Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        // Générer le PDF
+        $response = new Response($dompdf->output());
+        $response->headers->set('Content-Type', 'application/pdf');
+        $response->headers->set('Content-Disposition', 'attachment; filename="clinique-'.$clinique->getNom().'.pdf"');
+
+        return $response;
     }
 }

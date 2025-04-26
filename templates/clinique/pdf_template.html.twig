@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{ clinique.nom }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 10px;
+            line-height: 1.2;
+            margin: 5px;
+            padding: 0;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #000;
+            padding-bottom: 3px;
+        }
+        .clinique-info {
+            margin-bottom: 5px;
+        }
+        h1 { 
+            font-size: 14px; 
+            margin: 0 0 5px 0; 
+            font-weight: bold;
+        }
+        p { 
+            margin: 0 0 3px 0; 
+        }
+        b {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>{{ clinique.nom }}</h1>
+    </div>
+    <div class="clinique-info">
+        <p><b>Adresse:</b> {{ clinique.adresse }}</p>
+        <p><b>Email:</b> {{ clinique.email }}</p>
+        <p><b>Tél:</b> {{ clinique.tel }}</p>
+        <p><b>Description:</b> {{ clinique.description }}</p>
+    </div>
+</body>
+</html> 
