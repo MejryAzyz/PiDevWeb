@@ -10,15 +10,26 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Knp\Component\Pager\PaginatorInterface;
 
 #[Route('/service')]
 class ServiceController extends AbstractController
 {
     #[Route('/', name: 'app_service_index', methods: ['GET'])]
-    public function index(ServiceRepository $serviceRepository): Response
+    public function index(ServiceRepository $serviceRepository, Request $request, PaginatorInterface $paginator): Response
     {
+        $query = $serviceRepository->createQueryBuilder('s')
+            ->orderBy('s.nomService', 'ASC')
+            ->getQuery();
+
+        $pagination = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1),
+            10 // Nombre d'éléments par page
+        );
+
         return $this->render('service/index.html.twig', [
-            'services' => $serviceRepository->findAll(),
+            'services' => $pagination,
         ]);
     }
 

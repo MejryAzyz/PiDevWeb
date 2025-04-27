@@ -47,9 +47,7 @@
                                         <td>{{ service.nomService }}</td>
                                         <td class="pe-3">
                                             <div class="hstack gap-1">
-                                                <a href="{{ path('app_service_show', {'id': service.id}) }}" class="btn btn-soft-primary btn-icon btn-sm rounded-circle">
-                                                    <i class="ti ti-eye"></i>
-                                                </a>
+                                               
                                                 <a href="{{ path('app_service_edit', {'id': service.id}) }}" class="btn btn-soft-success btn-icon btn-sm rounded-circle">
                                                     <i class="ti ti-edit fs-16"></i>
                                                 </a>
@@ -69,6 +67,11 @@
                                 {% endfor %}
                             </tbody>
                         </table>
+                    </div>
+                    <div class="card-footer">
+                        <div class="d-flex justify-content-center">
+                            {{ knp_pagination_render(services) }}
+                        </div>
                     </div>
                 </div>
             </div>

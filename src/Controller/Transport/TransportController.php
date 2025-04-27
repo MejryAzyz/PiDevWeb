@@ -12,23 +12,32 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Knp\Component\Pager\PaginatorInterface;
 
 #[Route('/transport')]
 final class TransportController extends AbstractController
 {
     #[Route('/admin', name: 'app_transport_index', methods: ['GET'])]
-    public function index(TransportRepository $transportRepository): Response
+    public function index(TransportRepository $transportRepository, Request $request, PaginatorInterface $paginator): Response
     {
-        $transports = $transportRepository->findAll();
+        $query = $transportRepository->createQueryBuilder('t')
+            ->orderBy('t.type', 'ASC')
+            ->getQuery();
+
+        $pagination = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1),
+            10 // Nombre d'éléments par page
+        );
 
         // Calculate dynamic stats
-        $totalCapacity = array_sum(array_map(fn($t) => $t->getCapacite(), $transports));
-        $tariffs = array_map(fn($t) => $t->getTarif(), $transports);
+        $totalCapacity = array_sum(array_map(fn($t) => $t->getCapacite(), $pagination->getItems()));
+        $tariffs = array_map(fn($t) => $t->getTarif(), $pagination->getItems());
         $averageTariff = count($tariffs) > 0 ? array_sum($tariffs) / count($tariffs) : 0;
-        $totalTransports = count($transports);
+        $totalTransports = $pagination->getTotalItemCount();
 
         return $this->render('transport/index.html.twig', [
-            'transports' => $transports,
+            'transports' => $pagination,
             'total_capacity' => $totalCapacity,
             'average_tariff' => $averageTariff,
             'total_transports' => $totalTransports,

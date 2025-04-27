@@ -12,25 +12,34 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Knp\Component\Pager\PaginatorInterface;
 
 #[Route('/hebergement')]
 final class HebergementController extends AbstractController
 {
     #[Route(name: 'app_hebergement_index', methods: ['GET'])]
-    public function index(HebergementRepository $hebergementRepository): Response
+    public function index(HebergementRepository $hebergementRepository, Request $request, PaginatorInterface $paginator): Response
     {
-        $hebergements = $hebergementRepository->findAll();
-        
+        $query = $hebergementRepository->createQueryBuilder('h')
+            ->orderBy('h.nom', 'ASC')
+            ->getQuery();
+
+        $pagination = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1),
+            10 // Nombre d'éléments par page
+        );
+
         // Aggregate data for charts
-        $totalCapacity = array_sum(array_map(fn($h) => $h->getCapacite(), $hebergements));
-        $tariffs = array_map(fn($h) => $h->getTarifNuit(), $hebergements);
-        $capacityData = array_map(fn($h) => [$h->getNom(), $h->getCapacite()], $hebergements);
+        $totalCapacity = array_sum(array_map(fn($h) => $h->getCapacite(), $pagination->getItems()));
+        $tariffs = array_map(fn($h) => $h->getTarifNuit(), $pagination->getItems());
+        $capacityData = array_map(fn($h) => [$h->getNom(), $h->getCapacite()], $pagination->getItems());
         
         // Calculate average tariff
         $averageTariff = count($tariffs) > 0 ? array_sum($tariffs) / count($tariffs) : 0;
     
         return $this->render('hebergement/index.html.twig', [
-            'hebergements' => $hebergements,
+            'hebergements' => $pagination,
             'total_capacity' => $totalCapacity,
             'tariffs' => json_encode($tariffs),
             'capacity_data' => json_encode($capacityData),
