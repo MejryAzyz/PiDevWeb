@@ -1,0 +1,228 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails de la Clinique | Osen - Responsive Bootstrap 5 Admin Dashboard{% endblock %}
+
+{% block css %}
+<!-- App css -->
+<link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet" type="text/css" id="app-style" />
+
+<!-- Icons css -->
+<link href="{{ asset('assets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+{% block body %}
+<!-- Begin page -->
+<div class="page-container">
+    <div class="page-title-head d-flex align-items-sm-center flex-sm-row flex-column gap-2">
+        <div class="flex-grow-1">
+            <h4 class="fs-18 fw-semibold mb-0">Détails de la Clinique</h4>
+        </div>
+        <div class="text-end">
+            <ol class="breadcrumb m-0 py-0">
+                <li class="breadcrumb-item"><a href="#">Osen</a></li>
+                <li class="breadcrumb-item"><a href="#">Hospital</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('app_clinique_index') }}">Cliniques</a></li>
+                <li class="breadcrumb-item active">{{ clinique.nom }}</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- Détails de la clinique -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Photo de la clinique -->
+                        <div class="col-md-4">
+                            {% if clinique.cliniquePhotos|length > 0 %}
+                                <div class="text-center">
+                                    <img src="{{ asset(clinique.cliniquePhotos.first.photo_url) }}" 
+                                         class="img-fluid rounded" 
+                                         style="max-height: 300px; width: 100%; object-fit: cover;"
+                                         alt="Photo de la clinique">
+                                </div>
+                            {% else %}
+                                <div class="text-center">
+                                    <img src="{{ asset('images/mayoClinic.jpg') }}" 
+                                         class="img-fluid rounded" 
+                                         style="max-height: 300px; width: 100%; object-fit: cover;"
+                                         alt="Image par défaut">
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Informations de la clinique -->
+                        <div class="col-md-8">
+                            <h4 class="card-title mb-4">{{ clinique.nom }}</h4>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6 class="text-muted mb-3">Informations de contact</h6>
+                                    <ul class="list-unstyled">
+                                        <li class="mb-2">
+                                            <i class="ti ti-map-pin me-2"></i>
+                                            <strong>Adresse:</strong> {{ clinique.adresse }}
+                                        </li>
+                                        <li class="mb-2">
+                                            <i class="ti ti-phone me-2"></i>
+                                            <strong>Téléphone:</strong> {{ clinique.telephone }}
+                                        </li>
+                                        <li class="mb-2">
+                                            <i class="ti ti-mail me-2"></i>
+                                            <strong>Email:</strong> {{ clinique.email }}
+                                        </li>
+                                        <li class="mb-2">
+                                            <i class="ti ti-currency-euro me-2"></i>
+                                            <strong>Prix par consultation:</strong> {{ clinique.prix|number_format(2) }} €
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6 class="text-muted mb-3">Description</h6>
+                                    <p class="text-muted">{{ clinique.description }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Liste des docteurs -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex align-items-center justify-content-between border-bottom border-light">
+                    <h4 class="header-title">Liste des docteurs</h4>
+                    <div>
+                        <a href="{{ path('app_docteur_new') }}" class="btn btn-success bg-gradient">
+                            <i class="ti ti-plus me-1"></i> Ajouter docteur
+                        </a>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-nowrap mb-0">
+                        <thead class="bg-light-subtle">
+                            <tr>
+                                <th>Nom</th>
+                                <th>Prénom</th>
+                                <th>Téléphone</th>
+                                <th>Email</th>
+                                <th>Spécialité</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for docteur in docteurs %}
+                                <tr>
+                                    <td>{{ docteur.nom }}</td>
+                                    <td>{{ docteur.prenom }}</td>
+                                    <td>{{ docteur.telephone }}</td>
+                                    <td>{{ docteur.email }}</td>
+                                    <td>{{ docteur.specialite.nom }}</td>
+                                    <td class="pe-3">
+                                        <div class="hstack gap-1 justify-content-end">
+                                            
+                                            <a href="{{ path('app_docteur_edit', {'id_docteur': docteur.id_docteur}) }}" class="btn btn-soft-success btn-icon btn-sm rounded-circle">
+                                                <i class="ti ti-edit fs-16"></i>
+                                            </a>
+                                            <button class="btn btn-soft-danger btn-icon btn-sm rounded-circle delete-btn"
+                                                data-id="{{ docteur.id_docteur }}"
+                                                data-url="{{ path('app_docteur_delete', {'id_docteur': docteur.id_docteur}) }}"
+                                                data-token="{{ csrf_token('delete' ~ docteur.id_docteur) }}">
+                                                <i class="ti ti-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="6" class="text-center">Aucun docteur trouvé.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<!-- Vendor js -->
+<script src="{{ asset('assets/js/vendor.min.js') }}"></script>
+
+<!-- App js -->
+<script src="{{ asset('assets/js/app.min.js') }}"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const deleteUrl = this.getAttribute('data-url');
+                const docteurId = this.getAttribute('data-id');
+                const csrfToken = this.getAttribute('data-token');
+
+                Swal.fire({
+                    title: 'Êtes-vous sûr ?',
+                    text: "Cette action est irréversible !",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Oui, supprimer',
+                    cancelButtonText: 'Annuler'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = deleteUrl;
+
+                        const tokenInput = document.createElement('input');
+                        tokenInput.type = 'hidden';
+                        tokenInput.name = '_token';
+                        tokenInput.value = csrfToken;
+                        form.appendChild(tokenInput);
+
+                        document.body.appendChild(form);
+
+                        fetch(deleteUrl, {
+                            method: 'POST',
+                            body: new FormData(form)
+                        }).then(response => {
+                            if (response.ok) {
+                                Swal.fire(
+                                    'Supprimé !',
+                                    'Le docteur a été supprimé avec succès.',
+                                    'success'
+                                ).then(() => {
+                                    button.closest('tr').remove();
+                                });
+                            } else {
+                                Swal.fire(
+                                    'Erreur !',
+                                    "Une erreur s'est produite lors de la suppression du docteur.",
+                                    'error'
+                                );
+                            }
+                        }).catch(error => {
+                            Swal.fire(
+                                'Erreur !',
+                                "Une erreur s'est produite lors de la suppression du docteur.",
+                                'error'
+                            );
+                        }).finally(() => {
+                            document.body.removeChild(form);
+                        });
+                    }
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}

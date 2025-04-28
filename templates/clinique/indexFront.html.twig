@@ -1,0 +1,241 @@
+{% extends 'baseFront.html.twig' %}
+
+{% block title %}Nos Cliniques - Emigrar{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+{% endblock %}
+
+{% block body %}
+<div class="rt-breadcump rt-breadcump-height">
+    <div class="rt-page-bg rtbgprefix-cover" style="background-image: url({{ asset('coderthemes.com/osen/layouts/assets/images/backgrounds/bredcump.png') }})">
+    </div>
+    <div class="container">
+        <div class="row rt-breadcump-height">
+            <div class="col-12">
+                <div class="breadcrumbs-content">
+                    <h3>Nos Cliniques</h3>
+                    <div class="breadcrumbs">
+                        <span class="divider"><i class="icofont-home"></i></span>
+                        <a href="#" title="Accueil">Accueil</a>
+                        <span class="divider"><i class="icofont-simple-right"></i></span>
+                        Nos Cliniques
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bredcump--search-trip">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-10 mx-auto">
+                    <div class="rt-banner-searchbox trip-search">
+                        <form action="{{ path('app_clinique_front_index') }}" method="get" class="rt-input-group">
+                            <div class="single-input col-md-9">
+                                <input type="text" class="form-control" name="search" placeholder="Rechercher une clinique" value="{{ app.request.query.get('search') }}">
+                                <span class="input-iconbadge"><i class="icofont-google-map"></i></span>
+                            </div>
+                            <div class="single-input col-md-3">
+                                <button type="submit" class="rt-btn rt-gradient pill text-uppercase d-block rt-Bshadow-2">Rechercher</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="spacer-bottom"></div>
+<section class="content-area">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 mx-auto col-md-7 mb-5 mb-lg-0">
+                <div class="rt-sidebar-group">
+                    <div class="rt-widget widget_range-slider">
+                        <h3 class="rt-widget-title">Filtrer par prix</h3>
+                        <form action="{{ path('app_clinique_front_index') }}" method="get" id="price-filter-form">
+                            <input type="hidden" name="page" value="{{ currentPage|default(1) }}">
+                            <div class="slider-range" id="price-range"></div>
+                            <div class="price_slider_amount mt-4">
+                                <div class="clearfix">
+                                    <div class="float-left">
+                                        <span>Prix :</span>
+                                    </div>
+                                    <div class="float-right">
+                                        <input type="text" id="price-amount" readonly style="border:0; font-weight:bold;" name="price_range">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-center mt-4">
+                                <button type="submit" class="rt-btn rt-gradient rounded-sm rt-sm text-uppercase">Filtrer</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="rt-widget widget_specialty-filter">
+                        <h3 class="rt-widget-title">Filtrer par spécialité</h3>
+                        <form action="{{ path('app_clinique_front_index') }}" method="get" id="specialty-filter-form">
+                            <select name="specialty" class="form-control">
+                                <option value="">Toutes les spécialités</option>
+                                {% for specialite in specialites %}
+                                    <option value="{{ specialite.id_specialite }}">{{ specialite.nom }}</option>
+                                {% endfor %}
+                            </select>
+                            <div class="text-center mt-4">
+                                <button type="submit" class="rt-btn rt-gradient rounded-sm rt-sm text-uppercase">Filtrer</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <div class="box-style__1 rt-mb-30">
+                    <form action="#" class="row">
+                        <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
+                            <button class="rt-btn pill rt-sm rt-gradient d-block">Recommandé</button>
+                        </div>
+                        <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
+                            <select class="rt-selectactive banner-select" name="from" style="width: 100%">
+                                <option value="1">Prix</option>
+                                <option value="2">100</option>
+                                <option value="3">100</option>
+                                <option value="4">400</option>
+                                <option value="5">500</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-3 rt-input-group mini col-md-6 mb-3 mb-md-0">
+                            <select class="rt-selectactive banner-select" name="from" style="width: 100%">
+                                <option value="1" selected>étoiles</option>
+                                <option value="2">100</option>
+                                <option value="3">100</option>
+                                <option value="4">400</option>
+                                <option value="5">500</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-3 rt-input-group mini col-md-6">
+                            <input type="text" class="form-control" placeholder="Mots-clés (optionnel)">
+                        </div>
+                    </form>
+                </div>
+
+                {% for clinique in cliniques %}
+                <div class="box-style__1 rt-mb-30">
+                    <div class="hotel-inner-content row">
+                        <div class="hotel-thumb col-md-3 mb-5 mb-md-0">
+                            {% if clinique.cliniquePhotos|length > 0 %}
+                                {# Accéder à la première photo avec first #}
+                                <div class="hotel-bg rtbgprefix-cover" style="background-image: url('{{ asset(clinique.cliniquePhotos.first.photo_url) }}')"></div>
+                            {% else %}
+                                <div class="hotel-bg rtbgprefix-cover" style="background-image: url('{{ asset('images/mayoClinic.jpg') }}')"></div>
+                            {% endif %}
+                        </div>
+                        <div class="hotel-text col-md-9">
+                            <div class="top">
+                                <h5>{{ clinique.nom }}</h5>
+                                <!-- <p>{{ clinique.description|slice(0, 100) ~ '...' }}</p> -->
+                                <p class="lead text-dark">{{ clinique.description }}</p>
+                            </div>
+                            <div class="middle-text d-md-flex justify-content-md-between rt-mt-20">
+                                <div class="left_column">
+                                    <span class="f-size-12 text-878">( {{ clinique.docteurs.count }} Docteurs )</span>
+                                    <span class="text-555 f-size-16 d-block rt-mt-15">
+                                        <span class="rt-mr-15"><i class="icofont-location-pin primary-color rt-mr-4"></i>{{ clinique.adresse }}</span>
+                                    </span>
+                                </div>
+                                <div class="right_column text-left text-md-right">
+                                    <span class="d-block text-primary f-size-24 rt-semiblod title-font">{{ clinique.prix|number_format(2) }} €</span>
+                                    <span class="d-block f-size-12 text-878">Par consultation</span>
+                                </div>
+                            </div>
+                            <div class="footer-elements d-flex justify-content-between align-items-center align-items-end">
+                                <div class="left">
+                                    <a href="#">Contactez-nous</a>
+                                </div>
+                                <div class="right">
+                                    {% if clinique.id_clinique is not null %}
+                                    <div class="right">
+                                        <a href="{{ path('app_clinique_front_show', {'id_clinique': clinique.id_clinique}) }}" class="rt-btn rt-gradient pill rt-sm3 text-uppercase text-white">Voir Détails</a>
+                                    </div>
+                                    {% else %}
+                                        <span class="text-muted">Détails indisponibles</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                    <p>Aucune clinique trouvée.</p>
+                {% endfor %}
+
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination rt-paganation justify-content-center">
+                        {% if currentPage > 1 %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ path('app_clinique_front_index', {'page': currentPage - 1}) }}">
+                                    <i class="icofont-rounded-double-left"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+
+                        {% for i in 1..totalPages %}
+                            <li class="page-item {{ currentPage == i ? 'active' : '' }}">
+                                <a class="page-link" href="{{ path('app_clinique_front_index', {'page': i}) }}">
+                                    {{ i }}
+                                </a>
+                            </li>
+                        {% endfor %}
+
+                        {% if currentPage < totalPages %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ path('app_clinique_front_index', {'page': currentPage + 1}) }}">
+                                    <i class="icofont-rounded-double-right"></i>
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Récupérer les valeurs min et max depuis le contrôleur avec des valeurs par défaut
+            const minPrice = {{ min_price is defined ? min_price : 0 }};
+            const maxPrice = {{ max_price is defined ? max_price : 1000 }};
+            const currentMinPrice = {{ current_min_price is defined ? current_min_price : min_price is defined ? min_price : 0 }};
+            const currentMaxPrice = {{ current_max_price is defined ? current_max_price : max_price is defined ? max_price : 1000 }};
+
+            $("#price-range").slider({
+                range: true,
+                min: minPrice,
+                max: maxPrice,
+                values: [currentMinPrice, currentMaxPrice],
+                slide: function(event, ui) {
+                    $("#price-amount").val(ui.values[0] + "€ - " + ui.values[1] + "€");
+                },
+                change: function(event, ui) {
+                    // Mettre à jour la valeur cachée
+                    $("input[name='price_range']").val(ui.values[0] + "," + ui.values[1]);
+                }
+            });
+
+            // Initialiser l'affichage du prix
+            $("#price-amount").val($("#price-range").slider("values", 0) +
+                "€ - " + $("#price-range").slider("values", 1) + "€");
+            
+            // Définir la valeur initiale du champ caché
+            $("input[name='price_range']").val(
+                $("#price-range").slider("values", 0) + "," + 
+                $("#price-range").slider("values", 1)
+            );
+        });
+    </script>
+{% endblock %}

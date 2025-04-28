@@ -1,0 +1,218 @@
+{% extends 'baseFront.html.twig' %}
+
+{% block title %}{{ transport.type }} - Détails{% endblock %}
+
+{% block body %}
+<div class="rt-breadcump rt-breadcump-height">
+    <div class="rt-page-bg rtbgprefix-cover" style="background-image: url({{ asset('coderthemes.com/osen/layouts/assets/images/backgrounds/bredcump.png') }})">
+    </div><!-- /.rt-page-bg -->
+    <div class="container">
+        <div class="row rt-breadcump-height">
+            <div class="col-12">
+                <div class="breadcrumbs-content">
+                    <h3>{{ transport.type }}</h3>
+                    <div class="breadcrumbs">
+                        <span class="divider"><i class="icofont-home"></i></span>
+                        <a href="" title="Accueil">Accueil</a>
+                        <span class="divider"><i class="icofont-simple-right"></i></span>
+                        <a href="{{ path('app_transport_front_index') }}" title="Transports">Transports</a>
+                        <span class="divider"><i class="icofont-simple-right"></i></span>
+                        {{ transport.type }}
+                    </div><!-- /.breadcrumbs -->
+                </div><!-- /.breadcrumbs-content -->
+            </div><!-- /.col-12 -->
+        </div><!-- /.row -->
+    </div><!-- /.container -->
+</div><!-- /.rt-bredcump -->
+
+<section class="content-area">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-8 col-lg-7">
+                <div class="transport-inner-content bg-white rounded-lg shadow-sm p-4">
+                    <!-- Hero Image Section -->
+                    <div class="transport-hero-image mb-4 position-relative">
+                        {% if transport.type|lower == 'taxi' %}
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRae_MuifW4xM_iK-vi-_El7z9KLsY1E8yGIw&s" alt="Taxi" class="img-fluid w-100 rounded" style="height: 400px; object-fit: cover;">
+                        {% elseif transport.type|lower == 'voiture' %}
+                            <img src="https://img-4.linternaute.com/XpIwVOW1cq3k-npLPf_h0kYFxVE=/1500x/smart/52373731986a4566806476f7acb2dc3a/ccmcms-linternaute/10654353.jpg" alt="Voiture" class="img-fluid w-100 rounded" style="height: 400px; object-fit: cover;">
+                        {% elseif transport.type|lower == 'van' or transport.type|lower == 'minibus' %}
+                            <img src="https://i.ytimg.com/vi/sbyR9yBOPZA/hqdefault.jpg" alt="Van/Minibus" class="img-fluid w-100 rounded" style="height: 400px; object-fit: cover;">
+                        {% elseif transport.type|lower == 'bus' %}
+                            <img src="https://img.linemedia.com/img/s/coach-bus-Temsa-Maraton-HDH-330kw-450HP-WC-USB-MATRIX-53-1-1-NO-FLIXBUS---1739353811855939579_common--25021210532098263900.jpg" alt="Bus" class="img-fluid w-100 rounded" style="height: 400px; object-fit: cover;">
+                        {% elseif transport.type|lower == 'vtc' %}
+                            <img src="https://www.enquetesecuriteroutiere.org/images/blog/vtc.jpg" alt="VTC" class="img-fluid w-100 rounded" style="height: 400px; object-fit: cover;">
+                        {% else %}
+                            <img src="https://img-4.linternaute.com/XpIwVOW1cq3k-npLPf_h0kYFxVE=/1500x/smart/52373731986a4566806476f7acb2dc3a/ccmcms-linternaute/10654353.jpg" alt="Transport" class="img-fluid w-100 rounded" style="height: 400px; object-fit: cover;">
+                        {% endif %}
+                        <div class="price-badge position-absolute" style="top: 20px; right: 20px;">
+                            <span class="bg-primary text-white rounded-pill px-4 py-2 font-weight-bold">
+                                {{ transport.tarif }}€ <small>/jour</small>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="transport-top-meta d-flex flex-md-row flex-column justify-content-md-between align-items-md-center mb-4">
+                        <div class="transport-name">
+                            <h4 class="mb-2 font-weight-bold">{{ transport.type }}</h4>
+                            <div class="feature-badges">
+                                <span class="badge badge-pill badge-primary mr-2">{{ transport.capacite }} places</span>
+                                <span class="badge badge-pill badge-info mr-2">{{ transport.type }}</span>
+                                <span class="badge badge-pill badge-success">Disponible</span>
+                            </div>
+                        </div><!-- /.transport-name -->
+                        <div class="transport-rating text-center mt-3 mt-md-0">
+                            <span class="badge badge-pill badge-success px-3 py-2 mb-2">Excellent</span>
+                            <div class="d-block text-warning f-16">
+                                <i class="icofont-star"></i>
+                                <i class="icofont-star"></i>
+                                <i class="icofont-star"></i>
+                                <i class="icofont-star"></i>
+                                <i class="icofont-star"></i>
+                            </div>
+                        </div><!-- /.transport-rating -->
+                    </div><!-- /.transport-top-meta -->
+                    
+                    <!-- Summary Card -->
+                    <div class="property-highlights rounded bg-light p-4 mb-4">
+                        <div class="row text-center">
+                            <div class="col-4">
+                                <div class="p-3">
+                                    <i class="icofont-users-alt-5 text-primary f-32"></i>
+                                    <h5 class="mt-2 mb-0 f-18">{{ transport.capacite }}</h5>
+                                    <p class="text-muted mb-0 f-14">Capacité</p>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="p-3">
+                                    <i class="icofont-money-bag text-primary f-32"></i>
+                                    <h5 class="mt-2 mb-0 f-18">{{ transport.tarif }}€</h5>
+                                    <p class="text-muted mb-0 f-14">Par jour</p>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="p-3">
+                                    <i class="icofont-car text-primary f-32"></i>
+                                    <h5 class="mt-2 mb-0 f-18">{{ transport.type }}</h5>
+                                    <p class="text-muted mb-0 f-14">Type</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="transport-inner-tabs">
+                        <ul class="nav nav-tabs nav-pills nav-fill mb-4" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active rounded-pill" data-toggle="tab" href="#description" role="tab">Description</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link rounded-pill" data-toggle="tab" href="#features" role="tab">Caractéristiques</a>
+                            </li>
+                        </ul>
+                        
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="description" role="tabpanel">
+                                <div class="transport-description">
+                                    <h5 class="f-18 rt-strong mb-4 border-bottom pb-2">Description du transport</h5>
+                                    <p>
+                                        Ce véhicule de type <span class="badge badge-info">{{ transport.type }}</span> offre une capacité de <span class="badge badge-primary">{{ transport.capacite }} places</span>.
+                                    </p>
+                                    <p>Disponible à la location pour vos déplacements à un tarif de <strong>{{ transport.tarif }}€</strong> par jour.</p>
+                                </div><!-- /.transport-description -->
+                            </div><!-- /.tab-pane -->
+                            
+                            <div class="tab-pane fade" id="features" role="tabpanel">
+                                <div class="rt-mt-10">
+                                    <h5 class="f-18 rt-strong mb-4 border-bottom pb-2">Caractéristiques principales</h5>
+                                    <div class="row">
+                                        <div class="col-lg-4 col-md-6 mb-4">
+                                            <div class="media bg-light p-3 rounded">
+                                                <div class="rt-mr-16">
+                                                    <i class="icofont-car text-primary f-24"></i>
+                                                </div>
+                                                <div class="media-body">
+                                                    <h6 class="f-16 rt-medium">Type</h6>
+                                                    <p class="mb-0">{{ transport.type }}</p>
+                                                </div>
+                                            </div>
+                                        </div><!-- /.col-lg-4 -->
+                                        <div class="col-lg-4 col-md-6 mb-4">
+                                            <div class="media bg-light p-3 rounded">
+                                                <div class="rt-mr-16">
+                                                    <i class="icofont-users-alt-5 text-primary f-24"></i>
+                                                </div>
+                                                <div class="media-body">
+                                                    <h6 class="f-16 rt-medium">Capacité</h6>
+                                                    <p class="mb-0">{{ transport.capacite }} places</p>
+                                                </div>
+                                            </div>
+                                        </div><!-- /.col-lg-4 -->
+                                        <div class="col-lg-4 col-md-6 mb-4">
+                                            <div class="media bg-light p-3 rounded">
+                                                <div class="rt-mr-16">
+                                                    <i class="icofont-money-bag text-primary f-24"></i>
+                                                </div>
+                                                <div class="media-body">
+                                                    <h6 class="f-16 rt-medium">Tarif</h6>
+                                                    <p class="mb-0">{{ transport.tarif }}€ par jour</p>
+                                                </div>
+                                            </div>
+                                        </div><!-- /.col-lg-4 -->
+                                    </div><!-- /.row -->
+                                </div>
+                            </div><!-- /.tab-pane -->
+                        </div><!-- /.tab-content -->
+                    </div><!-- /.transport-inner-tabs -->
+                </div><!-- /.transport-inner-content -->
+            </div><!-- /.col-xl-8 -->
+            
+            <div class="col-xl-4 col-lg-5">
+                <div class="sidebar sticky-sidebar">
+                    <div class="sidebar-widget bg-white rounded-lg shadow-sm p-4 mb-4">
+                        <div class="price-card text-center">
+                            <div class="price-badge bg-primary text-white py-2 px-4 rounded-pill d-inline-block mb-4">
+                                <h4 class="mb-0">{{ transport.tarif }}€ <small>/jour</small></h4>
+                            </div>
+                            <p class="text-muted">Réservez directement pour obtenir le meilleur tarif</p>
+                        </div>
+                    </div><!-- /.sidebar-widget -->
+                    
+                    <div class="sidebar-widget bg-white rounded-lg shadow-sm p-4 mb-4">
+                        <h5 class="widget-title border-bottom pb-2 mb-3">Détails rapides</h5>
+                        <ul class="list-unstyled property-details">
+                            <li class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <span class="property-label"><i class="icofont-car text-primary mr-2"></i> Type</span>
+                                <span class="property-value font-weight-bold">{{ transport.type }}</span>
+                            </li>
+                            <li class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <span class="property-label"><i class="icofont-users-alt-5 text-primary mr-2"></i> Capacité</span>
+                                <span class="property-value font-weight-bold">{{ transport.capacite }} personnes</span>
+                            </li>
+                            <li class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                <span class="property-label"><i class="icofont-money-bag text-primary mr-2"></i> Prix par jour</span>
+                                <span class="property-value font-weight-bold">{{ transport.tarif }}€</span>
+                            </li>
+                            <li class="d-flex justify-content-between align-items-center py-2">
+                                <span class="property-label"><i class="icofont-star text-primary mr-2"></i> Évaluation</span>
+                                <span class="property-value text-warning">
+                                    <i class="icofont-star"></i>
+                                    <i class="icofont-star"></i>
+                                    <i class="icofont-star"></i>
+                                    <i class="icofont-star"></i>
+                                    <i class="icofont-star"></i>
+                                </span>
+                            </li>
+                        </ul>
+                    </div><!-- /.sidebar-widget -->
+                    <a href="/reservation/new?type=transport&&id={{ transport.id_transport }}" class="btn btn-primary btn-lg rounded-pill mb-3">Réserver</a>
+                </div><!-- /.sidebar -->
+            </div><!-- /.col-xl-4 -->
+        </div><!-- /.row -->
+    </div><!-- /.container -->
+</section>
+
+{% block javascripts %}
+<script src="{{ asset('coderthemes.com/osen/layouts/assets/js/vendor.min.js') }}"></script>
+<script src="{{ asset('coderthemes.com/osen/layouts/assets/js/app.js') }}"></script>
+{% endblock %}
+{% endblock %} 

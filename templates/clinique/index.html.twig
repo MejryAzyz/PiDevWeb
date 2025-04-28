@@ -1,0 +1,245 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Les Cliniques | Osen - Responsive Bootstrap 5 Admin Dashboard{% endblock %}
+
+{% block css %}
+<!-- App css -->
+<link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet" type="text/css" id="app-style" />
+
+<!-- Icons css -->
+<link href="{{ asset('assets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+{% block body %}
+<!-- Begin page -->
+    <!-- Page Content -->
+
+        <div class="page-container">
+            <div class="page-title-head d-flex align-items-sm-center flex-sm-row flex-column gap-2">
+                <div class="flex-grow-1">
+                    <h4 class="fs-18 fw-semibold mb-0">Les Cliniques</h4>
+                </div>
+                <div class="text-end">
+                    <ol class="breadcrumb m-0 py-0">
+                        <li class="breadcrumb-item"><a href="#">Osen</a></li>
+                        <li class="breadcrumb-item"><a href="#">Hospital</a></li>
+                        <li class="breadcrumb-item active">Doctors</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="container mt-2">
+                <div class="row row-cols-xxl-3 row-cols-md-2 row-cols-1 g-4 align-items-stretch">
+                    
+                    <!-- Card 1: Nombre total de cliniques -->
+                    <div class="col">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <a href="#!" class="text-muted float-end mt-n1 fs-18"><i class="ti ti-external-link"></i></a>
+                                <h5 class="text-muted fs-13 text-uppercase" title="Number of Clinics">Overall Clinics</h5>
+                                <div class="d-flex align-items-center gap-2 my-3">
+                                    <div class="avatar-md flex-shrink-0">
+                                        <span class="avatar-title bg-primary-subtle text-primary rounded fs-22">
+                                            <i class="ti ti-hospital"></i> <!-- Icône pour les hôpitaux -->
+                                        </span>
+                                    </div>
+                                    <h3 class="mb-0 fw-bold">{{ totalCliniques }} <span class="badge text-bg-success fw-medium ms-2 fs-12">Total des cliniques</span></h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            
+                    <!-- Card 2: Clinique avec le prix le plus bas -->
+                    <div class="col">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <a href="#!" class="text-muted float-end mt-n1 fs-18"><i class="ti ti-external-link"></i></a>
+                                <h5 class="text-muted fs-13 text-uppercase" title="Cheapest Clinic">La clinique qui a le prix le plus bas</h5>
+                                <div class="d-flex align-items-center gap-2 my-3">
+                                    <div class="avatar-md flex-shrink-0">
+                                        <span class="avatar-title bg-success-subtle text-success rounded fs-22">
+                                            <i class="ti ti-cash"></i> <!-- Icône pour le prix -->
+                                        </span>
+                                    </div>
+                                    <h3 class="mb-0 fw-bold">{{ cliniqueBasPrix.nom }} <span class="badge text-bg-success fw-medium ms-2 fs-12">{{ cliniqueBasPrix.prix }} €</span></h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            
+                    <!-- Card 3: Clinique avec le prix le plus haut -->
+                    <div class="col">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <a href="#!" class="text-muted float-end mt-n1 fs-18"><i class="ti ti-external-link"></i></a>
+                                <h5 class="text-muted fs-13 text-uppercase" title="Clinique la plus chère">La clinique avec le prix le plus haut</h5>
+                                <div class="d-flex align-items-center gap-2 my-3">
+                                    <div class="avatar-md flex-shrink-0">
+                                        <span class="avatar-title bg-danger-subtle text-danger rounded fs-22">
+                                            <i class="ti ti-wallet"></i> <!-- Icône pour portefeuille -->
+                                        </span>
+                                    </div>
+                                    <h3 class="mb-0 fw-bold">{{ cliniqueHautPrix.nom }} 
+                                        <span class="badge text-bg-success fw-medium ms-2 fs-12">
+                                            {{ cliniqueHautPrix.prix }} €
+                                        </span>
+                                    </h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            
+                </div> <!-- End row -->
+            </div> <!-- End container -->
+            
+            
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header d-flex align-items-center justify-content-between border-bottom border-light">
+                            <h4 class="header-title">Liste des cliniques</h4>
+                            <div>
+                                <a href="{{ path('app_clinique_new') }}" class="btn btn-success bg-gradient">
+                                    <i class="ti ti-plus me-1"></i> Ajouter clinique
+                                </a>
+                                <a href="#" class="btn btn-secondary bg-gradient">
+                                    <i class="ti ti-file-import me-1"></i> Import
+                                </a>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-nowrap mb-0">
+                                <thead class="bg-light-subtle">
+                                    <tr>
+                                        <th>Nom </th>
+                                        <th>Adresse</th>
+                                        <th>Email</th>
+                                        <th>Telephone</th>
+                                        <th>Prix</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for clinique in cliniques %}
+                                        <tr>
+                                            <td>{{ clinique.nom }}</td>
+                                            <td>{{ clinique.adresse }}</td>
+                                            <td>{{ clinique.email }}</td>
+                                            <td>{{ clinique.telephone }}</td>
+                                            <td>{{ clinique.prix }} €</td>
+                                            <td class="pe-3">
+                                                <div class="hstack gap-1 justify-content-end">
+                                                    <a href="{{ path('app_clinique_docteurs', {'id_clinique': clinique.id_clinique}) }}" class="btn btn-soft-primary btn-icon btn-sm rounded-circle"> <i class="ti ti-eye"></i></a>
+                                                    <a href="{{ path('app_clinique_edit', {'id_clinique': clinique.id_clinique}) }}" class="btn btn-soft-success btn-icon btn-sm rounded-circle"> <i class="ti ti-edit fs-16"></i></a>
+                                                    <button class="btn btn-soft-danger btn-icon btn-sm rounded-circle delete-btn" 
+                                                data-id="{{ clinique.id_clinique }}"
+                                                data-url="{{ path('app_clinique_delete', {'id_clinique': clinique.id_clinique}) }}"
+                                                data-token="{{ csrf_token('delete' ~ clinique.id_clinique) }}">
+                                            <i class="ti ti-trash"></i>
+                                        </button>
+
+                                                </div></td>
+                                        </tr>
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="8" class="text-center">Aucune clinique trouvée.</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                               
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    
+
+{% endblock %}
+
+{% block js %}
+<!-- Vendor js -->
+<script src="{{ asset('assets/js/vendor.min.js') }}"></script>
+
+<!-- App js -->
+<script src="{{ asset('assets/js/vendor.min.js') }}"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const deleteUrl = this.getAttribute('data-url');
+                const cliniqueId = this.getAttribute('data-id');
+                const csrfToken = this.getAttribute('data-token');
+
+                Swal.fire({
+                    title: 'Êtes-vous sûr ?',
+                    text: "Cette action est irréversible !",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Oui, supprimer',
+                    cancelButtonText: 'Annuler'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Créer un formulaire pour soumettre la requête POST
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = deleteUrl;
+
+                        // Ajouter le token CSRF
+                        const tokenInput = document.createElement('input');
+                        tokenInput.type = 'hidden';
+                        tokenInput.name = '_token';
+                        tokenInput.value = csrfToken;
+                        form.appendChild(tokenInput);
+
+                        document.body.appendChild(form);
+
+                        fetch(deleteUrl, {
+                            method: 'POST',
+                            body: new FormData(form)
+                        }).then(response => {
+                            if (response.ok) {
+                                Swal.fire(
+                                    'Supprimé !',
+                                    'La clinique a été supprimée avec succès.',
+                                    'success'
+                                ).then(() => {
+                                    button.closest('tr').remove();
+                                });
+                            } else {
+                                Swal.fire(
+                                    'Erreur !',
+                                    "Une erreur s'est produite lors de la suppression de la clinique.",
+                                    'error'
+                                );
+                            }
+                        }).catch(error => {
+                            Swal.fire(
+                                'Erreur !',
+                                "Une erreur s'est produite lors de la suppression de la clinique.",
+                                'error'
+                            );
+                        }).finally(() => {
+                            document.body.removeChild(form);
+                        });
+                    }
+                });
+            });
+        });
+    });
+</script>
+
+
+
+
+
+{% endblock %}
+

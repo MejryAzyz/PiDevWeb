@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Reservation{% endblock %}
+
+{% block body %}
+    <h1>Reservation</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id_reservation</th>
+                <td>{{ reservation.idReservation }}</td>
+            </tr>
+            <tr>
+                <th>Id_patient</th>
+                <td>{{ reservation.idPatient }}</td>
+            </tr>
+            <tr>
+                <th>Id_clinique</th>
+                <td>{{ reservation.idClinique }}</td>
+            </tr>
+            <tr>
+                <th>Id_transport</th>
+                <td>{{ reservation.id_transport.id_transport }}</td>
+            </tr>
+            <tr>
+                <th>Date_depart</th>
+                <td>{{ reservation.dateDepart ? reservation.dateDepart|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Heure_depart</th>
+                <td>{{ reservation.heureDepart }}</td>
+            </tr>
+            <tr>
+                <th>Id_hebergement</th>
+                <td>{{ reservation.idHebergement }}</td>
+            </tr>
+            <tr>
+                <th>Date_debut</th>
+                <td>{{ reservation.dateDebut ? reservation.dateDebut|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Date_fin</th>
+                <td>{{ reservation.dateFin ? reservation.dateFin|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Date_reservation</th>
+                <td>{{ reservation.dateReservation ? reservation.dateReservation|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Statut</th>
+                <td>{{ reservation.statut }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_reservation_index') }}">back to list</a>
+
+    <a href="{{ path('app_reservation_edit', {'id_reservation': reservation.id_reservation}) }}">edit</a>
+
+    {{ include('reservation/_delete_form.html.twig') }}
+{% endblock %}

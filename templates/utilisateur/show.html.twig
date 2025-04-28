@@ -1,0 +1,74 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Utilisateur{% endblock %}
+
+{% block body %}
+    <h1>Utilisateur</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id_utilisateur</th>
+                <td>{{ utilisateur.idUtilisateur }}</td>
+            </tr>
+            <tr>
+                <th>Nom</th>
+                <td>{{ utilisateur.nom }}</td>
+            </tr>
+            <tr>
+                <th>Prenom</th>
+                <td>{{ utilisateur.prenom }}</td>
+            </tr>
+            <tr>
+                <th>Email</th>
+                <td>{{ utilisateur.email }}</td>
+            </tr>
+            <tr>
+                <th>Mot_de_passe</th>
+                <td>{{ utilisateur.motDePasse }}</td>
+            </tr>
+            <tr>
+                <th>Telephone</th>
+                <td>{{ utilisateur.telephone }}</td>
+            </tr>
+            <tr>
+                <th>Date_naissance</th>
+                <td>{{ utilisateur.dateNaissance ? utilisateur.dateNaissance|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Adresse</th>
+                <td>{{ utilisateur.adresse }}</td>
+            </tr>
+            <tr>
+                <th>Image_url</th>
+                <td>{{ utilisateur.imageUrl }}</td>
+            </tr>
+            <tr>
+                <th>Status</th>
+                <td>{{ utilisateur.status }}</td>
+            </tr>
+            <tr>
+                <th>Verif</th>
+                <td>{{ utilisateur.verif }}</td>
+            </tr>
+            <tr>
+                <th>Verification_token</th>
+                <td>{{ utilisateur.verificationToken }}</td>
+            </tr>
+            <tr>
+                <th>Nationalite</th>
+                <td>{{ utilisateur.nationalite }}</td>
+            </tr>
+            <tr>
+                <th>Reset_password_token</th>
+                <td>{{ utilisateur.resetPasswordToken }}</td>
+            </tr>
+        </tbody>
+    </table>
+<div class="text-center mt-4">
+    <a href="{{ path('app_utilisateur_index') }}"  class="btn btn-primary">back to list</a>
+
+    <a href="{{ path('app_utilisateur_edit', {'id_utilisateur': utilisateur.id_utilisateur}) }}"  class="btn btn-secondary">edit</a>
+</div>
+    {{ include('utilisateur/_delete_form.html.twig') }}
+{% endblock %}

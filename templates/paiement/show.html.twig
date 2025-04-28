@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Paiement{% endblock %}
+
+{% block body %}
+    <br>
+    <h1>Detail du paiement</h1>
+    <br>
+    {% for paiement in paiements %}
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id Paiement</th>
+                <td>{{ paiement.id_paiement }}</td>
+            </tr>
+            <tr>
+                <th>Montant</th>
+                <td>{{ paiement.montant }}</td>
+            </tr>
+            <tr>
+                <th>Date Paiement</th>
+                <td>{{ paiement.datePaiement ? paiement.datePaiement|date('Y-m-d H:i:s') : 'N/A' }}</td>
+            </tr>
+            <tr>
+                <th>Méthode</th>
+                <td>
+                    {% if paiement.methode is null %}
+                        Encore pas payé
+                    {% else %}
+                        {{ paiement.methode }}
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th>Réservation</th>
+                <td>{{ paiement.id_reservation.id_reservation }}</td> <!-- Assuming the reservation has an ID -->
+            </tr>
+        </tbody>
+    </table>
+    <br>
+    <a href="{{ path('app_paiement_edit', {'id_paiement': paiement.id_paiement}) }}" class="btn btn-warning btn-sm">Modifier</a>
+    <br>
+    <a href="{{ path('app_reservation_index') }}" class="btn btn-primary">Retour au reservation</a>
+    {% endfor %}
+
+{% endblock %}

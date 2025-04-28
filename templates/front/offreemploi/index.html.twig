@@ -1,0 +1,242 @@
+{% extends 'baseFront.html.twig' %}
+
+{% block title %}Job Opportunities - Emigrar{% endblock %}
+
+{% block body %}
+    <!-- Hero Section -->
+    <div class="rt-breadcump rt-breadcump-height">
+        <div class="rt-page-bg rtbgprefix-cover" style="background-image: url({{ asset('coderthemes.com/osen/layouts/assets/images/backgrounds/bredcump.png') }})">
+        </div><!-- /.rt-page-bg -->
+        <div class="container">
+            <div class="row rt-breadcump-height">
+                <div class="col-12">
+                    <div class="breadcrumbs-content">
+                        <h3>Job Opportunities</h3>
+                        <div class="breadcrumbs">
+                            <span class="divider"><i class="icofont-home"></i></span>
+                            <a href="{{ path('app_front_offreemploi_index') }}" title="Home">Home</a>
+                            <span class="divider"><i class="icofont-simple-right"></i></span>
+                            Jobs
+                        </div><!-- /.breadcrumbs -->
+                    </div><!-- /.breadcrumbs-content -->
+                </div><!-- /.col-12 -->
+            </div><!-- /.row -->
+        </div><!-- /.container -->
+
+        <div class="bredcump--search-trip">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-10 mx-auto">
+                        <div class="rt-banner-searchbox trip-search bg-white shadow-sm rounded-lg p-4">
+                            <div class="row g-3">
+                                <div class="col-lg-8">
+                                    <input type="text" class="form-control" id="jobSearch" placeholder="Search jobs...">
+                                </div>
+                                <div class="col-lg-4">
+                                    <select class="form-select" id="jobTypeFilter">
+                                        <option value="">All Job Types</option>
+                                        <option value="Full Time">Full Time</option>
+                                        <option value="Freelance">Freelance</option>
+                                        <option value="CDI">CDI</option>
+                                        <option value="Plein temps">Plein temps</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- /.col-lg-10 -->
+                </div><!-- /.row -->
+            </div><!-- /.container -->
+        </div>
+    </div><!-- /.rt-bredcump -->
+
+    <!-- Job Listings -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row" id="jobListings">
+                {% for offreemploi in offreemplois %}
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="position-relative">
+                                {% if offreemploi.imageurl and offreemploi.imageurl != '' %}
+                                    <img src="{{ asset('uploads/offers/' ~ offreemploi.imageurl) }}" 
+                                         class="card-img-top" 
+                                         alt="{{ offreemploi.titre }}"
+                                         style="height: 200px; object-fit: cover;"
+                                         onerror="this.onerror=null; this.src='{{ asset('assets/images/default-job.png') }}';">
+                                {% else %}
+                                    <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                        <i class="fas fa-briefcase fa-3x text-muted"></i>
+                                    </div>
+                                {% endif %}
+                                <div class="position-absolute bottom-0 start-0 w-100 p-3" 
+                                     style="background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);">
+                                    <h5 class="card-title text-white mb-0">{{ offreemploi.titre }}</h5>
+                                    <p class="text-white-50 mb-0">
+                                        <i class="fas fa-map-marker-alt me-1"></i>{{ offreemploi.emplacement }}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="card-body {% if offreemploi.imageurl %}pt-3{% endif %}">
+                                {% if not offreemploi.imageurl %}
+                                    <h5 class="card-title mb-2">{{ offreemploi.titre }}</h5>
+                                    <p class="text-muted mb-3">
+                                        <i class="fas fa-map-marker-alt me-1"></i>{{ offreemploi.emplacement }}
+                                    </p>
+                                {% endif %}
+
+                                <div class="mb-3">
+                                    <span class="badge bg-primary me-2">{{ offreemploi.typeposte }}</span>
+                                    <span class="badge bg-info">{{ offreemploi.typecontrat }}</span>
+                                </div>
+
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">Posted {{ offreemploi.datepublication|date('M d, Y') }}</small>
+                                    <div>
+                                        <a href="{{ path('app_front_offreemploi_show', {'id': offreemploi.id}) }}" 
+                                           class="btn btn-outline-primary btn-sm me-2">View Details</a>
+                                        <a href="{{ path('app_accompagnateur_new', {'offre_id': offreemploi.id}) }}" 
+                                           class="btn btn-primary btn-sm">Apply Now</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="col-12 text-center">
+                        <div class="py-5">
+                            <i class="fas fa-briefcase fa-3x text-muted mb-3"></i>
+                            <h3>No Job Openings Available</h3>
+                            <p class="text-muted">Please check back later for new opportunities.</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .rt-breadcump {
+            position: relative;
+            padding: 100px 0;
+            background-color: #f8f9fa;
+        }
+        .rt-breadcump-height {
+            min-height: 200px;
+        }
+        .rt-page-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+        .rtbgprefix-cover {
+            background-size: cover;
+            background-position: center center;
+        }
+        .breadcrumbs-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            color: #fff;
+        }
+        .breadcrumbs-content h3 {
+            color: #fff;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        .breadcrumbs {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        .breadcrumbs a {
+            color: #fff;
+            text-decoration: none;
+        }
+        .breadcrumbs a:hover {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        .bredcump--search-trip {
+            position: relative;
+            margin-top: -50px;
+            z-index: 2;
+        }
+        .card {
+            transition: transform 0.2s;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .badge {
+            font-weight: 500;
+            padding: 0.5em 1em;
+        }
+        .btn-primary {
+            padding: 0.5rem 1.5rem;
+            border-radius: 4px;
+        }
+        .form-control, .form-select {
+            padding: 0.75rem 1rem;
+            border-radius: 4px;
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const jobSearch = document.getElementById('jobSearch');
+            const jobTypeFilter = document.getElementById('jobTypeFilter');
+            const jobListings = document.getElementById('jobListings');
+
+            function filterJobs() {
+                const searchTerm = jobSearch.value.toLowerCase();
+                const jobType = jobTypeFilter.value.toLowerCase();
+                const cards = jobListings.getElementsByClassName('col-lg-4');
+
+                Array.from(cards).forEach(card => {
+                    const title = card.querySelector('.card-title').textContent.toLowerCase();
+                    const type = card.querySelector('.badge').textContent.toLowerCase();
+                    const matchesSearch = title.includes(searchTerm);
+                    const matchesType = !jobType || type.includes(jobType);
+
+                    card.style.display = matchesSearch && matchesType ? 'block' : 'none';
+                });
+
+                // Show "No results" message if no jobs match
+                const visibleCards = Array.from(cards).filter(card => card.style.display !== 'none');
+                const noResultsElement = document.querySelector('.no-results');
+                
+                if (visibleCards.length === 0) {
+                    if (!noResultsElement) {
+                        const noResults = document.createElement('div');
+                        noResults.className = 'col-12 text-center no-results';
+                        noResults.innerHTML = `
+                            <div class="py-5">
+                                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                                <h3>No Matching Jobs Found</h3>
+                                <p class="text-muted">Try adjusting your search criteria</p>
+                            </div>
+                        `;
+                        jobListings.appendChild(noResults);
+                    }
+                } else if (noResultsElement) {
+                    noResultsElement.remove();
+                }
+            }
+
+            jobSearch.addEventListener('input', filterJobs);
+            jobTypeFilter.addEventListener('change', filterJobs);
+        });
+    </script>
+{% endblock %} 
