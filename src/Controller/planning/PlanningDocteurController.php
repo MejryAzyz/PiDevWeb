@@ -12,15 +12,56 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Psr\Log\LoggerInterface;
+use Twilio\Rest\Client;
 
 #[Route('/planning/docteur')]
 final class PlanningDocteurController extends AbstractController
 {
     private $logger;
+    private $twilioClient;
 
     public function __construct(LoggerInterface $logger)
     {
         $this->logger = $logger;
+        // Initialize Twilio client
+        $accountSid = $_ENV['TWILIO_ACCOUNT_SID'];
+        $authToken = $_ENV['TWILIO_AUTH_TOKEN'];
+        $this->twilioClient = new Client($accountSid, $authToken);
+    }
+
+    private function sendSmsNotification(PlanningDocteur $planningDocteur): void
+    {
+        try {
+            $doctor = $planningDocteur->getDocteur();
+            if (!$doctor || !$doctor->getTelephone()) {
+                $this->logger->warning('Cannot send SMS: Doctor or phone number not found');
+                return;
+            }
+
+            // Format the message
+            $message = "🔔 Nouveau Planning MedTravel\n\n";
+            $message .= "📅 Date: " . $planningDocteur->getDateJour()->format('d/m/Y') . "\n";
+            $message .= "⏰ Heure: " . $planningDocteur->getHeureDebut() . " - " . $planningDocteur->getHeureFin() . "\n";
+            
+            if ($planningDocteur->getDossierMedical()) {
+                $message .= "👤 Patient: " . $planningDocteur->getDossierMedical()->getNomPatient() . "\n";
+            }
+
+            $message .= "\nMerci de confirmer votre disponibilité.";
+
+            // Send SMS using Twilio
+            $this->twilioClient->messages->create(
+                $doctor->getTelephone(),
+                [
+                    'from' => $_ENV['TWILIO_PHONE_NUMBER'],
+                    'body' => $message
+                ]
+            );
+
+            $this->logger->info('SMS notification sent successfully to doctor');
+        } catch (\Exception $e) {
+            $this->logger->error('Error sending SMS notification: ' . $e->getMessage());
+        }
     }
 
     #[Route('/search', name: 'app_planning_docteur_search', methods: ['GET'])]
@@ -114,6 +155,9 @@ final class PlanningDocteurController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($planningDocteur);
             $entityManager->flush();
+
+            // Send SMS notification
+            $this->sendSmsNotification($planningDocteur);
 
             return $this->redirectToRoute('app_planning_docteur_index', [], Response::HTTP_SEE_OTHER);
         }

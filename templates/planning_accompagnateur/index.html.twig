@@ -200,7 +200,7 @@
                 const id = this.dataset.id;
                 const url = this.dataset.url;
                 const token = this.dataset.token;
-
+    
                 Swal.fire({
                     title: 'Êtes-vous sûr?',
                     text: "Cette action est irréversible!",
@@ -407,14 +407,14 @@
                                         window.location.reload();
                                     });
                                 } else {
-                                    Swal.fire(
-                                        'Erreur!',
-                                        'Une erreur est survenue lors de la suppression.',
-                                        'error'
-                                    );
+                            Swal.fire(
+                                'Erreur!',
+                                'Une erreur est survenue lors de la suppression.',
+                                'error'
+                            );
                                 }
-                            });
-                        }
+                        });
+                    }
                     });
                 });
             });
