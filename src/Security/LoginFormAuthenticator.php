@@ -18,6 +18,7 @@ use Symfony\Component\Security\Http\Util\TargetPathTrait;
 use App\Repository\UtilisateurRepository;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 
 
 class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
@@ -47,8 +48,12 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
         $request->getSession()->set(SecurityRequestAttributes::LAST_USERNAME, $email);
         $user = $this->utilisateurRepository->findOneByEmail($email);
 
-        // Check if the user is banned (status = 0)
-        
+        $recaptchaResponse = $request->request->get('g-recaptcha-response');
+
+        // Vérification du reCAPTCHA
+        if (!$this->isRecaptchaValid($recaptchaResponse)) {        
+            throw new CustomUserMessageAuthenticationException('Captcha validation failed. Please try again.');        }
+            
         return new Passport(
             new UserBadge($email),
             new PasswordCredentials($request->getPayload()->getString('password')),
@@ -83,4 +88,20 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
     {
         return $this->urlGenerator->generate(self::LOGIN_ROUTE);
     }
+
+    private function isRecaptchaValid(string $recaptchaResponse): bool
+    {
+        if (empty($recaptchaResponse)) {
+            return false;
+        }
+    
+        $secretKey =  $_ENV['RECAPTCHA_SECRET_KEY']; // Your secret key
+        $response = file_get_contents(
+            'https://www.google.com/recaptcha/api/siteverify?secret=' . $secretKey . '&response=' . $recaptchaResponse
+        );
+        $responseData = json_decode($response);
+    
+        return isset($responseData->success) && $responseData->success;
+    }
+    
 }
