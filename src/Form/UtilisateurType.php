@@ -9,9 +9,18 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 class UtilisateurType extends AbstractType
 {
+    private HttpClientInterface $client;
+    
+    public function __construct(HttpClientInterface $client)
+    {
+        $this->client = $client;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -27,10 +36,34 @@ class UtilisateurType extends AbstractType
                 'label' => 'Date de naissance',
             ])
             ->add('adresse')
-            ->add('nationalite')
-          
-            
+            ->add('nationalite', ChoiceType::class, [
+                'choices' => $this->getNationalities(),
+                'placeholder' => 'Choisissez votre nationalité',
+                'attr' => ['class' => 'form-control'],
+            ])
         ;
+    }
+
+    private function getNationalities(): array
+    {
+        $response = $this->client->request('GET', 'https://restcountries.com/v3.1/all');
+        $countries = $response->toArray();
+
+        $choices = [];
+        foreach ($countries as $country) {
+            if (isset($country['translations']['fra']['common'])) {
+                $name = $country['translations']['fra']['common']; // Nom en français
+                $choices[$name] = $name;
+            } elseif (isset($country['name']['common'])) {
+                $name = $country['name']['common'];
+                $choices[$name] = $name;
+            }
+        }
+
+        asort($choices); // Trie alphabétique
+        return $choices;
+    
+               
     }
 
     public function configureOptions(OptionsResolver $resolver): void
