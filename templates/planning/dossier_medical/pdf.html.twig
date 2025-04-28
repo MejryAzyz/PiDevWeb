@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Dossier Médical - {{ dossier_medical.nomPatient }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .info-section {
+            margin-bottom: 20px;
+        }
+        .info-section h2 {
+            color: #34495e;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+        }
+        .info-row {
+            margin-bottom: 10px;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #7f8c8d;
+        }
+        .plannings-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .plannings-list li {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Dossier Médical</h1>
+        <p>MedTravel - {{ "now"|date("d/m/Y") }}</p>
+    </div>
+
+    <div class="info-section">
+        <h2>Informations du Patient</h2>
+        <div class="info-row">
+            <span class="info-label">Nom du patient :</span>
+            <span>{{ dossier_medical.nomPatient }}</span>
+        </div>
+    </div>
+
+    <div class="info-section">
+        <h2>Informations Médicales</h2>
+        <div class="info-row">
+            <span class="info-label">Tests médicaux :</span>
+            <span>{{ dossier_medical.testsMedicaux }}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Antécédents :</span>
+            <span>{{ dossier_medical.antecedents }}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Allergies :</span>
+            <span>{{ dossier_medical.allergies }}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Restrictions alimentaires :</span>
+            <span>{{ dossier_medical.restrictionsAlimentaires }}</span>
+        </div>
+    </div>
+
+    {% if dossier_medical.planningDocteurs|length > 0 %}
+    <div class="info-section">
+        <h2>Plannings Docteur</h2>
+        <ul class="plannings-list">
+            {% for planning in dossier_medical.planningDocteurs %}
+                <li>
+                    Planning #{{ planning.idPlanning }} - {{ planning.dateJour|date('d/m/Y') }} {{ planning.heureDebut }} - {{ planning.heureFin }}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    {% if dossier_medical.planningAccompagnateurs|length > 0 %}
+    <div class="info-section">
+        <h2>Plannings Accompagnateur</h2>
+        <ul class="plannings-list">
+            {% for planning in dossier_medical.planningAccompagnateurs %}
+                <li>
+                    Planning #{{ planning.idPlanning }} - {{ planning.dateJour|date('d/m/Y') }} {{ planning.heureDebut }} - {{ planning.heureFin }}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+</body>
+</html> 

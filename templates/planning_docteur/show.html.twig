@@ -21,19 +21,15 @@
                                 </tr>
                                 <tr>
                                     <td><p class="mb-0">Date Jour :</p></td>
-                                    <td class="px-2 text-dark fw-medium fs-14">{{ planning_docteur.dateJour ? planning_docteur.dateJour|date('Y-m-d') : '' }}<td>
+                                    <td class="px-2 text-dark fw-medium fs-14">{{ planning_docteur.dateJour ? planning_docteur.dateJour|date('Y-m-d') : '' }}</td>
                                 </tr>
                                 <tr>
                                     <td><p class="mb-0">Heure Debut :</p></td>
-                                    <td class="px-2 text-dark fw-medium fs-14">{{ planning_docteur.heure_debut }}</td>
+                                    <td class="px-2 text-dark fw-medium fs-14">{{ planning_docteur.heureDebut }}</td>
                                 </tr>
                                 <tr>
                                     <td><p class="mb-0">Heure Fin :</p></td>
-                                    <td class="px-2 text-dark fw-medium fs-14">{{ planning_docteur.heure_fin }}</td>
-                                </tr>
-                                <tr>
-                                    <td><p class="mb-0">Heure de fin :</p></td>
-                                    <td><p class="mb-0">{{ planning_docteur.heureFin }}</p></td>
+                                    <td class="px-2 text-dark fw-medium fs-14">{{ planning_docteur.heureFin }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -41,7 +37,7 @@
                 </div>
                 <div class="card-footer border-top gap-1 hstack">
                     <a href="{{ path('app_planning_docteur_index') }}" class="btn btn-light w-100">Retour à la liste</a>
-                    <a href="{{ path('app_planning_docteur_edit', {'id_planning': planning_docteur.id_planning}) }}" class="btn btn-dark d-inline-flex align-items-center justify-content-center rounded avatar-md">
+                    <a href="{{ path('app_planning_docteur_edit', {'idPlanning': planning_docteur.idPlanning}) }}" class="btn btn-dark d-inline-flex align-items-center justify-content-center rounded avatar-md">
                         <i class="ti ti-edit fs-20"></i>
                     </a>
                 </div>

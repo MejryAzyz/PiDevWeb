@@ -155,22 +155,16 @@ class Reservation
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: false)]
-    private ?string $statut = null;
-
-    public function getStatut(): ?string
-    {
-        return $this->statut;
-    }
-
-    public function setStatut(string $statut): self
-    {
-        $this->statut = $statut;
-        return $this;
-    }
-
     #[ORM\OneToMany(targetEntity: AffectationAccompagnateur::class, mappedBy: 'reservation')]
     private Collection $affectationAccompagnateurs;
+
+    #[ORM\ManyToOne(targetEntity: Docteur::class, inversedBy: 'reservations')]
+    #[ORM\JoinColumn(name: 'id_docteur', referencedColumnName: 'id_docteur')]
+    private ?Docteur $docteur = null;
+
+    #[ORM\ManyToOne(targetEntity: Accompagnateur::class, inversedBy: 'reservations')]
+    #[ORM\JoinColumn(name: 'id_accompagnateur', referencedColumnName: 'id_accompagnateur')]
+    private ?Accompagnateur $accompagnateur = null;
 
     public function __construct()
     {
@@ -312,6 +306,28 @@ class Reservation
     {
         $this->date_reservation = $date_reservation;
 
+        return $this;
+    }
+
+    public function getDocteur(): ?Docteur
+    {
+        return $this->docteur;
+    }
+
+    public function setDocteur(?Docteur $docteur): self
+    {
+        $this->docteur = $docteur;
+        return $this;
+    }
+
+    public function getAccompagnateur(): ?Accompagnateur
+    {
+        return $this->accompagnateur;
+    }
+
+    public function setAccompagnateur(?Accompagnateur $accompagnateur): self
+    {
+        $this->accompagnateur = $accompagnateur;
         return $this;
     }
 

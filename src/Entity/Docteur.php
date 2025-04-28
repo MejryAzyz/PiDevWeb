@@ -117,9 +117,13 @@ class Docteur
     #[ORM\OneToMany(targetEntity: PlanningDocteur::class, mappedBy: 'docteur')]
     private Collection $planningDocteurs;
 
+    #[ORM\OneToMany(targetEntity: Reservation::class, mappedBy: 'docteur')]
+    private Collection $reservations;
+
     public function __construct()
     {
         $this->planningDocteurs = new ArrayCollection();
+        $this->reservations = new ArrayCollection();
     }
 
     /**
@@ -144,6 +148,36 @@ class Docteur
     public function removePlanningDocteur(PlanningDocteur $planningDocteur): self
     {
         $this->getPlanningDocteurs()->removeElement($planningDocteur);
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Reservation>
+     */
+    public function getReservations(): Collection
+    {
+        if (!$this->reservations instanceof Collection) {
+            $this->reservations = new ArrayCollection();
+        }
+        return $this->reservations;
+    }
+
+    public function addReservation(Reservation $reservation): self
+    {
+        if (!$this->getReservations()->contains($reservation)) {
+            $this->getReservations()->add($reservation);
+            $reservation->setDocteur($this);
+        }
+        return $this;
+    }
+
+    public function removeReservation(Reservation $reservation): self
+    {
+        if ($this->getReservations()->removeElement($reservation)) {
+            if ($reservation->getDocteur() === $this) {
+                $reservation->setDocteur(null);
+            }
+        }
         return $this;
     }
 

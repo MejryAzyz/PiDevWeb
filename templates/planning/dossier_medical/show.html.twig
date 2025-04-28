@@ -59,7 +59,7 @@
                                     <ul class="list-unstyled mb-0">
                                         {% for planning in dossier_medical.planningDocteurs %}
                                             <li>
-                                                <a href="{{ path('app_planning_docteur_show', {'id_planning': planning.idPlanning}) }}" class="text-primary">
+                                                <a href="{{ path('app_planning_docteur_show', {'idPlanning': planning.idPlanning}) }}" class="text-primary">
                                                     Planning #{{ planning.idPlanning }} - {{ planning.dateJour|date('d/m/Y') }} {{ planning.heureDebut }} - {{ planning.heureFin }}
                                                 </a>
                                             </li>
@@ -94,6 +94,9 @@
     <div class="text-end mt-4">
         <a href="{{ path('app_planning_dossier_medical_edit', {'id': dossier_medical.id}) }}" class="btn btn-primary btn-lg me-2">
             <i class="ti ti-edit me-1"></i> Modifier
+        </a>
+        <a href="{{ path('app_planning_dossier_medical_export_pdf', {'id': dossier_medical.id}) }}" class="btn btn-success btn-lg me-2">
+            <i class="ti ti-file-export me-1"></i> Exporter PDF
         </a>
         <a href="{{ path('app_planning_dossier_medical_index') }}" class="btn btn-outline-secondary btn-lg">
             <i class="ti ti-arrow-left me-1"></i> Retour

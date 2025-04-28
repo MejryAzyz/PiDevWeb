@@ -17,17 +17,17 @@ class PlanningDocteur
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private ?int $id_planning = null;
+    #[ORM\Column(name: 'id_planning', type: 'integer')]
+    private ?int $idPlanning = null;
 
-    public function getId_planning(): ?int
+    public function getIdPlanning(): ?int
     {
-        return $this->id_planning;
+        return $this->idPlanning;
     }
 
-    public function setId_planning(int $id_planning): self
+    public function setIdPlanning(int $idPlanning): self
     {
-        $this->id_planning = $id_planning;
+        $this->idPlanning = $idPlanning;
         return $this;
     }
 
@@ -50,16 +50,16 @@ class PlanningDocteur
     #[ORM\Column(type: 'date', nullable: false)]
     #[Assert\NotBlank(message:"La date du rendez-vous est obligatoire")]
     #[Assert\Type("\DateTimeInterface",message:"saisir une date valide")]
-    private ?\DateTimeInterface $date_jour = null;
+    private ?\DateTimeInterface $dateJour = null;
 
-    public function getDate_jour(): ?\DateTimeInterface
+    public function getDateJour(): ?\DateTimeInterface
     {
-        return $this->date_jour;
+        return $this->dateJour;
     }
 
-    public function setDate_jour(\DateTimeInterface $date_jour): self
+    public function setDateJour(\DateTimeInterface $dateJour): self
     {
-        $this->date_jour = $date_jour;
+        $this->dateJour = $dateJour;
         return $this;
     }
 
@@ -69,16 +69,16 @@ class PlanningDocteur
         pattern: "/^([01]\d|2[0-3]):[0-5]\d$/",
         message: "l'heure début doit etre sous la format HH:mm"
     )]
-    private ?string $heure_debut = null;
+    private ?string $heureDebut = null;
 
-    public function getHeure_debut(): ?string
+    public function getHeureDebut(): ?string
     {
-        return $this->heure_debut;
+        return $this->heureDebut;
     }
 
-    public function setHeure_debut(string $heure_debut): self
+    public function setHeureDebut(string $heureDebut): self
     {
-        $this->heure_debut = $heure_debut;
+        $this->heureDebut = $heureDebut;
         return $this;
     }
 
@@ -88,57 +88,16 @@ class PlanningDocteur
         pattern: "/^([01]\d|2[0-3]):[0-5]\d$/",
         message: "l'heure fin doit etre sous la format HH:mm"
     )]
-    private ?string $heure_fin = null;
-
-    public function getHeure_fin(): ?string
-    {
-        return $this->heure_fin;
-    }
-
-    public function setHeure_fin(string $heure_fin): self
-    {
-        $this->heure_fin = $heure_fin;
-        return $this;
-    }
-
-    public function getIdPlanning(): ?int
-    {
-        return $this->id_planning;
-    }
-
-    public function getDateJour(): ?\DateTimeInterface
-    {
-        return $this->date_jour;
-    }
-
-    public function setDateJour(\DateTimeInterface $date_jour): static
-    {
-        $this->date_jour = $date_jour;
-
-        return $this;
-    }
-
-    public function getHeureDebut(): ?string
-    {
-        return $this->heure_debut;
-    }
-
-    public function setHeureDebut(string $heure_debut): static
-    {
-        $this->heure_debut = $heure_debut;
-
-        return $this;
-    }
+    private ?string $heureFin = null;
 
     public function getHeureFin(): ?string
     {
-        return $this->heure_fin;
+        return $this->heureFin;
     }
 
-    public function setHeureFin(string $heure_fin): static
+    public function setHeureFin(string $heureFin): self
     {
-        $this->heure_fin = $heure_fin;
-
+        $this->heureFin = $heureFin;
         return $this;
     }
 
@@ -151,7 +110,7 @@ class PlanningDocteur
         return $this->dossierMedical;
     }
 
-    public function setDossierMedical(?DossierMedical $dossierMedical): static
+    public function setDossierMedical(?DossierMedical $dossierMedical): self
     {
         $this->dossierMedical = $dossierMedical;
         return $this;

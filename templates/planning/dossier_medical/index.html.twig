@@ -65,7 +65,7 @@
                                 <td class="fs-12">{{ dossier_medical.restrictionsAlimentaires|slice(0, 30) ~ '...' }}</td>
                                 <td class="fs-12">
                                     {% if dossier_medical.planningDocteurs|length > 0 %}
-                                        <a href="{{ path('app_planning_docteur_show', {'id_planning': dossier_medical.planningDocteurs|first.idPlanning}) }}" class="text-primary">
+                                        <a href="{{ path('app_planning_docteur_show', {'idPlanning': dossier_medical.planningDocteurs|first.idPlanning}) }}" class="text-primary">
                                             Voir planning docteur
                                         </a>
                                     {% else %}
