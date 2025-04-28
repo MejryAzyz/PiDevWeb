@@ -140,7 +140,7 @@
                                             <span class="text-muted">Non assigné</span>
                                         {% endif %}
                                     </td>
-                                    <td class="fs-12">
+                                    <td>
                                         <div class="btn-group">
                                             <a href="{{ path('app_planning_docteur_show', {'idPlanning': planning_docteur.idPlanning}) }}" class="btn btn-info btn-sm">
                                                 <i class="ti ti-eye"></i>
@@ -148,12 +148,7 @@
                                             <a href="{{ path('app_planning_docteur_edit', {'idPlanning': planning_docteur.idPlanning}) }}" class="btn btn-warning btn-sm">
                                                 <i class="ti ti-edit"></i>
                                             </a>
-                                            <button class="btn btn-danger btn-sm delete-btn" 
-                                                    data-id="{{ planning_docteur.idPlanning }}"
-                                                    data-url="{{ path('app_planning_docteur_delete', {'idPlanning': planning_docteur.idPlanning}) }}"
-                                                    data-token="{{ csrf_token('delete' ~ planning_docteur.idPlanning) }}">
-                                                <i class="ti ti-trash"></i>
-                                            </button>
+                                            {{ include('planning_docteur/_delete_form.html.twig') }}
                                         </div>
                                     </td>
                                 </tr>

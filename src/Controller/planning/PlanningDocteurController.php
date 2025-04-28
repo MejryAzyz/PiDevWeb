@@ -13,12 +13,15 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Psr\Log\LoggerInterface;
 use Twilio\Rest\Client;
+use Mailjet\Client as MailjetClient;
+use Mailjet\Resources;
 
 #[Route('/planning/docteur')]
 final class PlanningDocteurController extends AbstractController
 {
     private $logger;
     private $twilioClient;
+    private $mailjetClient;
 
     public function __construct(LoggerInterface $logger)
     {
@@ -27,6 +30,14 @@ final class PlanningDocteurController extends AbstractController
         $accountSid = $_ENV['TWILIO_ACCOUNT_SID'];
         $authToken = $_ENV['TWILIO_AUTH_TOKEN'];
         $this->twilioClient = new Client($accountSid, $authToken);
+
+        // Initialize Mailjet client
+        $this->mailjetClient = new MailjetClient(
+            $_ENV['MAILJET_API_KEY'],
+            $_ENV['MAILJET_API_SECRET'],
+            true,
+            ['version' => 'v3.1']
+        );
     }
 
     private function sendSmsNotification(PlanningDocteur $planningDocteur): void
@@ -61,6 +72,129 @@ final class PlanningDocteurController extends AbstractController
             $this->logger->info('SMS notification sent successfully to doctor');
         } catch (\Exception $e) {
             $this->logger->error('Error sending SMS notification: ' . $e->getMessage());
+        }
+    }
+
+    private function sendEmailNotification(PlanningDocteur $planningDocteur): void
+    {
+        try {
+            $this->logger->info('Starting email notification process');
+
+            // Check if Mailjet credentials are set
+            if (!isset($_ENV['MAILJET_API_KEY']) || !isset($_ENV['MAILJET_API_SECRET']) || !isset($_ENV['MAILJET_SENDER_EMAIL'])) {
+                $this->logger->error('Mailjet credentials are not properly configured in .env file');
+                $this->logger->error('MAILJET_API_KEY: ' . (isset($_ENV['MAILJET_API_KEY']) ? 'set' : 'not set'));
+                $this->logger->error('MAILJET_API_SECRET: ' . (isset($_ENV['MAILJET_API_SECRET']) ? 'set' : 'not set'));
+                $this->logger->error('MAILJET_SENDER_EMAIL: ' . (isset($_ENV['MAILJET_SENDER_EMAIL']) ? 'set' : 'not set'));
+                return;
+            }
+
+            $this->logger->info('Mailjet credentials are properly configured');
+
+            $doctor = $planningDocteur->getDocteur();
+            if (!$doctor) {
+                $this->logger->warning('Cannot send email: Doctor not found');
+                return;
+            }
+            if (!$doctor->getEmail()) {
+                $this->logger->warning('Cannot send email: Doctor email not found for doctor: ' . $doctor->getNom());
+                return;
+            }
+
+            $this->logger->info('Attempting to send email to: ' . $doctor->getEmail());
+
+            // Get the logo file and convert it to base64
+            $logoPath = __DIR__ . '/../../../public/images/email/logo.png';
+            if (!file_exists($logoPath)) {
+                $this->logger->error('Logo file not found at: ' . $logoPath);
+                return;
+            }
+
+            // Read the logo file
+            $logoData = file_get_contents($logoPath);
+            if ($logoData === false) {
+                $this->logger->error('Failed to read logo file');
+                return;
+            }
+
+            // Check file size (limit to 50KB)
+            if (strlen($logoData) > 51200) { // 50KB in bytes
+                $this->logger->error('Logo file is too large: ' . strlen($logoData) . ' bytes');
+                return;
+            }
+
+            // Convert to base64
+            $base64Logo = base64_encode($logoData);
+            $logoDataUri = 'data:image/png;base64,' . $base64Logo;
+
+            // Create HTML email content with base64 encoded logo
+            $htmlContent = '
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 5px;">
+                <div style="text-align: center; margin-bottom: 30px; padding: 20px 0; background-color: #ffffff;">
+                    <img src="' . $logoDataUri . '" alt="MedTravel Logo" style="max-width: 200px; height: auto; margin-bottom: 20px;">
+                    <h1 style="color: #2c3e50; margin-bottom: 10px; font-size: 24px;">Nouveau Planning MedTravel</h1>
+                    <p style="color: #7f8c8d; font-size: 16px;">Une nouvelle entrée de planning a été ajoutée</p>
+                </div>
+                
+                <div style="background-color: #f8f9fa; padding: 20px; border-radius: 5px; margin-bottom: 20px;">
+                    <h2 style="color: #34495e; margin-bottom: 15px; border-bottom: 2px solid #3498db; padding-bottom: 5px; font-size: 20px;">Détails du Planning</h2>
+                    <p style="margin: 10px 0; font-size: 16px;"><strong>📅 Date:</strong> ' . $planningDocteur->getDateJour()->format('d/m/Y') . '</p>
+                    <p style="margin: 10px 0; font-size: 16px;"><strong>⏰ Heure:</strong> ' . $planningDocteur->getHeureDebut() . ' - ' . $planningDocteur->getHeureFin() . '</p>';
+            
+            if ($planningDocteur->getDossierMedical()) {
+                $htmlContent .= '
+                    <p style="margin: 10px 0; font-size: 16px;"><strong>👤 Patient:</strong> ' . $planningDocteur->getDossierMedical()->getNomPatient() . '</p>';
+            }
+            
+            $htmlContent .= '
+                </div>
+                
+                <div style="text-align: center; margin-top: 30px; padding: 20px 0; border-top: 1px solid #e0e0e0;">
+                    <p style="color: #7f8c8d; font-size: 16px;">Merci de confirmer votre disponibilité.</p>
+                </div>
+            </div>';
+
+            // Send email using Mailjet
+            $body = [
+                'Messages' => [
+                    [
+                        'From' => [
+                            'Email' => $_ENV['MAILJET_SENDER_EMAIL'],
+                            'Name' => "MedTravel"
+                        ],
+                        'To' => [
+                            [
+                                'Email' => $doctor->getEmail(),
+                                'Name' => $doctor->getNom()
+                            ]
+                        ],
+                        'Subject' => "Nouveau Planning MedTravel - " . $planningDocteur->getDateJour()->format('d/m/Y'),
+                        'HTMLPart' => $htmlContent
+                    ]
+                ]
+            ];
+
+            $this->logger->info('Preparing to send email with Mailjet');
+            $this->logger->info('From email: ' . $_ENV['MAILJET_SENDER_EMAIL']);
+            $this->logger->info('To email: ' . $doctor->getEmail());
+
+            try {
+                $this->logger->info('Sending email via Mailjet API');
+                $response = $this->mailjetClient->post(Resources::$Email, ['body' => $body]);
+                
+                if ($response->success()) {
+                    $this->logger->info('Email notification sent successfully to doctor: ' . $doctor->getEmail());
+                    $this->logger->info('Mailjet response: ' . json_encode($response->getData()));
+                } else {
+                    $this->logger->error('Failed to send email notification. Response: ' . json_encode($response->getData()));
+                }
+            } catch (\Exception $e) {
+                $this->logger->error('Mailjet API error: ' . $e->getMessage());
+                $this->logger->error('Stack trace: ' . $e->getTraceAsString());
+            }
+        } catch (\Exception $e) {
+            $this->logger->error('Error in sendEmailNotification: ' . $e->getMessage());
+            $this->logger->error('Stack trace: ' . $e->getTraceAsString());
         }
     }
 
@@ -153,13 +287,32 @@ final class PlanningDocteurController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($planningDocteur);
-            $entityManager->flush();
+            try {
+                // First save the planning
+                $entityManager->persist($planningDocteur);
+                $entityManager->flush();
 
-            // Send SMS notification
-            $this->sendSmsNotification($planningDocteur);
+                // Then try to send notifications
+                try {
+                    // Send SMS notification
+                    $this->sendSmsNotification($planningDocteur);
+                } catch (\Exception $e) {
+                    $this->logger->error('Error sending SMS notification: ' . $e->getMessage());
+                }
 
-            return $this->redirectToRoute('app_planning_docteur_index', [], Response::HTTP_SEE_OTHER);
+                try {
+                    // Send email notification
+                    $this->sendEmailNotification($planningDocteur);
+                } catch (\Exception $e) {
+                    $this->logger->error('Error sending email notification: ' . $e->getMessage());
+                }
+
+                $this->addFlash('success', 'Le planning a été créé avec succès.');
+                return $this->redirectToRoute('app_planning_docteur_index', [], Response::HTTP_SEE_OTHER);
+            } catch (\Exception $e) {
+                $this->logger->error('Error creating planning: ' . $e->getMessage());
+                $this->addFlash('error', 'Une erreur est survenue lors de la création du planning.');
+            }
         }
 
         return $this->render('planning_docteur/new.html.twig', [
