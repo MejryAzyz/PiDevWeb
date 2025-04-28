@@ -140,10 +140,12 @@ document.addEventListener('DOMContentLoaded', function() {
             // Show the calendar
             miniCalendar.style.display = 'block';
             
-            // Fetch the accompagnateur's planning
-            fetch(`/api/accompagnateur/${accompagnateurId}/planning`)
+            // Fetch the accompagnateur's planning and reservations
+            fetch(`/planning/accompagnateur/api/${accompagnateurId}/planning/raw`)
                 .then(response => response.json())
                 .then(data => {
+                    console.log('Received events:', data);
+                    
                     if (calendar) {
                         calendar.destroy();
                     }
@@ -158,21 +160,50 @@ document.addEventListener('DOMContentLoaded', function() {
                         locale: 'fr',
                         height: 'auto',
                         contentHeight: 300,
-                        events: data.map(planning => ({
-                            title: `${planning.heureDebut} - ${planning.heureFin}`,
-                            start: planning.dateJour,
-                            end: planning.dateJour,
-                            color: '#dc3545',
-                            display: 'background'
-                        })),
+                        events: data,
+                        eventDidMount: function(info) {
+                            console.log('Event mounted:', info.event);
+                            // Add tooltip with event details
+                            const eventType = info.event.extendedProps.type;
+                            const title = info.event.title;
+                            const date = info.event.start.toLocaleDateString('fr-FR');
+                            
+                            let tooltip = `Date: ${date}\n`;
+                            tooltip += `Type: ${eventType === 'planning' ? 'Planning' : 'Réservation'}\n`;
+                            tooltip += `Détails: ${title}`;
+                            
+                            if (eventType === 'reservation') {
+                                const dateDebut = info.event.extendedProps.dateDebut;
+                                const dateFin = info.event.extendedProps.dateFin;
+                                tooltip += `\nPériode: ${dateDebut} au ${dateFin}`;
+                            }
+                            
+                            info.el.title = tooltip;
+                        },
                         eventClick: function(info) {
-                            // You can add click handling here if needed
+                            console.log('Event clicked:', info.event);
+                            // Show event details in a tooltip or modal
+                            const eventType = info.event.extendedProps.type;
+                            const title = info.event.title;
+                            const date = info.event.start.toLocaleDateString('fr-FR');
+                            
+                            let message = `Date: ${date}\n`;
+                            message += `Type: ${eventType === 'planning' ? 'Planning' : 'Réservation'}\n`;
+                            message += `Détails: ${title}`;
+                            
+                            if (eventType === 'reservation') {
+                                const dateDebut = info.event.extendedProps.dateDebut;
+                                const dateFin = info.event.extendedProps.dateFin;
+                                message += `\nPériode: ${dateDebut} au ${dateFin}`;
+                            }
+                            
+                            alert(message);
                         }
                     });
                     calendar.render();
                 })
                 .catch(error => {
-                    console.error('Error fetching accompagnateur planning:', error);
+                    console.error('Error fetching accompagnateur planning and reservations:', error);
                 });
         } else {
             // Hide the calendar if no accompagnateur is selected

@@ -15,6 +15,7 @@ use Psr\Log\LoggerInterface;
 use Twilio\Rest\Client;
 use Mailjet\Client as MailjetClient;
 use Mailjet\Resources;
+use App\Entity\Reservation;
 
 #[Route('/planning/docteur')]
 final class PlanningDocteurController extends AbstractController
@@ -356,5 +357,129 @@ final class PlanningDocteurController extends AbstractController
         }
 
         return $this->redirectToRoute('app_planning_docteur_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/api/{id}/planning', name: 'app_planning_docteur_api_planning', methods: ['GET'])]
+    public function getDoctorPlanning(int $id, PlanningDocteurRepository $planningDocteurRepository, EntityManagerInterface $entityManager): JsonResponse
+    {
+        try {
+            // Get planning
+            $plannings = $planningDocteurRepository->findBy(['docteur' => $id]);
+            $this->logger->info('Found ' . count($plannings) . ' planning entries for doctor ' . $id);
+            
+            $planningEvents = array_map(function($planning) {
+                return [
+                    'id' => 'planning_' . $planning->getIdPlanning(),
+                    'title' => $planning->getHeureDebut() . ' - ' . $planning->getHeureFin(),
+                    'start' => $planning->getDateJour()->format('Y-m-d'),
+                    'end' => $planning->getDateJour()->format('Y-m-d'),
+                    'backgroundColor' => '#dc3545',
+                    'borderColor' => '#dc3545',
+                    'display' => 'block',
+                    'type' => 'planning',
+                    'extendedProps' => [
+                        'idPlanning' => $planning->getIdPlanning(),
+                        'heureDebut' => $planning->getHeureDebut(),
+                        'heureFin' => $planning->getHeureFin()
+                    ]
+                ];
+            }, $plannings);
+
+            // Get reservations
+            $reservations = $entityManager->getRepository(Reservation::class)->findBy(['docteur' => $id]);
+            $this->logger->info('Found ' . count($reservations) . ' reservations for doctor ' . $id);
+            
+            $reservationEvents = array_map(function($reservation) {
+                $event = [
+                    'id' => 'reservation_' . $reservation->getIdReservation(),
+                    'title' => 'Réservation: ' . $reservation->getHeureDepart(),
+                    'start' => $reservation->getDateDebut()->format('Y-m-d'),
+                    'end' => $reservation->getDateFin()->format('Y-m-d'),
+                    'backgroundColor' => '#28a745',
+                    'borderColor' => '#28a745',
+                    'display' => 'block',
+                    'type' => 'reservation',
+                    'extendedProps' => [
+                        'idReservation' => $reservation->getIdReservation(),
+                        'dateDebut' => $reservation->getDateDebut()->format('Y-m-d'),
+                        'dateFin' => $reservation->getDateFin()->format('Y-m-d'),
+                        'heureDepart' => $reservation->getHeureDepart()
+                    ]
+                ];
+                $this->logger->info('Reservation event: ' . json_encode($event));
+                return $event;
+            }, $reservations);
+
+            // Combine both types of events
+            $events = array_merge($planningEvents, $reservationEvents);
+            $this->logger->info('Total events: ' . count($events));
+            $this->logger->info('Events data: ' . json_encode($events));
+
+            return $this->json($events);
+        } catch (\Exception $e) {
+            $this->logger->error('Error fetching doctor planning and reservations: ' . $e->getMessage());
+            $this->logger->error('Stack trace: ' . $e->getTraceAsString());
+            return $this->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    #[Route('/api/{id}/planning/raw', name: 'app_planning_docteur_api_planning_raw', methods: ['GET'])]
+    public function getDoctorPlanningRaw(int $id, PlanningDocteurRepository $planningDocteurRepository, EntityManagerInterface $entityManager): JsonResponse
+    {
+        try {
+            // Get planning
+            $plannings = $planningDocteurRepository->findBy(['docteur' => $id]);
+            $this->logger->info('Found ' . count($plannings) . ' planning entries for doctor ' . $id);
+            
+            $planningEvents = array_map(function($planning) {
+                return [
+                    'id' => 'planning_' . $planning->getIdPlanning(),
+                    'title' => $planning->getHeureDebut() . ' - ' . $planning->getHeureFin(),
+                    'start' => $planning->getDateJour()->format('Y-m-d'),
+                    'end' => $planning->getDateJour()->format('Y-m-d'),
+                    'backgroundColor' => '#dc3545',
+                    'borderColor' => '#dc3545',
+                    'display' => 'block',
+                    'type' => 'planning',
+                    'extendedProps' => [
+                        'idPlanning' => $planning->getIdPlanning(),
+                        'heureDebut' => $planning->getHeureDebut(),
+                        'heureFin' => $planning->getHeureFin()
+                    ]
+                ];
+            }, $plannings);
+
+            // Get reservations
+            $reservations = $entityManager->getRepository(Reservation::class)->findBy(['docteur' => $id]);
+            $this->logger->info('Found ' . count($reservations) . ' reservations for doctor ' . $id);
+            
+            $reservationEvents = array_map(function($reservation) {
+                return [
+                    'id' => 'reservation_' . $reservation->getIdReservation(),
+                    'title' => 'Réservation',
+                    'start' => $reservation->getDateDebut()->format('Y-m-d'),
+                    'end' => $reservation->getDateFin()->format('Y-m-d'),
+                    'backgroundColor' => '#28a745',
+                    'borderColor' => '#28a745',
+                    'display' => 'block',
+                    'type' => 'reservation',
+                    'extendedProps' => [
+                        'idReservation' => $reservation->getIdReservation(),
+                        'dateDebut' => $reservation->getDateDebut()->format('Y-m-d'),
+                        'dateFin' => $reservation->getDateFin()->format('Y-m-d')
+                    ]
+                ];
+            }, $reservations);
+
+            // Combine both types of events
+            $events = array_merge($planningEvents, $reservationEvents);
+            $this->logger->info('Total events: ' . count($events));
+            $this->logger->info('Events data: ' . json_encode($events));
+
+            return $this->json($events);
+        } catch (\Exception $e) {
+            $this->logger->error('Error fetching doctor planning and reservations: ' . $e->getMessage());
+            return $this->json(['error' => $e->getMessage()], 500);
+        }
     }
 }
