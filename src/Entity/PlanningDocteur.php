@@ -9,28 +9,31 @@ use Doctrine\Common\Collections\Collection;
 
 use App\Repository\PlanningDocteurRepository;
 
+use Symfony\Component\Validator\Constraints as Assert;
+
 #[ORM\Entity(repositoryClass: PlanningDocteurRepository::class)]
 #[ORM\Table(name: 'planning_docteur')]
 class PlanningDocteur
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private ?int $id_planning = null;
+    #[ORM\Column(name: 'id_planning', type: 'integer')]
+    private ?int $idPlanning = null;
 
-    public function getId_planning(): ?int
+    public function getIdPlanning(): ?int
     {
-        return $this->id_planning;
+        return $this->idPlanning;
     }
 
-    public function setId_planning(int $id_planning): self
+    public function setIdPlanning(int $idPlanning): self
     {
-        $this->id_planning = $id_planning;
+        $this->idPlanning = $idPlanning;
         return $this;
     }
 
     #[ORM\ManyToOne(targetEntity: Docteur::class, inversedBy: 'planningDocteurs')]
     #[ORM\JoinColumn(name: 'id_docteur', referencedColumnName: 'id_docteur')]
+    #[Assert\NotBlank(message:"nom docteur est obligatoire")]
     private ?Docteur $docteur = null;
 
     public function getDocteur(): ?Docteur
@@ -45,86 +48,71 @@ class PlanningDocteur
     }
 
     #[ORM\Column(type: 'date', nullable: false)]
-    private ?\DateTimeInterface $date_jour = null;
-
-    public function getDate_jour(): ?\DateTimeInterface
-    {
-        return $this->date_jour;
-    }
-
-    public function setDate_jour(\DateTimeInterface $date_jour): self
-    {
-        $this->date_jour = $date_jour;
-        return $this;
-    }
-
-    #[ORM\Column(type: 'string', nullable: false)]
-    private ?string $heure_debut = null;
-
-    public function getHeure_debut(): ?string
-    {
-        return $this->heure_debut;
-    }
-
-    public function setHeure_debut(string $heure_debut): self
-    {
-        $this->heure_debut = $heure_debut;
-        return $this;
-    }
-
-    #[ORM\Column(type: 'string', nullable: false)]
-    private ?string $heure_fin = null;
-
-    public function getHeure_fin(): ?string
-    {
-        return $this->heure_fin;
-    }
-
-    public function setHeure_fin(string $heure_fin): self
-    {
-        $this->heure_fin = $heure_fin;
-        return $this;
-    }
-
-    public function getIdPlanning(): ?int
-    {
-        return $this->id_planning;
-    }
+    #[Assert\NotBlank(message:"La date du rendez-vous est obligatoire")]
+    #[Assert\Type("\DateTimeInterface",message:"saisir une date valide")]
+    private ?\DateTimeInterface $dateJour = null;
 
     public function getDateJour(): ?\DateTimeInterface
     {
-        return $this->date_jour;
+        return $this->dateJour;
     }
 
-    public function setDateJour(\DateTimeInterface $date_jour): static
+    public function setDateJour(\DateTimeInterface $dateJour): self
     {
-        $this->date_jour = $date_jour;
-
+        $this->dateJour = $dateJour;
         return $this;
     }
+
+    #[ORM\Column(type: 'string', nullable: false)]
+    #[Assert\NotBlank(message:"heure début est obligatoire")]
+    #[Assert\Regex(
+        pattern: "/^([01]\d|2[0-3]):[0-5]\d$/",
+        message: "l'heure début doit etre sous la format HH:mm"
+    )]
+    private ?string $heureDebut = null;
 
     public function getHeureDebut(): ?string
     {
-        return $this->heure_debut;
+        return $this->heureDebut;
     }
 
-    public function setHeureDebut(string $heure_debut): static
+    public function setHeureDebut(string $heureDebut): self
     {
-        $this->heure_debut = $heure_debut;
-
+        $this->heureDebut = $heureDebut;
         return $this;
     }
+
+    #[ORM\Column(type: 'string', nullable: false)]
+    #[Assert\NotBlank(message:"heure fin est obligatoire")]
+    #[Assert\Regex(
+        pattern: "/^([01]\d|2[0-3]):[0-5]\d$/",
+        message: "l'heure fin doit etre sous la format HH:mm"
+    )]
+    private ?string $heureFin = null;
 
     public function getHeureFin(): ?string
     {
-        return $this->heure_fin;
+        return $this->heureFin;
     }
 
-    public function setHeureFin(string $heure_fin): static
+    public function setHeureFin(string $heureFin): self
     {
-        $this->heure_fin = $heure_fin;
-
+        $this->heureFin = $heureFin;
         return $this;
     }
 
+    #[ORM\ManyToOne(inversedBy: 'planningDocteurs', targetEntity: DossierMedical::class)]
+    #[ORM\JoinColumn(name: 'dossier_medical_id', referencedColumnName: 'id')]
+    private ?DossierMedical $dossierMedical = null;
+
+    public function getDossierMedical(): ?DossierMedical
+    {
+        return $this->dossierMedical;
+    }
+
+    public function setDossierMedical(?DossierMedical $dossierMedical): self
+    {
+        $this->dossierMedical = $dossierMedical;
+        return $this;
+    }
 }

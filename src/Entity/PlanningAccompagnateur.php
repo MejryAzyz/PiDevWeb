@@ -9,8 +9,14 @@ use Doctrine\Common\Collections\Collection;
 
 use App\Repository\PlanningAccompagnateurRepository;
 
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
+
+
+
 #[ORM\Entity(repositoryClass: PlanningAccompagnateurRepository::class)]
 #[ORM\Table(name: 'planning_accompagnateur')]
+#[Assert\Callback('validateHeures')]
 class PlanningAccompagnateur
 {
     #[ORM\Id]
@@ -31,6 +37,7 @@ class PlanningAccompagnateur
 
     #[ORM\ManyToOne(targetEntity: Accompagnateur::class, inversedBy: 'planningAccompagnateurs')]
     #[ORM\JoinColumn(name: 'id_accompagnateur', referencedColumnName: 'id_accompagnateur')]
+    #[Assert\NotBlank(message:"nom accompagnateur est obligatoire")]
     private ?Accompagnateur $accompagnateur = null;
 
     public function getAccompagnateur(): ?Accompagnateur
@@ -45,6 +52,8 @@ class PlanningAccompagnateur
     }
 
     #[ORM\Column(type: 'date', nullable: false)]
+    #[Assert\NotBlank(message:"La date du rendez-vous est obligatoire")]
+    #[Assert\Type("\DateTimeInterface",message:"saisir une date valide")]
     private ?\DateTimeInterface $date_jour = null;
 
     public function getDate_jour(): ?\DateTimeInterface
@@ -59,6 +68,12 @@ class PlanningAccompagnateur
     }
 
     #[ORM\Column(type: 'string', nullable: false)]
+    #[Assert\NotBlank(message:"heure début est obligatoire")]
+    #[Assert\Regex(
+        pattern: "/^([01]\d|2[0-3]):[0-5]\d$/",
+        message: "l'heure début doit etre sous la format HH:mm"
+    )]
+    
     private ?string $heure_debut = null;
 
     public function getHeure_debut(): ?string
@@ -73,6 +88,12 @@ class PlanningAccompagnateur
     }
 
     #[ORM\Column(type: 'string', nullable: false)]
+    #[Assert\NotBlank(message:"heure fin est obligatoire")]
+    #[Assert\Regex(
+        pattern: "/^([01]\d|2[0-3]):[0-5]\d$/",
+        message: "l'heure fin doit etre sous la format HH:mm"
+    )]
+    #[Assert\NotBlank(message:"heure début est obligatoire")]
     private ?string $heure_fin = null;
 
     public function getHeure_fin(): ?string
@@ -83,20 +104,6 @@ class PlanningAccompagnateur
     public function setHeure_fin(string $heure_fin): self
     {
         $this->heure_fin = $heure_fin;
-        return $this;
-    }
-
-    #[ORM\Column(type: 'string', nullable: false)]
-    private ?string $statut = null;
-
-    public function getStatut(): ?string
-    {
-        return $this->statut;
-    }
-
-    public function setStatut(string $statut): self
-    {
-        $this->statut = $statut;
         return $this;
     }
 
@@ -141,4 +148,39 @@ class PlanningAccompagnateur
         return $this;
     }
 
+    public function validateHeures(ExecutionContextInterface $context): void
+    {
+        if (!$this->heure_debut || !$this->heure_fin) {
+            return; 
+        }
+
+        $debut = \DateTime::createFromFormat('H:i', $this->heure_debut);
+        $fin = \DateTime::createFromFormat('H:i', $this->heure_fin);
+
+        if (!$debut || !$fin) {
+            return; 
+        }
+
+        if ($fin <= $debut) {
+            $context->buildViolation("L'heure de fin doit être après l'heure de début.")
+                ->atPath('heure_fin')
+                ->addViolation();
+        }
+    }
+
+    #[ORM\ManyToOne(inversedBy: 'planningAccompagnateurs', targetEntity: DossierMedical::class)]
+    #[ORM\JoinColumn(name: 'dossier_medical_id', referencedColumnName: 'id')]
+    private ?DossierMedical $dossierMedical = null;
+
+    public function getDossierMedical(): ?DossierMedical
+    {
+        return $this->dossierMedical;
+    }
+
+    public function setDossierMedical(?DossierMedical $dossierMedical): static
+    {
+        $this->dossierMedical = $dossierMedical;
+        return $this;
+    }
 }
+

@@ -1,0 +1,219 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Hebergement{% endblock %}
+
+{% block css %}
+    <link href="{{ asset('coderthemes.com/osen/layouts/assets/css/app.min.css') }}" rel="stylesheet" type="text/css" id="app-style" />
+    <link href="{{ asset('coderthemes.com/osen/layouts/assets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('coderthemes.com/osen/layouts/assets/vendor/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+    <!-- FullCalendar CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet" type="text/css" />
+    <style>
+        .form-group { margin-bottom: 1.5rem; }
+        .form-control.is-invalid { border-color: #dc3545; }
+        .invalid-feedback { display: block; color: #dc3545; font-size: 0.875rem; }
+        .dropzone { min-height: 200px; border: 2px dashed #ced4da; background: #f8f9fa; }
+        .dropzone .dz-message { text-align: center; margin: 2rem 0; }
+        .card { box-shadow: 0 0.15rem 1.75rem 0 rgba(33, 40, 50, 0.15); }
+        #miniCalendar { 
+            margin-top: 1rem;
+            display: none;
+            width: 100%;
+            margin-left: 0;
+            margin-right: 0;
+        }
+        .fc-event {
+            cursor: pointer;
+        }
+        .fc-event-title {
+            font-size: 0.7em;
+        }
+        .fc .fc-toolbar {
+            font-size: 0.8em;
+        }
+        .fc .fc-toolbar-title {
+            font-size: 1.2em;
+        }
+        .fc .fc-button {
+            padding: 0.3em 0.6em;
+            font-size: 0.8em;
+        }
+        .fc .fc-daygrid-day {
+            min-height: 2em;
+        }
+        .fc .fc-daygrid-day-number {
+            font-size: 0.8em;
+            padding: 2px 4px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="page-container py-4" >
+    <div class="page-title-head d-flex align-items-center flex-column flex-sm-row gap-3 mb-4">
+        <h4 class="fs-24 fw-semibold mb-0 flex-grow-1">Ajouter un planning</h4>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb m-0">
+                <li class="breadcrumb-item"><a href="#">MedTravel</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('app_planning_accompagnateur_index') }}">planning accompagnateur</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Ajouter planning accompagnateur</li>
+            </ol>
+        </nav>
+    </div>
+
+    {{ form_start(form, {'attr': {'id': 'planningAccompagnateurForm', 'class':'rt-form', 'novalidate': 'novalidate'}}) }}
+    <div class="row g-4 mx-0" style="max-width: 100%;">
+        <div class="col-lg-12 px-0 ">
+            <div class="card h-100">
+                <div class="card-header bg-soft-primary border-bottom border-dashed" style="text-align: center;">
+                    <h5 class="card-title mb-0">INFORMATIONS</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            {{ form_label(form.accompagnateur, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.accompagnateur, {'attr': {'class': 'form-control', 'placeholder': 'choisir accompagnateur'}}) }}
+                            {{ form_errors(form.accompagnateur, {'attr': {'class': 'invalid-feedback'}}) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_label(form.date_jour, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.date_jour, {'attr': {'class': 'form-control', 'placeholder': 'format JJ-MM-AAAA'}}) }}
+                            {{ form_errors(form.date_jour, {'attr': {'class': 'invalid-feedback'}}) }}
+                        </div>
+                        <div class="col-12">
+                            <div id="miniCalendar"></div>
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_label(form.heure_debut, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.heure_debut, {'attr': {'class': 'form-control', 'placeholder': 'format HH:mm'}}) }}
+                            {{ form_errors(form.heure_debut, {'attr': {'class': 'invalid-feedback'}}) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_label(form.heure_fin, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.heure_fin, {'attr': {'class': 'form-control', 'placeholder': 'HH:mm'}}) }}
+                            {{ form_errors(form.heure_fin, {'attr': {'class': 'invalid-feedback'}}) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_label(form.dossierMedical, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.dossierMedical, {'attr': {'class': 'form-control', 'placeholder': 'Sélectionnez un dossier médical'}}) }}
+                            {{ form_errors(form.dossierMedical, {'attr': {'class': 'invalid-feedback'}}) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-end mt-4">
+        <button type="submit" class="btn btn-primary btn-lg me-2" id="submitPlanningForm">
+            <i class="ti ti-check me-1"></i> Ajouter planning
+        </button>
+        <a href="{{ path('app_planning_accompagnateur_index') }}" class="btn btn-outline-danger btn-lg" id="cancelButton">
+            <i class="ti ti-x me-1"></i> Cancel
+        </a>
+    </div>
+    {{ form_end(form) }}
+</div>
+{% endblock %}
+
+{% block js %}
+<!-- Vendor js -->
+<script src="{{ asset('coderthemes.com/osen/layouts/assets/vendor/apexcharts/apexcharts.min.js') }}"></script>
+<script src="{{ asset('coderthemes.com/osen/layouts/assets/js/vendor.min.js') }}"></script>
+
+<!-- FullCalendar JS -->
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales-all.min.js"></script>
+
+<!-- App js -->
+<script src="{{ asset('coderthemes.com/osen/layouts/assets/js/app.js') }}"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const accompagnateurSelect = document.querySelector('#{{ form.accompagnateur.vars.id }}');
+    const miniCalendar = document.getElementById('miniCalendar');
+    let calendar = null;
+
+    accompagnateurSelect.addEventListener('change', function() {
+        const accompagnateurId = this.value;
+        if (accompagnateurId) {
+            // Show the calendar
+            miniCalendar.style.display = 'block';
+            
+            // Fetch the accompagnateur's planning and reservations
+            fetch(`/planning/accompagnateur/api/${accompagnateurId}/planning/raw`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Received events:', data);
+                    
+                    if (calendar) {
+                        calendar.destroy();
+                    }
+
+                    calendar = new FullCalendar.Calendar(miniCalendar, {
+                        initialView: 'dayGridMonth',
+                        headerToolbar: {
+                            left: 'prev,next',
+                            center: 'title',
+                            right: 'dayGridMonth,timeGridWeek'
+                        },
+                        locale: 'fr',
+                        height: 'auto',
+                        contentHeight: 300,
+                        events: data,
+                        eventDidMount: function(info) {
+                            console.log('Event mounted:', info.event);
+                            // Add tooltip with event details
+                            const eventType = info.event.extendedProps.type;
+                            const title = info.event.title;
+                            const date = info.event.start.toLocaleDateString('fr-FR');
+                            
+                            let tooltip = `Date: ${date}\n`;
+                            tooltip += `Type: ${eventType === 'planning' ? 'Planning' : 'Réservation'}\n`;
+                            tooltip += `Détails: ${title}`;
+                            
+                            if (eventType === 'reservation') {
+                                const dateDebut = info.event.extendedProps.dateDebut;
+                                const dateFin = info.event.extendedProps.dateFin;
+                                tooltip += `\nPériode: ${dateDebut} au ${dateFin}`;
+                            }
+                            
+                            info.el.title = tooltip;
+                        },
+                        eventClick: function(info) {
+                            console.log('Event clicked:', info.event);
+                            // Show event details in a tooltip or modal
+                            const eventType = info.event.extendedProps.type;
+                            const title = info.event.title;
+                            const date = info.event.start.toLocaleDateString('fr-FR');
+                            
+                            let message = `Date: ${date}\n`;
+                            message += `Type: ${eventType === 'planning' ? 'Planning' : 'Réservation'}\n`;
+                            message += `Détails: ${title}`;
+                            
+                            if (eventType === 'reservation') {
+                                const dateDebut = info.event.extendedProps.dateDebut;
+                                const dateFin = info.event.extendedProps.dateFin;
+                                message += `\nPériode: ${dateDebut} au ${dateFin}`;
+                            }
+                            
+                            alert(message);
+                        }
+                    });
+                    calendar.render();
+                })
+                .catch(error => {
+                    console.error('Error fetching accompagnateur planning and reservations:', error);
+                });
+        } else {
+            // Hide the calendar if no accompagnateur is selected
+            miniCalendar.style.display = 'none';
+            if (calendar) {
+                calendar.destroy();
+                calendar = null;
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

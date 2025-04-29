@@ -1,0 +1,106 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails du Dossier Médical{% endblock %}
+
+{% block css %}
+<!-- App css -->
+<link href="{{ asset('coderthemes.com/osen/layouts/assets/css/app.min.css') }}" rel="stylesheet" type="text/css" id="app-style" />
+
+<!-- Icons css -->
+<link href="{{ asset('coderthemes.com/osen/layouts/assets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+{% block body %}
+<div class="page-container py-4">
+    <div class="page-title-head d-flex align-items-center flex-column flex-sm-row gap-3 mb-4">
+        <h4 class="fs-24 fw-semibold mb-0 flex-grow-1">Détails du Dossier Médical</h4>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb m-0">
+                <li class="breadcrumb-item"><a href="#">MedTravel</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('app_planning_dossier_medical_index') }}">dossiers médicaux</a></li>
+                <li class="breadcrumb-item active" aria-current="page">détails dossier médical</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-soft-primary border-bottom border-dashed">
+                    <h5 class="card-title mb-0">Informations du Dossier Médical</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless mb-0">
+                        <tbody>
+                            <tr>
+                                <td><p class="mb-0">Nom du patient :</p></td>
+                                <td><p class="mb-0">{{ dossier_medical.nomPatient }}</p></td>
+                            </tr>
+                            <tr>
+                                <td><p class="mb-0">Tests médicaux :</p></td>
+                                <td><p class="mb-0">{{ dossier_medical.testsMedicaux }}</p></td>
+                            </tr>
+                            <tr>
+                                <td><p class="mb-0">Antécédents :</p></td>
+                                <td><p class="mb-0">{{ dossier_medical.antecedents }}</p></td>
+                            </tr>
+                            <tr>
+                                <td><p class="mb-0">Allergies :</p></td>
+                                <td><p class="mb-0">{{ dossier_medical.allergies }}</p></td>
+                            </tr>
+                            <tr>
+                                <td><p class="mb-0">Restrictions alimentaires :</p></td>
+                                <td><p class="mb-0">{{ dossier_medical.restrictionsAlimentaires }}</p></td>
+                            </tr>
+                            {% if dossier_medical.planningDocteurs|length > 0 %}
+                            <tr>
+                                <td><p class="mb-0">Plannings Docteur :</p></td>
+                                <td>
+                                    <ul class="list-unstyled mb-0">
+                                        {% for planning in dossier_medical.planningDocteurs %}
+                                            <li>
+                                                <a href="{{ path('app_planning_docteur_show', {'idPlanning': planning.idPlanning}) }}" class="text-primary">
+                                                    Planning #{{ planning.idPlanning }} - {{ planning.dateJour|date('d/m/Y') }} {{ planning.heureDebut }} - {{ planning.heureFin }}
+                                                </a>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </td>
+                            </tr>
+                            {% endif %}
+                            {% if dossier_medical.planningAccompagnateurs|length > 0 %}
+                            <tr>
+                                <td><p class="mb-0">Plannings Accompagnateur :</p></td>
+                                <td>
+                                    <ul class="list-unstyled mb-0">
+                                        {% for planning in dossier_medical.planningAccompagnateurs %}
+                                            <li>
+                                                <a href="{{ path('app_planning_accompagnateur_show', {'id_planning': planning.idPlanning}) }}" class="text-primary">
+                                                    Planning #{{ planning.idPlanning }} - {{ planning.dateJour|date('d/m/Y') }} {{ planning.heureDebut }} - {{ planning.heureFin }}
+                                                </a>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-end mt-4">
+        <a href="{{ path('app_planning_dossier_medical_edit', {'id': dossier_medical.id}) }}" class="btn btn-primary btn-lg me-2">
+            <i class="ti ti-edit me-1"></i> Modifier
+        </a>
+        <a href="{{ path('app_planning_dossier_medical_export_pdf', {'id': dossier_medical.id}) }}" class="btn btn-success btn-lg me-2">
+            <i class="ti ti-file-export me-1"></i> Exporter PDF
+        </a>
+        <a href="{{ path('app_planning_dossier_medical_index') }}" class="btn btn-outline-secondary btn-lg">
+            <i class="ti ti-arrow-left me-1"></i> Retour
+        </a>
+    </div>
+</div>
+{% endblock %} 

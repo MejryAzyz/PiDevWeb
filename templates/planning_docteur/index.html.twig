@@ -1,0 +1,493 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Planning Docteurs{% endblock %}
+
+{% block css %}
+<!-- App css -->
+<link href="{{ asset('coderthemes.com/osen/layouts/assets/css/app.min.css') }}" rel="stylesheet" type="text/css" id="app-style" />
+
+<!-- Icons css -->
+<link href="{{ asset('coderthemes.com/osen/layouts/assets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
+
+<!-- Sweet Alert css -->
+<link href="{{ asset('coderthemes.com/osen/layouts/assets/vendor/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet" type="text/css" />
+
+<!-- jQuery UI CSS -->
+<link href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
+
+<style>
+    .search-container {
+        margin-bottom: 1rem;
+        padding: 1rem;
+        background-color: #f8f9fa;
+        border-radius: 0.25rem;
+    }
+    .ui-autocomplete {
+        max-height: 200px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        z-index: 1000;
+    }
+    .ui-menu-item {
+        padding: 8px 12px;
+        cursor: pointer;
+    }
+    .ui-menu-item:hover {
+        background-color: #f0f0f0;
+    }
+    .search-input {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+    }
+    .search-button {
+        margin-left: 0.5rem;
+    }
+    .suggestions-container {
+        position: absolute;
+        background: white;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        max-height: 200px;
+        overflow-y: auto;
+        width: 100%;
+        z-index: 1000;
+        display: none;
+    }
+    .suggestion-item {
+        padding: 8px 12px;
+        cursor: pointer;
+    }
+    .suggestion-item:hover {
+        background-color: #f0f0f0;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="page-container">
+    
+    <div class="page-title-head d-flex align-items-sm-center flex-sm-row flex-column gap-2">
+        <div class="flex-grow-1">
+            <h4 class="fs-18 fw-semibold mb-0"> Planning Docteurs</h4>
+        </div>
+        <div class="text-end">
+            <ol class="breadcrumb m-0 py-0">
+                <li class="breadcrumb-item"><a href="#">MedTravel</a></li>
+                <li class="breadcrumb-item active">planning docteurs</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex align-items-center justify-content-between border-bottom border-light">
+                    <h4 class="header-title">Liste des plannings</h4>
+                    <div>
+                        <a href="{{ path('app_planning_docteur_new') }}" class="btn btn-success bg-gradient">
+                            <i class="ti ti-plus me-1"></i> Ajouter planning
+                        </a>
+                        <a href="{{ path('app_planning_docteur_calendar') }}" class="btn btn-info bg-gradient">
+                            <i class="ti ti-calendar me-1"></i> Vue Calendrier
+                        </a>
+                        <a href="#" class="btn btn-secondary bg-gradient">
+                            <i class="ti ti-file-import me-1"></i> Import
+                        </a>
+                    </div>
+                </div>
+                <div class="search-container">
+                    <div class="row">
+                        <div class="col-md-8 position-relative">
+                            <input type="text" id="searchInput" class="search-input" placeholder="Rechercher par nom de docteur, date, ou heure...">
+                            <div id="suggestions" class="suggestions-container"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <button id="searchButton" class="btn btn-primary search-button">
+                                <i class="ti ti-search me-1"></i> Rechercher
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table text-center align-middle">
+                        <thead>
+                            <tr>
+                                <th>Id Planning</th>
+                                <th>Nom Docteur</th>
+                                <th>Date</th>
+                                <th>Heure début</th>
+                                <th>Heure fin</th>
+                                <th>Dossier Médical</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="planningTableBody">
+                            {% for planning_docteur in planning_docteurs %}
+                                <tr>
+                                    <td>{{ planning_docteur.idPlanning }}</td>
+                                    <td>{{ planning_docteur.docteur.nom }}</td>
+                                    <td>{{ planning_docteur.dateJour ? planning_docteur.dateJour|date('Y-m-d') : '' }}</td>
+                                    <td>{{ planning_docteur.heureDebut }}</td>
+                                    <td>{{ planning_docteur.heureFin }}</td>
+                                    <td>
+                                        {% if planning_docteur.dossierMedical %}
+                                            <a href="{{ path('app_planning_dossier_medical_show', {'id': planning_docteur.dossierMedical.id}) }}" class="text-primary">
+                                                Voir détails
+                                            </a>
+                                        {% else %}
+                                            <span class="text-muted">Non assigné</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="{{ path('app_planning_docteur_show', {'idPlanning': planning_docteur.idPlanning}) }}" class="btn btn-info btn-sm">
+                                                <i class="ti ti-eye"></i>
+                                            </a>
+                                            <a href="{{ path('app_planning_docteur_edit', {'idPlanning': planning_docteur.idPlanning}) }}" class="btn btn-warning btn-sm">
+                                                <i class="ti ti-edit"></i>
+                                            </a>
+                                            {{ include('planning_docteur/_delete_form.html.twig') }}
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="7">Aucun enregistrement trouvé</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<!-- Vendor js -->
+<script src="{{ asset('coderthemes.com/osen/layouts/assets/vendor/apexcharts/apexcharts.min.js') }}"></script>
+<script src="{{ asset('coderthemes.com/osen/layouts/assets/js/vendor.min.js') }}"></script>
+
+<!-- jQuery and jQuery UI -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+
+<!-- Sweet Alerts js -->
+<script src="{{ asset('coderthemes.com/osen/layouts/assets/vendor/sweetalert2/sweetalert2.min.js') }}"></script>
+
+<!-- App js -->
+<script src="{{ asset('coderthemes.com/osen/layouts/assets/js/app.js') }}"></script>
+
+<script>
+    // Define base URLs for routes
+    const ROUTES = {
+        show: '{{ path('app_planning_docteur_show', {'idPlanning': 'PLACEHOLDER'}) }}',
+        edit: '{{ path('app_planning_docteur_edit', {'idPlanning': 'PLACEHOLDER'}) }}',
+        delete: '{{ path('app_planning_docteur_delete', {'idPlanning': 'PLACEHOLDER'}) }}',
+        dossierMedical: '{{ path('app_planning_dossier_medical_show', {'id': 'PLACEHOLDER'}) }}',
+        search: '{{ path('app_planning_docteur_search') }}',
+        searchSuggestions: '{{ path('app_planning_docteur_search_suggestions') }}'
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Delete button functionality
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const id = this.dataset.id;
+                const url = this.dataset.url;
+                const token = this.dataset.token;
+
+                Swal.fire({
+                    title: 'Êtes-vous sûr?',
+                    text: "Cette action est irréversible!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Oui, supprimer!',
+                    cancelButtonText: 'Annuler'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        fetch(url, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-Token': token
+                            }
+                        }).then(response => {
+                            if (response.ok) {
+                                Swal.fire(
+                                    'Supprimé!',
+                                    'Le planning a été supprimé.',
+                                    'success'
+                                ).then(() => {
+                                    window.location.reload();
+                                });
+                            } else {
+                                Swal.fire(
+                                    'Erreur!',
+                                    'Une erreur est survenue lors de la suppression.',
+                                    'error'
+                                );
+                            }
+                        });
+                    }
+                });
+            });
+        });
+
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        const searchButton = document.getElementById('searchButton');
+        const tableBody = document.getElementById('planningTableBody');
+        const suggestionsContainer = document.getElementById('suggestions');
+
+        function performSearch() {
+            const query = searchInput.value.trim();
+            
+            // Show loading state
+            tableBody.innerHTML = '<tr><td colspan="7" class="text-center">Recherche en cours...</td></tr>';
+
+            // If query is empty, show all data
+            if (query.length === 0) {
+                fetch(`${ROUTES.search}?query=`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.error) {
+                            throw new Error(data.error);
+                        }
+                        
+                        if (data.length === 0) {
+                            tableBody.innerHTML = '<tr><td colspan="7">Aucun enregistrement trouvé</td></tr>';
+                            return;
+                        }
+
+                        tableBody.innerHTML = data.map(planning => `
+                            <tr>
+                                <td>${planning.idPlanning}</td>
+                                <td>${planning.docteurNom}</td>
+                                <td>${planning.dateJour}</td>
+                                <td>${planning.heureDebut}</td>
+                                <td>${planning.heureFin}</td>
+                                <td>
+                                    ${planning.dossierMedical ? 
+                                        `<a href="${ROUTES.dossierMedical.replace('PLACEHOLDER', planning.dossierMedical.id)}" class="text-primary">Voir détails</a>` :
+                                        '<span class="text-muted">Non assigné</span>'
+                                    }
+                                </td>
+                                <td class="fs-12">
+                                    <div class="btn-group">
+                                        <a href="${ROUTES.show.replace('PLACEHOLDER', planning.idPlanning)}" class="btn btn-info btn-sm">
+                                            <i class="ti ti-eye"></i>
+                                        </a>
+                                        <a href="${ROUTES.edit.replace('PLACEHOLDER', planning.idPlanning)}" class="btn btn-warning btn-sm">
+                                            <i class="ti ti-edit"></i>
+                                        </a>
+                                        <button class="btn btn-danger btn-sm delete-btn" 
+                                                data-id="${planning.idPlanning}"
+                                                data-url="${ROUTES.delete.replace('PLACEHOLDER', planning.idPlanning)}"
+                                                data-token="${planning.csrfToken}">
+                                            <i class="ti ti-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `).join('');
+
+                        // Reattach delete button event listeners
+                        attachDeleteButtonListeners();
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        tableBody.innerHTML = `<tr><td colspan="7" class="text-center text-danger">Une erreur est survenue lors de la recherche: ${error.message}</td></tr>`;
+                    });
+                return;
+            }
+
+            // If query is not empty, perform search
+            if (query.length < 2) return;
+
+            fetch(`${ROUTES.search}?query=${encodeURIComponent(query)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+                    
+                    if (data.length === 0) {
+                        tableBody.innerHTML = '<tr><td colspan="7">Aucun résultat trouvé</td></tr>';
+                        return;
+                    }
+
+                    tableBody.innerHTML = data.map(planning => `
+                        <tr>
+                            <td>${planning.idPlanning}</td>
+                            <td>${planning.docteurNom}</td>
+                            <td>${planning.dateJour}</td>
+                            <td>${planning.heureDebut}</td>
+                            <td>${planning.heureFin}</td>
+                            <td>
+                                ${planning.dossierMedical ? 
+                                    `<a href="${ROUTES.dossierMedical.replace('PLACEHOLDER', planning.dossierMedical.id)}" class="text-primary">Voir détails</a>` :
+                                    '<span class="text-muted">Non assigné</span>'
+                                }
+                            </td>
+                            <td class="fs-12">
+                                <div class="btn-group">
+                                    <a href="${ROUTES.show.replace('PLACEHOLDER', planning.idPlanning)}" class="btn btn-info btn-sm">
+                                        <i class="ti ti-eye"></i>
+                                    </a>
+                                    <a href="${ROUTES.edit.replace('PLACEHOLDER', planning.idPlanning)}" class="btn btn-warning btn-sm">
+                                        <i class="ti ti-edit"></i>
+                                    </a>
+                                    <button class="btn btn-danger btn-sm delete-btn" 
+                                            data-id="${planning.idPlanning}"
+                                            data-url="${ROUTES.delete.replace('PLACEHOLDER', planning.idPlanning)}"
+                                            data-token="${planning.csrfToken}">
+                                        <i class="ti ti-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `).join('');
+
+                    // Reattach delete button event listeners
+                    attachDeleteButtonListeners();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    tableBody.innerHTML = `<tr><td colspan="7" class="text-center text-danger">Une erreur est survenue lors de la recherche: ${error.message}</td></tr>`;
+                });
+        }
+
+        // Function to attach delete button event listeners
+        function attachDeleteButtonListeners() {
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = this.dataset.id;
+                    const url = this.dataset.url;
+                    const token = this.dataset.token;
+
+                    Swal.fire({
+                        title: 'Êtes-vous sûr?',
+                        text: "Cette action est irréversible!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Oui, supprimer!',
+                        cancelButtonText: 'Annuler'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            fetch(url, {
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRF-Token': token
+                                }
+                            }).then(response => {
+                                if (response.ok) {
+                                    Swal.fire(
+                                        'Supprimé!',
+                                        'Le planning a été supprimé.',
+                                        'success'
+                                    ).then(() => {
+                                        window.location.reload();
+                                    });
+                                } else {
+                                    Swal.fire(
+                                        'Erreur!',
+                                        'Une erreur est survenue lors de la suppression.',
+                                        'error'
+                                    );
+                                }
+                            });
+                        }
+                    });
+                });
+            });
+        }
+
+        searchButton.addEventListener('click', performSearch);
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        // Add input event listener to handle empty input
+        searchInput.addEventListener('input', function() {
+            if (this.value.trim() === '') {
+                performSearch();
+            }
+        });
+
+        // Autocomplete functionality
+        let searchTimeout;
+        searchInput.addEventListener('input', function() {
+            const query = this.value.trim();
+            if (query.length < 2) {
+                suggestionsContainer.style.display = 'none';
+                return;
+            }
+
+            // Clear previous timeout
+            if (searchTimeout) {
+                clearTimeout(searchTimeout);
+            }
+
+            // Set new timeout
+            searchTimeout = setTimeout(() => {
+                fetch(`${ROUTES.searchSuggestions}?query=${encodeURIComponent(query)}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Erreur réseau');
+                        }
+                        return response.json();
+                    })
+                    .then(suggestions => {
+                        if (suggestions.length > 0) {
+                            suggestionsContainer.innerHTML = suggestions.map(suggestion => 
+                                `<div class="suggestion-item">${suggestion}</div>`
+                            ).join('');
+                            suggestionsContainer.style.display = 'block';
+                        } else {
+                            suggestionsContainer.style.display = 'none';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        suggestionsContainer.style.display = 'none';
+                    });
+            }, 300); // 300ms delay
+        });
+
+        // Handle suggestion clicks
+        suggestionsContainer.addEventListener('click', function(e) {
+            if (e.target.classList.contains('suggestion-item')) {
+                searchInput.value = e.target.textContent;
+                suggestionsContainer.style.display = 'none';
+                performSearch();
+            }
+        });
+
+        // Hide suggestions when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!searchInput.contains(e.target) && !suggestionsContainer.contains(e.target)) {
+                suggestionsContainer.style.display = 'none';
+            }
+        });
+    });
+</script>
+{% endblock %}
