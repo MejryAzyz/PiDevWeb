@@ -19,15 +19,6 @@ class DocteurType extends AbstractType
             ->add('prenom')
             ->add('telephone')
             ->add('email')
-<<<<<<< HEAD
-            ->add('idClinique', EntityType::class, [
-                'class' => Clinique::class,
-                'choice_label' => 'id',
-            ])
-            ->add('idSpecialite', EntityType::class, [
-                'class' => Specialite::class,
-                'choice_label' => 'id',
-=======
             ->add('clinique', EntityType::class, [
                 'class' => Clinique::class,
                 // 'choice_label' => 'id',
@@ -39,7 +30,6 @@ class DocteurType extends AbstractType
                 // 'choice_label' => 'id',
                 'choice_label' => 'nom', // Affiche le nom de la spécialité dans le dropdown
                 'placeholder' => 'Sélectionner une spécialité',
->>>>>>> c4098f6 (bundle)
             ])
         ;
     }

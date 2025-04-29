@@ -41,12 +41,6 @@
                                     <thead class="table-light">
                                         <tr>
                                             <th>Id Réservation</th>
-                                            <th>Id Patient</th>
-<<<<<<< HEAD
-                                            <th>Id Clinique</th>
-                                            <th>Nom Clinique</th>
-=======
->>>>>>> c4098f6 (bundle)
                                             <th>Date Réservation</th>
                                             <th>Statut</th>
                                             <th>Actions</th>
@@ -58,12 +52,6 @@
                                                 <td>{{ reservation.idReservation }}
 
                                                 </td>
-                                                <td>{{ reservation.idPatient }}</td>
-<<<<<<< HEAD
-                                                <td>{{ reservation.idClinique.idClinique }}</td>
-                                                <td>{{ reservation.idClinique.nom }}</td>
-=======
->>>>>>> c4098f6 (bundle)
                                                 <td>{{ reservation.dateReservation ? reservation.dateReservation|date('Y-m-d H:i:s') : '' }}</td>
                                                 <td>{{ reservation.statut }}</td>
                                                 <td>
@@ -85,15 +73,15 @@
                                         {% endfor %}
                                     </tbody>
                                 </table>
+                                <div class="navigation">
+                                            {{ knp_pagination_render(clinic_reservations) }}
+                                        </div>
 
                                 <!-- Réservations Transport -->
                                 <h5 class="my-3 text-muted">Réservations Transport</h5>
                                 <table class="table table-striped table-hover table-bordered">
                                     <thead class="table-light">
                                         <tr>
-                                            <th>Id Réservation</th>
-                                            <th>Id Patient</th>
-                                            <th>Id Transport</th>
                                             <th>Transport Type</th>
                                             <th>Date Départ</th>
                                             <th>Heure Départ</th>
@@ -105,9 +93,6 @@
                                     <tbody>
                                         {% for reservation in transport_reservations %}
                                             <tr>
-                                                <td>{{ reservation.idReservation }}</td>
-                                                <td>{{ reservation.idPatient }}</td>
-                                                <td>{{ reservation.id_transport.id_transport }}</td>
                                                 <td>{{ reservation.id_transport.type }}</td>
                                                 <td>{{ reservation.dateDepart ? reservation.dateDepart|date('Y-m-d') : '' }}</td>
                                                 <td>{{ reservation.heureDepart }}</td>
@@ -128,15 +113,14 @@
                                         {% endfor %}
                                     </tbody>
                                 </table>
-
+                                <div class="navigation">
+                                    {{ knp_pagination_render(transport_reservations) }}
+                                </div>
                                 <!-- Réservations Hébergement -->
                                 <h5 class="my-3 text-muted">Réservations Hébergement</h5>
                                 <table class="table table-striped table-hover table-bordered">
                                     <thead class="table-light">
                                         <tr>
-                                            <th>Id Réservation</th>
-                                            <th>Id Patient</th>
-                                            <th>Id Hébergement</th>
                                             <th>Hébergement</th>
                                             <th>Date Début</th>
                                             <th>Date Fin</th>
@@ -148,9 +132,6 @@
                                     <tbody>
                                         {% for reservation in hebergement_reservations %}
                                             <tr>
-                                                <td>{{ reservation.idReservation }}</td>
-                                                <td>{{ reservation.idPatient }}</td>
-                                                <td>{{ reservation.id_hebergement.id_hebergement }}</td>
                                                 <td>{{ reservation.id_hebergement.nom }}</td>
                                                 <td>{{ reservation.dateDebut ? reservation.dateDebut|date('Y-m-d') : '' }}</td>
                                                 <td>{{ reservation.dateFin ? reservation.dateFin|date('Y-m-d') : '' }}</td>
@@ -171,6 +152,9 @@
                                         {% endfor %}
                                     </tbody>
                                 </table>
+                                <div class="navigation">
+                                    {{ knp_pagination_render(hebergement_reservations) }}
+                                </div>
                             </div>
                         </div>
                     </div>

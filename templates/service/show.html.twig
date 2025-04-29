@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails du Service{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1>Détails du Service</h1>
+
+        <table class="table">
+            <tbody>
+                <tr>
+                    <th>Id</th>
+                    <td>{{ service.id }}</td>
+                </tr>
+                <tr>
+                    <th>Nom du service</th>
+                    <td>{{ service.nomService }}</td>
+                </tr>
+              
+            </tbody>
+        </table>
+
+        <div class="mt-4">
+            <a href="{{ path('app_service_edit', {'id': service.id}) }}" class="btn btn-warning">Modifier</a>
+            <a href="{{ path('app_service_index') }}" class="btn btn-secondary">Retour à la liste</a>
+        </div>
+    </div>
+{% endblock %} 

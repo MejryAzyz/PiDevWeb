@@ -21,25 +21,14 @@ class Hebergement
     #[ORM\Column(type: 'string', nullable: false)]
     #[Assert\NotBlank(message: "Le nom ne peut pas être vide")]
     #[Assert\Regex(
-<<<<<<< HEAD
-        pattern: "/^[a-zA-Z ]+$/",
-=======
         pattern: "/^[a-zA-ZÀ-ÿ ]+$/",
->>>>>>> c4098f6 (bundle)
         message: "Le nom doit contenir uniquement des lettres et espaces"
     )]
     private ?string $nom = null;
 
     #[ORM\Column(type: 'string', nullable: false)]
     #[Assert\NotBlank(message: "L'adresse ne peut pas être vide")]
-<<<<<<< HEAD
-    #[Assert\Regex(
-        pattern: "/^[a-zA-ZÀ-ÿ0-9\s'-]+, [a-zA-ZÀ-ÿ0-9\s'-]+, [0-9]{4,5}$/",
-        message: "L'adresse doit être au format 'Rue, Ville, Code Postal' (ex. : Rue de la Paix, Paris, 75001)"
-    )]
-=======
     
->>>>>>> c4098f6 (bundle)
     private ?string $adresse = null;
 
     #[ORM\Column(type: 'string', nullable: false)]
@@ -62,29 +51,17 @@ class Hebergement
     private ?string $email = null;
     #[ORM\Column(type: 'integer', nullable: false)]
     #[Assert\NotBlank(message: "La capacité ne peut pas être vide")]
-<<<<<<< HEAD
-    #[Assert\GreaterThanOrEqual(
-        value: 20,
-        message: "La capacité doit être supérieure ou égale à 1"
-=======
     #[Assert\GreaterThan(
         value: 0,
         message: "La capacité doit être supérieure à 0 personnes"
->>>>>>> c4098f6 (bundle)
     )]
     private ?int $capacite = null;
 
     #[ORM\Column(type: 'float', nullable: false)]
     #[Assert\NotBlank(message: "Le tarif par nuit ne peut pas être vide")]
-<<<<<<< HEAD
-    #[Assert\GreaterThanOrEqual(
-        value: 1,
-        message: "Le tarif par nuit doit être supérieur ou égal à 0"
-=======
     #[Assert\GreaterThan(
         value: 0,
         message: "Le tarif par nuit doit être supérieur à 0 DT"
->>>>>>> c4098f6 (bundle)
     )]
     private ?float $tarif_nuit = null;
 
@@ -101,16 +78,17 @@ class Hebergement
     #[ORM\OneToMany(targetEntity: ReservationHebergement::class, mappedBy: 'hebergement')]
     private Collection $reservationHebergements;
 
-<<<<<<< HEAD
-=======
-    #[ORM\OneToOne(targetEntity: Service::class, mappedBy: 'hebergement', cascade: ['persist', 'remove'])]
-    private ?Service $service = null;
+    #[ORM\ManyToMany(targetEntity: Service::class, inversedBy: 'hebergements')]
+    #[ORM\JoinTable(name: 'service_hebergement')]
+    #[ORM\JoinColumn(name: 'hebergement_id', referencedColumnName: 'id_hebergement')]
+    #[ORM\InverseJoinColumn(name: 'service_id', referencedColumnName: 'id_service')]
+    private Collection $services;
 
->>>>>>> c4098f6 (bundle)
     public function __construct()
     {
         $this->hebergementPhotos = new ArrayCollection();
         $this->reservationHebergements = new ArrayCollection();
+        $this->services = new ArrayCollection();
     }
 
     // Getters and Setters remain the same, just adding validation above
@@ -273,29 +251,28 @@ class Hebergement
         $this->image_url = $image_url;
         return $this;
     }
-<<<<<<< HEAD
-=======
 
-    public function getService(): ?Service
+    /**
+     * @return Collection<int, Service>
+     */
+    public function getServices(): Collection
     {
-        return $this->service;
+        return $this->services;
     }
 
-    public function setService(?Service $service): self
+    public function addService(Service $service): static
     {
-        // unset the owning side of the relation if necessary
-        if ($service === null && $this->service !== null) {
-            $this->service->setHebergement(null);
+        if (!$this->services->contains($service)) {
+            $this->services->add($service);
         }
-
-        // set the owning side of the relation if necessary
-        if ($service !== null && $service->getHebergement() !== $this) {
-            $service->setHebergement($this);
-        }
-
-        $this->service = $service;
 
         return $this;
     }
->>>>>>> c4098f6 (bundle)
+
+    public function removeService(Service $service): static
+    {
+        $this->services->removeElement($service);
+
+        return $this;
+    }
 }

@@ -2,10 +2,6 @@
 
 namespace App\Controller;
 
-<<<<<<< HEAD
-use App\Entity\Reservation;
-use App\Form\ReservationType;
-=======
 use App\Entity\Clinique;
 use App\Entity\Hebergement;
 use App\Entity\Reservation;
@@ -13,18 +9,15 @@ use App\Entity\Transport;
 use App\Form\ReservationType;
 use App\Form\HebergementReservationType;
 use App\Form\ReservationTransportEditType;
->>>>>>> c4098f6 (bundle)
 use App\Repository\ReservationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-<<<<<<< HEAD
-=======
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
->>>>>>> c4098f6 (bundle)
+use Knp\Component\Pager\PaginatorInterface;
 
 #[Route('/reservation')]
 final class ReservationController extends AbstractController
@@ -58,17 +51,31 @@ final class ReservationController extends AbstractController
     }
 
     #[Route(name: 'app_reservation_index', methods: ['GET'])]
-    public function index(ReservationRepository $reservationRepository): Response
+    public function index(ReservationRepository $reservationRepository, PaginatorInterface $paginator, Request $request): Response
     {
         // Get groups of reservations based on non-null foreign keys
         $clinicReservations = $reservationRepository->findByClinic();
+        $clinicReservationsp = $paginator->paginate(
+            $clinicReservations, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            4 /*limit per page*/
+        );
         $transportReservations = $reservationRepository->findByTransport();
+        $transportReservationsp = $paginator->paginate(
+            $transportReservations, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            4 /*limit per page*/
+        );
         $hebergementReservations = $reservationRepository->findByHebergement();
-
+        $hebergementReservationsp = $paginator->paginate(
+            $hebergementReservations, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            4 /*limit per page*/
+        );
         return $this->render('reservation/index.html.twig', [
-            'clinic_reservations' => $clinicReservations,
-            'transport_reservations' => $transportReservations,
-            'hebergement_reservations' => $hebergementReservations,
+            'clinic_reservations' => $clinicReservationsp,
+            'transport_reservations' => $transportReservationsp,
+            'hebergement_reservations' => $hebergementReservationsp,
         ]);
     }
 
@@ -76,21 +83,6 @@ final class ReservationController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $reservation = new Reservation();
-<<<<<<< HEAD
-        $form = $this->createForm(ReservationType::class, $reservation);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($reservation);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_reservation_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('reservation/new.html.twig', [
-            'reservation' => $reservation,
-            'form' => $form,
-=======
         if ($_GET['type'] == "hebergement") {
             $form = $this->createForm(HebergementReservationType::class, $reservation);
             $form->handleRequest($request);
@@ -137,16 +129,10 @@ final class ReservationController extends AbstractController
         }
         return $this->render('reservation/updateresh.htm.twig', [
             'reservation' => $reservation,
->>>>>>> c4098f6 (bundle)
         ]);
     }
 
 
-<<<<<<< HEAD
-
-    #[Route('/{id_reservation}/edit', name: 'app_reservation_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Reservation $reservation, EntityManagerInterface $entityManager): Response
-=======
     #[Route('/edit_transport/{id}', name: 'transport_reservation_edit')]
     public function editTransport(Request $request, Reservation $reservation, EntityManagerInterface $entityManager): Response
     {
@@ -186,7 +172,6 @@ final class ReservationController extends AbstractController
 
     #[Route('/{id_reservation}/edit', name: 'app_reservation_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Reservation $reservation, EntityManagerInterface $entityManager, MailerInterface $mailer): Response
->>>>>>> c4098f6 (bundle)
     {
         // Create the form and handle the request
         $form = $this->createForm(ReservationType::class, $reservation);
@@ -201,8 +186,6 @@ final class ReservationController extends AbstractController
 
             // Now check the statut field and perform the correct redirect
             if ($reservation->getStatut() === 'accepted') {
-<<<<<<< HEAD
-=======
                 $email = (new Email())
                     ->from('beyaabid876@gmail.com')
                     ->to('beyaabid876@gmail.com')
@@ -226,7 +209,6 @@ final class ReservationController extends AbstractController
                     ');
 
                 $mailer->send($email);
->>>>>>> c4098f6 (bundle)
                 return $this->redirectToRoute('app_paiement_new', ['id_reservation' => $id_reservation]);
             }
 

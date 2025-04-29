@@ -12,25 +12,34 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Knp\Component\Pager\PaginatorInterface;
 
 #[Route('/hebergement')]
 final class HebergementController extends AbstractController
 {
     #[Route(name: 'app_hebergement_index', methods: ['GET'])]
-    public function index(HebergementRepository $hebergementRepository): Response
+    public function index(HebergementRepository $hebergementRepository, Request $request, PaginatorInterface $paginator): Response
     {
-        $hebergements = $hebergementRepository->findAll();
-        
+        $query = $hebergementRepository->createQueryBuilder('h')
+            ->orderBy('h.nom', 'ASC')
+            ->getQuery();
+
+        $pagination = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1),
+            10 // Nombre d'éléments par page
+        );
+
         // Aggregate data for charts
-        $totalCapacity = array_sum(array_map(fn($h) => $h->getCapacite(), $hebergements));
-        $tariffs = array_map(fn($h) => $h->getTarifNuit(), $hebergements);
-        $capacityData = array_map(fn($h) => [$h->getNom(), $h->getCapacite()], $hebergements);
+        $totalCapacity = array_sum(array_map(fn($h) => $h->getCapacite(), $pagination->getItems()));
+        $tariffs = array_map(fn($h) => $h->getTarifNuit(), $pagination->getItems());
+        $capacityData = array_map(fn($h) => [$h->getNom(), $h->getCapacite()], $pagination->getItems());
         
         // Calculate average tariff
         $averageTariff = count($tariffs) > 0 ? array_sum($tariffs) / count($tariffs) : 0;
     
         return $this->render('hebergement/index.html.twig', [
-            'hebergements' => $hebergements,
+            'hebergements' => $pagination,
             'total_capacity' => $totalCapacity,
             'tariffs' => json_encode($tariffs),
             'capacity_data' => json_encode($capacityData),
@@ -118,6 +127,9 @@ final class HebergementController extends AbstractController
             'capacities' => $capacities,
             'price_range' => $priceRange,
             'nations' => $nations,
+            'ipapi_api_key' => $_ENV['IPAPI_API_KEY'],
+            'exchange_rates_api_key' => $_ENV['EXCHANGE_RATES_API_KEY'],
+            'gemini_api_key' => $_ENV['GEMINI_API_KEY'],
         ]);
     }
 
@@ -126,6 +138,9 @@ final class HebergementController extends AbstractController
     {
         return $this->render('hebergement/front_show.html.twig', [
             'hebergement' => $hebergement,
+            'ipapi_api_key' => $_ENV['IPAPI_API_KEY'],
+            'exchange_rates_api_key' => $_ENV['EXCHANGE_RATES_API_KEY'],
+            'gemini_api_key' => $_ENV['GEMINI_API_KEY'],
         ]);
     }
 
@@ -137,51 +152,16 @@ final class HebergementController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-<<<<<<< HEAD
-            // The image_url is already set on the entity by the form, no need to fetch it manually
-            // $imageUrl = $request->get('hebergement')['image_url']; // Remove this
-            // $hebergement->setImageUrl($imageUrl); // Remove this
-
+            // La relation ManyToMany est gérée automatiquement par Doctrine
             $entityManager->persist($hebergement);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Hebergement created successfully!');
-
             return $this->redirectToRoute('app_hebergement_index', [], Response::HTTP_SEE_OTHER);
-=======
-            try {
-                // Get form data directly from the form
-                $rue = $form->get('rue')->getData();
-                $ville = $form->get('ville')->getData();
-                $pays = $form->get('pays')->getData();
-                
-                // Format the address as "rue, ville, pays"
-                $adresse = $rue . ', ' . $ville . ', ' . $pays;
-                $hebergement->setAdresse($adresse);
-
-                $entityManager->persist($hebergement);
-                $entityManager->flush();
-
-                $this->addFlash('success', 'Hebergement created successfully!');
-                return $this->redirectToRoute('app_hebergement_index', [], Response::HTTP_SEE_OTHER);
-            } catch (\Exception $e) {
-                $this->addFlash('error', 'Error saving to database: ' . $e->getMessage());
-            }
->>>>>>> c4098f6 (bundle)
-        }
-
-        // Add a flash message for invalid form submission (optional)
-        if ($form->isSubmitted() && !$form->isValid()) {
-            $this->addFlash('error', 'Please correct the errors in the form.');
         }
 
         return $this->render('hebergement/new.html.twig', [
             'hebergement' => $hebergement,
-<<<<<<< HEAD
-            'form' => $form->createView(), // Use createView() for clarity
-=======
-            'form' => $form->createView(),
->>>>>>> c4098f6 (bundle)
+            'form' => $form,
         ]);
     }
 
@@ -197,74 +177,34 @@ final class HebergementController extends AbstractController
     public function edit(Request $request, Hebergement $hebergement, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(HebergementType::class, $hebergement);
-<<<<<<< HEAD
+        
+        // Extraire les données de l'adresse existante
+        $adresseParts = explode(',', $hebergement->getAdresse());
+        if (count($adresseParts) >= 3) {
+            $form->get('rue')->setData(trim($adresseParts[0]));
+            $form->get('ville')->setData(trim($adresseParts[1]));
+            $form->get('pays')->setData(trim($adresseParts[2]));
+        } else {
+            $form->get('pays')->setData('France');
+        }
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
+            // Mettre à jour l'adresse complète
+            $rue = $form->get('rue')->getData();
+            $ville = $form->get('ville')->getData();
+            $pays = $form->get('pays')->getData();
+            $hebergement->setAdresse($rue . ', ' . $ville . ', ' . $pays);
 
-            $this->addFlash('success', 'Hebergement updated successfully!');
+            $entityManager->flush();
 
             return $this->redirectToRoute('app_hebergement_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        if ($form->isSubmitted() && !$form->isValid()) {
-            $this->addFlash('error', 'Please correct the errors in the form.');
-=======
-        
-        // Parse the existing adresse to populate rue, ville, and pays
-        $adresseParts = explode(', ', $hebergement->getAdresse());
-        if (count($adresseParts) >= 3) {
-            $rue = $adresseParts[0];
-            $ville = $adresseParts[1];
-            $pays = $adresseParts[2];
-            
-            // Set the form data for the unmapped fields
-            $form->get('rue')->setData($rue);
-            $form->get('ville')->setData($ville);
-            $form->get('pays')->setData($pays);
-        }
-        
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted()) {
-            // Debug form submission
-            $this->addFlash('info', 'Form submitted. Valid: ' . ($form->isValid() ? 'Yes' : 'No'));
-            
-            if ($form->isValid()) {
-                try {
-                    // Get form data directly from the form
-                    $rue = $form->get('rue')->getData();
-                    $ville = $form->get('ville')->getData();
-                    $pays = $form->get('pays')->getData();
-                    
-                    // Format the address as "rue, ville, pays"
-                    $adresse = $rue . ', ' . $ville . ', ' . $pays;
-                    $hebergement->setAdresse($adresse);
-                    
-                    // Debug the address
-                    $this->addFlash('info', 'Setting address to: ' . $adresse);
-
-                    $entityManager->flush();
-                    $this->addFlash('success', 'Hebergement updated successfully!');
-                    return $this->redirectToRoute('app_hebergement_index', [], Response::HTTP_SEE_OTHER);
-                } catch (\Exception $e) {
-                    $this->addFlash('error', 'Error saving to database: ' . $e->getMessage());
-                }
-            } else {
-                // Debug form errors
-                $errors = [];
-                foreach ($form->getErrors(true) as $error) {
-                    $errors[] = $error->getMessage();
-                }
-                $this->addFlash('error', 'Form validation errors: ' . implode(', ', $errors));
-            }
->>>>>>> c4098f6 (bundle)
-        }
-
         return $this->render('hebergement/edit.html.twig', [
             'hebergement' => $hebergement,
-            'form' => $form->createView(),
+            'form' => $form,
         ]);
     }
 

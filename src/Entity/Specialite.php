@@ -5,24 +5,15 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-<<<<<<< HEAD
-
-use App\Repository\SpecialiteRepository;
-=======
 use App\Repository\SpecialiteRepository;
 use Symfony\Component\Validator\Constraints as Assert;
->>>>>>> c4098f6 (bundle)
 
 #[ORM\Entity(repositoryClass: SpecialiteRepository::class)]
 #[ORM\Table(name: 'specialite')]
 class Specialite
 {
     #[ORM\Id]
-<<<<<<< HEAD
-    #[ORM\GeneratedValue]
-=======
     #[ORM\GeneratedValue(strategy: "AUTO")]
->>>>>>> c4098f6 (bundle)
     #[ORM\Column(type: 'integer')]
     private ?int $id_specialite = null;
 
@@ -31,13 +22,6 @@ class Specialite
         return $this->id_specialite;
     }
 
-<<<<<<< HEAD
-    public function setId_specialite(int $id_specialite): self
-    {
-        $this->id_specialite = $id_specialite;
-        return $this;
-    }
-=======
     #[Assert\NotBlank(message: "Le nom est obligatoire.")]
     #[Assert\Length(
         min: 3,
@@ -45,7 +29,6 @@ class Specialite
         minMessage: "Le nom doit contenir au moins {{ limit }} caractères.",
         maxMessage: "Le nom ne peut pas dépasser {{ limit }} caractères."
     )]
->>>>>>> c4098f6 (bundle)
 
     #[ORM\Column(type: 'string', nullable: false)]
     private ?string $nom = null;

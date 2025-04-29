@@ -1,0 +1,341 @@
+{% extends 'baseFront.html.twig' %}
+
+{% block title %}Nos Transports{% endblock %}
+
+{% block body %}
+<div class="rt-breadcump rt-breadcump-height">
+    <div class="rt-page-bg rtbgprefix-cover" style="background-image: url({{ asset('coderthemes.com/osen/layouts/assets/images/backgrounds/bredcump.png') }})">
+    </div><!-- /.rt-page-bg -->
+    <div class="container">
+        <div class="row rt-breadcump-height">
+            <div class="col-12">
+                <div class="breadcrumbs-content">
+                    <h3>Nos Transports</h3>
+                    <div class="breadcrumbs">
+                        <span class="divider"><i class="icofont-home"></i></span>
+                        <a href="" title="Accueil">Accueil</a>
+                        <span class="divider"><i class="icofont-simple-right"></i></span>
+                        Transports
+                    </div><!-- /.breadcrumbs -->
+                </div><!-- /.breadcrumbs-content -->
+            </div><!-- /.col-12 -->
+        </div><!-- /.row -->
+    </div><!-- /.container -->
+</div><!-- /.rt-bredcump -->
+
+<div class="spacer-bottom"></div><!-- /.spacer-bottom -->
+
+<!-- Hero Section -->
+<section class="hero-section bg-primary text-white py-5 mb-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 font-weight-bold mb-3">Trouvez le transport idéal</h1>
+                <p class="lead mb-4">Des véhicules de qualité pour tous vos déplacements, du taxi au bus de luxe.</p>
+                <div class="d-flex">
+                    <a href="#transports" class="btn btn-light btn-lg rounded-pill px-4 mr-3">
+                        <i class="icofont-car mr-2"></i> Voir nos véhicules
+                    </a>
+                    <a href="#" class="btn btn-outline-light btn-lg rounded-pill px-4">
+                        <i class="icofont-phone mr-2"></i> Nous contacter
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6 d-none d-lg-block">
+                <div class="hero-image-container position-relative">
+                    <img src="https://img.linemedia.com/img/s/coach-bus-Temsa-Maraton-HDH-330kw-450HP-WC-USB-MATRIX-53-1-1-NO-FLIXBUS---1739353811855939579_common--25021210532098263900.jpg" alt="Transport" class="img-fluid rounded-lg shadow-lg" style="max-height: 350px; width: 100%; object-fit: cover;">
+                    <div class="position-absolute" style="bottom: -20px; right: -20px; background: white; border-radius: 50%; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                        <div class="text-center">
+                            <div class="text-primary font-weight-bold f-24">{{ transports|length }}</div>
+                            <div class="text-muted f-12">Véhicules</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Transport Categories -->
+<section class="transport-categories mb-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-4">
+                <h2 class="font-weight-bold">Nos catégories de transport</h2>
+                <p class="text-muted">Choisissez le type de véhicule qui correspond à vos besoins</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-6 mb-4">
+                <div class="category-card text-center p-4 bg-white rounded-lg shadow-sm h-100">
+                    <div class="category-icon mb-3">
+                        <div class="icon-circle bg-primary-light rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                            <i class="icofont-car text-primary f-32"></i>
+                        </div>
+                    </div>
+                    <h5 class="mb-2">Voitures</h5>
+                    <p class="text-muted mb-0 f-14">Idéal pour les déplacements individuels ou en petit groupe</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-4">
+                <div class="category-card text-center p-4 bg-white rounded-lg shadow-sm h-100">
+                    <div class="category-icon mb-3">
+                        <div class="icon-circle bg-success-light rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                            <i class="icofont-taxi text-success f-32"></i>
+                        </div>
+                    </div>
+                    <h5 class="mb-2">Taxis</h5>
+                    <p class="text-muted mb-0 f-14">Service de transport rapide et confortable</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-4">
+                <div class="category-card text-center p-4 bg-white rounded-lg shadow-sm h-100">
+                    <div class="category-icon mb-3">
+                        <div class="icon-circle bg-warning-light rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                            <i class="icofont-truck text-warning f-32"></i>
+                        </div>
+                    </div>
+                    <h5 class="mb-2">Vans</h5>
+                    <p class="text-muted mb-0 f-14">Parfait pour les groupes moyens et les familles</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-4">
+                <div class="category-card text-center p-4 bg-white rounded-lg shadow-sm h-100">
+                    <div class="category-icon mb-3">
+                        <div class="icon-circle bg-info-light rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                            <i class="icofont-bus text-info f-32"></i>
+                        </div>
+                    </div>
+                    <h5 class="mb-2">Bus</h5>
+                    <p class="text-muted mb-0 f-14">Solution économique pour les grands groupes</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Transport Listings -->
+<section id="transports" class="content-area">
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-12">
+                <h2 class="font-weight-bold text-center">Nos véhicules disponibles</h2>
+                <p class="text-muted text-center">Découvrez notre sélection de véhicules de qualité</p>
+            </div>
+        </div>
+        
+        <div class="row">
+            {% if transports|length > 0 %}
+                {% for transport in transports %}
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="transport-card bg-white rounded-lg shadow-sm overflow-hidden h-100">
+                        <div class="transport-image position-relative">
+                            {% if transport.type|lower == 'taxi' %}
+                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRae_MuifW4xM_iK-vi-_El7z9KLsY1E8yGIw&s" alt="Taxi" class="img-fluid w-100" style="height: 220px; object-fit: cover;">
+                            {% elseif transport.type|lower == 'voiture' %}
+                                <img src="https://img-4.linternaute.com/XpIwVOW1cq3k-npLPf_h0kYFxVE=/1500x/smart/52373731986a4566806476f7acb2dc3a/ccmcms-linternaute/10654353.jpg" alt="Voiture" class="img-fluid w-100" style="height: 220px; object-fit: cover;">
+                            {% elseif transport.type|lower == 'van' or transport.type|lower == 'minibus' %}
+                                <img src="https://i.ytimg.com/vi/sbyR9yBOPZA/hqdefault.jpg" alt="Van/Minibus" class="img-fluid w-100" style="height: 220px; object-fit: cover;">
+                            {% elseif transport.type|lower == 'bus' %}
+                                <img src="https://img.linemedia.com/img/s/coach-bus-Temsa-Maraton-HDH-330kw-450HP-WC-USB-MATRIX-53-1-1-NO-FLIXBUS---1739353811855939579_common--25021210532098263900.jpg" alt="Bus" class="img-fluid w-100" style="height: 220px; object-fit: cover;">
+                            {% elseif transport.type|lower == 'vtc' %}
+                                <img src="https://www.enquetesecuriteroutiere.org/images/blog/vtc.jpg" alt="VTC" class="img-fluid w-100" style="height: 220px; object-fit: cover;">
+                            {% else %}
+                                <img src="https://img-4.linternaute.com/XpIwVOW1cq3k-npLPf_h0kYFxVE=/1500x/smart/52373731986a4566806476f7acb2dc3a/ccmcms-linternaute/10654353.jpg" alt="Transport" class="img-fluid w-100" style="height: 220px; object-fit: cover;">
+                            {% endif %}
+                            <div class="price-badge position-absolute" style="top: 15px; right: 15px;">
+                                <span class="bg-primary text-white rounded-pill px-3 py-2 font-weight-bold">
+                                    {{ transport.tarif }}€ <small>/jour</small>
+                                </span>
+                            </div>
+                            <div class="transport-type-badge position-absolute" style="top: 15px; left: 15px;">
+                                <span class="bg-dark text-white rounded-pill px-3 py-2 font-weight-bold">
+                                    {{ transport.type }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="transport-content p-4">
+                            <div class="transport-features mb-3">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="icofont-users-alt-5 text-primary mr-2"></i>
+                                    <span>{{ transport.capacite }} places</span>
+                                </div>
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="icofont-check-circled text-success mr-2"></i>
+                                    <span>Disponible immédiatement</span>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <i class="icofont-star text-warning mr-2"></i>
+                                    <span>Excellent service</span>
+                                </div>
+                            </div>
+                            <div class="transport-rating mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="text-warning mr-2">
+                                        <i class="icofont-star"></i>
+                                        <i class="icofont-star"></i>
+                                        <i class="icofont-star"></i>
+                                        <i class="icofont-star"></i>
+                                        <i class="icofont-star"></i>
+                                    </div>
+                                    <span class="text-muted">(5.0)</span>
+                                </div>
+                            </div>
+                            <div class="transport-action">
+                                <a href="{{ path('app_transport_front_show', {'id_transport': transport.id_transport}) }}" class="btn btn-primary btn-block rounded-pill">
+                                    <i class="icofont-eye mr-2"></i> Voir les détails
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12">
+                    <div class="alert alert-info rounded-lg shadow-sm">
+                        <div class="d-flex align-items-center">
+                            <i class="icofont-info-circle text-primary mr-3 f-24"></i>
+                            <p class="mb-0">Aucun transport disponible pour le moment.</p>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        
+        {% if pagesCount > 1 %}
+        <div class="row mt-4">
+            <div class="col-12">
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination rt-paganation justify-content-center">
+                        {% if currentPage > 1 %}
+                        <li class="page-item">
+                            <a class="page-link rounded-circle mr-2" href="{{ path('app_transport_front_index', {'page': currentPage - 1}) }}">
+                                <i class="icofont-rounded-double-left"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+                        
+                        {% for i in 1..pagesCount %}
+                        <li class="page-item {% if i == currentPage %}active{% endif %}">
+                            <a class="page-link rounded-circle mr-2" href="{{ path('app_transport_front_index', {'page': i}) }}">{{ i }}</a>
+                        </li>
+                        {% endfor %}
+                        
+                        {% if currentPage < pagesCount %}
+                        <li class="page-item">
+                            <a class="page-link rounded-circle" href="{{ path('app_transport_front_index', {'page': currentPage + 1}) }}">
+                                <i class="icofont-rounded-double-right"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="cta-section bg-light py-5 mt-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8 text-center text-lg-left">
+                <h3 class="font-weight-bold mb-2">Besoin d'un transport personnalisé ?</h3>
+                <p class="text-muted mb-lg-0">Contactez-nous pour des solutions sur mesure adaptées à vos besoins spécifiques.</p>
+            </div>
+            <div class="col-lg-4 text-center text-lg-right mt-3 mt-lg-0">
+                <a href="#" class="btn btn-primary btn-lg rounded-pill px-4">
+                    <i class="icofont-phone mr-2"></i> Nous contacter
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Récupérer les clés API depuis les variables Twig (à adapter si besoin)
+        const ipapiApiKey = '{{ ipapi_api_key|default('') }}';
+        const exchangeRatesApiKey = '{{ exchange_rates_api_key|default('') }}';
+
+        function extractPrice(text) {
+            const match = text.match(/(\d+(?:[.,]\d{1,2})?)/);
+            return match ? parseFloat(match[1].replace(',', '.')) : null;
+        }
+
+        async function getUserLocation() {
+            try {
+                const response = await fetch(`https://api.ipapi.com/api/check?access_key=${ipapiApiKey}`);
+                if (!response.ok) {
+                    throw new Error('Erreur de réponse de l\'API');
+                }
+                const data = await response.json();
+                let currency = 'EUR';
+                if (data.country_code === 'TN') {
+                    currency = 'TND';
+                } else if (data.country_code === 'US') {
+                    currency = 'USD';
+                } else if (data.country_code === 'GB') {
+                    currency = 'GBP';
+                }
+                return {
+                    country: data.country_name,
+                    currency: currency
+                };
+            } catch (error) {
+                return {
+                    country: 'France',
+                    currency: 'EUR'
+                };
+            }
+        }
+
+        async function convertPrices(currency) {
+            try {
+                const response = await fetch(`https://api.exchangerate-api.com/v4/latest/EUR?api_key=${exchangeRatesApiKey}`);
+                if (!response.ok) {
+                    throw new Error('Erreur de réponse de l\'API de conversion');
+                }
+                const data = await response.json();
+                const rate = data.rates[currency];
+                if (!rate) return;
+                // Conversion récursive sur tout le body pour TOUS les prix
+                function convertAllTextNodePrices(node) {
+                    if (node.nodeType === Node.TEXT_NODE) {
+                        const priceRegex = /(\d+(?:[.,]\d{1,2})?)\s*€/g;
+                        node.textContent = node.textContent.replace(priceRegex, (match, p1) => {
+                            const originalPrice = parseFloat(p1.replace(',', '.'));
+                            const convertedPrice = (originalPrice * rate).toFixed(2);
+                            return `${convertedPrice} ${currency}`;
+                        });
+                    } else if (node.nodeType === Node.ELEMENT_NODE) {
+                        node.childNodes.forEach(child => convertAllTextNodePrices(child));
+                    }
+                }
+                convertAllTextNodePrices(document.body);
+            } catch (error) {}
+        }
+
+        async function updateLocationInfo() {
+            const location = await getUserLocation();
+            const locationInfo = document.createElement('div');
+            locationInfo.className = 'location-info text-muted mb-3';
+            locationInfo.innerHTML = `
+                <i class="icofont-location-pin"></i> 
+                Prix affichés en ${location.currency} pour les utilisateurs de ${location.country}
+            `;
+            const title = document.querySelector('.breadcrumbs-content h3');
+            if (title) {
+                title.parentNode.insertBefore(locationInfo, title.nextSibling);
+            }
+            if (location.currency !== 'EUR') {
+                await convertPrices(location.currency);
+            }
+        }
+        updateLocationInfo();
+    });
+</script>
+{% endblock %}

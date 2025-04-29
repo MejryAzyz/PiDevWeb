@@ -150,10 +150,6 @@
                     <thead class="table-light">
                         <tr>
                             <th>Id Réservation</th>
-<<<<<<< HEAD
-                            <th>Nom Clinique</th>
-=======
->>>>>>> c4098f6 (bundle)
                             <th>Date Réservation</th>
                             <th>Statut</th>
                             <th>Actions</th>
@@ -163,16 +159,6 @@
                         {% for reservation in clinic_reservations %}
                             <tr>
                                 <td>{{ reservation.idReservation }}</td>
-<<<<<<< HEAD
-                                <td>{{ reservation.idClinique.nom }}</td>
-                                <td>{{ reservation.dateReservation ? reservation.dateReservation|date('Y-m-d H:i:s') : '' }}</td>
-                                <td>{{ reservation.statut }}</td>
-                                <td>
-                                    <form method="post" action="{{ path('clinic_reservation_delete', {'id': reservation.idReservation}) }}" onsubmit="return confirm('Voulez-vous vraiment annuler cette réservation ?');">
-                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ reservation.idReservation) }}">
-                                        <button class="btn btn-sm btn-danger">Annuler</button>
-                                    </form>      
-=======
                                 <td>{{ reservation.dateReservation ? reservation.dateReservation|date('Y-m-d H:i:s') : '' }}</td>
                                 <td>{{ reservation.statut }}</td>
                                 <td>
@@ -187,7 +173,6 @@
                                             Procéder au paiement
                                         </a>
                                     {% endif %}  
->>>>>>> c4098f6 (bundle)
                                 </td>
                             </tr>
                         {% else %}
@@ -222,12 +207,6 @@
                                 <td>{{ reservation.dateReservation ? reservation.dateReservation|date('Y-m-d H:i:s') : '' }}</td>
                                 <td>{{ reservation.statut }}</td>
                                 <td>
-<<<<<<< HEAD
-                                    <form method="post" action="{{ path('clinic_reservation_delete', {'id': reservation.idReservation}) }}" onsubmit="return confirm('Voulez-vous vraiment annuler cette réservation ?');">
-                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ reservation.idReservation) }}">
-                                        <button class="btn btn-sm btn-danger">Annuler</button>
-                                    </form>
-=======
                                     {% if reservation.statut != 'accepted' %}
                                         <a href="{{ path('transport_reservation_edit', {'id': reservation.idReservation}) }}" class="btn btn-sm btn-primary">Modifier</a>
                                         <form method="post" action="{{ path('clinic_reservation_delete', {'id': reservation.idReservation}) }}" onsubmit="return confirm('Voulez-vous vraiment annuler cette réservation ?');" style="display:inline;">
@@ -241,7 +220,6 @@
                                         </a>
                                     {% endif %}
 
->>>>>>> c4098f6 (bundle)
                                 </td>
                             </tr>
                         {% else %}
@@ -276,12 +254,6 @@
                                 <td>{{ reservation.dateReservation ? reservation.dateReservation|date('Y-m-d H:i:s') : '' }}</td>
                                 <td>{{ reservation.statut }}</td>
                                 <td>
-<<<<<<< HEAD
-                                    <form method="post" action="{{ path('clinic_reservation_delete', {'id': reservation.idReservation}) }}" onsubmit="return confirm('Voulez-vous vraiment annuler cette réservation ?');">
-                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ reservation.idReservation) }}">
-                                        <button class="btn btn-sm btn-danger">Annuler</button>
-                                    </form>
-=======
                                  {% if reservation.statut != 'accepted' %}
                                     <a href="{{ path('hebergement_reservation_edit', {'id': reservation.idReservation}) }}" class="btn btn-sm btn-warning mt-1">Modifier</a>
                                     <form method="post" action="{{ path('clinic_reservation_delete', {'id': reservation.idReservation}) }}" onsubmit="return confirm('Voulez-vous vraiment annuler cette réservation ?');">
@@ -294,7 +266,6 @@
                                         Procéder au paiement
                                     </a>
                                 {% endif %}
->>>>>>> c4098f6 (bundle)
                                 </td>
                             </tr>
                         {% else %}

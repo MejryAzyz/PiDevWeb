@@ -16,16 +16,10 @@ class ReservationRepository extends ServiceEntityRepository
     public function findByClinic(): array
     {
         return $this->createQueryBuilder('r')
-<<<<<<< HEAD
-            ->leftJoin('r.idClinique', 'c') // Use 'idClinique' instead of 'id_clinique'
-            ->addSelect('c')
-            ->andWhere('r.idClinique != 0') // Use 'idClinique' instead of 'id_clinique'
-=======
             ->leftJoin('r.idClinique', 'c')
             ->addSelect('c')
             ->andWhere('r.idClinique IS NOT NULL')
             ->andWhere('r.idClinique != 0')
->>>>>>> c4098f6 (bundle)
             ->getQuery()
             ->getResult();
     }

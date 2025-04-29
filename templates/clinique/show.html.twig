@@ -1,54 +1,5 @@
 {% extends 'base.html.twig' %}
 
-<<<<<<< HEAD
-{% block title %}Clinique{% endblock %}
-
-{% block body %}
-    <h1>Clinique</h1>
-
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id_clinique</th>
-                <td>{{ clinique.idClinique }}</td>
-            </tr>
-            <tr>
-                <th>Nom</th>
-                <td>{{ clinique.nom }}</td>
-            </tr>
-            <tr>
-                <th>Adresse</th>
-                <td>{{ clinique.adresse }}</td>
-            </tr>
-            <tr>
-                <th>Telephone</th>
-                <td>{{ clinique.telephone }}</td>
-            </tr>
-            <tr>
-                <th>Email</th>
-                <td>{{ clinique.email }}</td>
-            </tr>
-            <tr>
-                <th>Rate</th>
-                <td>{{ clinique.rate }}</td>
-            </tr>
-            <tr>
-                <th>Description</th>
-                <td>{{ clinique.description }}</td>
-            </tr>
-            <tr>
-                <th>Prix</th>
-                <td>{{ clinique.prix }}</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <a href="{{ path('app_clinique_index') }}">back to list</a>
-
-    <a href="{{ path('app_clinique_edit', {'id_clinique': clinique.id_clinique}) }}">edit</a>
-
-    {{ include('clinique/_delete_form.html.twig') }}
-=======
 {% block title %}Détails de la Clinique | Osen - Responsive Bootstrap 5 Admin Dashboard{% endblock %}
 
 {% block css %}
@@ -276,5 +227,4 @@
         });
     });
 </script>
->>>>>>> c4098f6 (bundle)
 {% endblock %}

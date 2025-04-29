@@ -6,14 +6,6 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-<<<<<<< HEAD
-
-use App\Repository\UtilisateurRepository;
-
-#[ORM\Entity(repositoryClass: UtilisateurRepository::class)]
-#[ORM\Table(name: 'utilisateur')]
-class Utilisateur
-=======
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -23,7 +15,6 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 #[ORM\Entity(repositoryClass: UtilisateurRepository::class)]
 #[ORM\Table(name: 'utilisateur')]
 class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface 
->>>>>>> c4098f6 (bundle)
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -57,14 +48,11 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     #[ORM\Column(type: 'string', nullable: false)]
-<<<<<<< HEAD
-=======
     #[Assert\NotBlank(message: "Le nom ne peut pas être vide")]
     #[Assert\Regex(
         pattern: "/^[a-zA-Z ]+$/",
         message: "Le nom doit contenir uniquement des lettres et espaces"
     )]
->>>>>>> c4098f6 (bundle)
     private ?string $nom = null;
 
     public function getNom(): ?string
@@ -79,14 +67,11 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     #[ORM\Column(type: 'string', nullable: false)]
-<<<<<<< HEAD
-=======
     #[Assert\NotBlank(message: "Le prenom ne peut pas être vide")]
     #[Assert\Regex(
         pattern: "/^[a-zA-Z ]+$/",
         message: "Le prenom doit contenir uniquement des lettres et espaces"
     )]
->>>>>>> c4098f6 (bundle)
     private ?string $prenom = null;
 
     public function getPrenom(): ?string
@@ -101,8 +86,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     #[ORM\Column(type: 'string', nullable: false)]
-<<<<<<< HEAD
-=======
     #[Assert\NotBlank(message: "L'email ne peut pas être vide")]
     #[Assert\Email(
         message: "L'adresse email '{{ value }}' n'est pas valide"
@@ -111,7 +94,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         pattern: '/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(com|tn)$/',
         message: "L'email doit être au format nom@domaine.com ou nom@domaine.tn"
     )]
->>>>>>> c4098f6 (bundle)
     private ?string $email = null;
 
     public function getEmail(): ?string
@@ -140,14 +122,11 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     #[ORM\Column(type: 'string', nullable: false)]
-<<<<<<< HEAD
-=======
     #[Assert\NotBlank(message: "Le numéro de téléphone ne peut pas être vide")]
     #[Assert\Regex(
         pattern: "/^[0-9]{8,15}$/",
         message: "Le numéro doit contenir entre 8 et 15 chiffres"
     )]
->>>>>>> c4098f6 (bundle)
     private ?string $telephone = null;
 
     public function getTelephone(): ?string
@@ -161,13 +140,9 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-<<<<<<< HEAD
-    #[ORM\Column(type: 'date', nullable: false)]
-=======
     #[ORM\Column(type: 'datetime', nullable: true)]
     #[Assert\NotBlank(message: "La date de naissance ne peut pas être vide")]
     #[Assert\LessThan("today", message: "La date de naissance doit être dans le passé")]
->>>>>>> c4098f6 (bundle)
     private ?\DateTimeInterface $date_naissance = null;
 
     public function getDate_naissance(): ?\DateTimeInterface
@@ -182,14 +157,11 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     #[ORM\Column(type: 'text', nullable: false)]
-<<<<<<< HEAD
-=======
     #[Assert\NotBlank(message: "L'adresse ne peut pas être vide")]
     #[Assert\Regex(
         pattern: "/^[a-zA-Z ]+$/",
         message: "L'adresse doit contenir uniquement des lettres et espaces"
     )]
->>>>>>> c4098f6 (bundle)
     private ?string $adresse = null;
 
     public function getAdresse(): ?string
@@ -260,14 +232,11 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     #[ORM\Column(type: 'string', nullable: false)]
-<<<<<<< HEAD
-=======
     #[Assert\NotBlank(message: "La nationalité ne peut pas être vide")]
     #[Assert\Regex(
         pattern: "/^[a-zA-Z ]+$/",
         message: "La nationalité doit contenir uniquement des lettres et espaces"
     )]
->>>>>>> c4098f6 (bundle)
     private ?string $nationalite = null;
 
     public function getNationalite(): ?string
@@ -422,8 +391,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-<<<<<<< HEAD
-=======
     public function getPassword(): string
     {
         return $this->mot_de_passe; // Retourne le mot de passe de l'utilisateur
@@ -448,5 +415,4 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     {
         return $this->email;
     }
->>>>>>> c4098f6 (bundle)
 }

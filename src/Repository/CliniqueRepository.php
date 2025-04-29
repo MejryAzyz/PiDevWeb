@@ -13,8 +13,6 @@ class CliniqueRepository extends ServiceEntityRepository
         parent::__construct($registry, Clinique::class);
     }
 
-<<<<<<< HEAD
-=======
     public function findAllWithPhotos()
     {
         return $this->createQueryBuilder('c')
@@ -24,6 +22,5 @@ class CliniqueRepository extends ServiceEntityRepository
             ->getResult();
     }
 
->>>>>>> c4098f6 (bundle)
     // Add custom methods as needed
 }

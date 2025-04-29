@@ -1,0 +1,110 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau Service{% endblock %}
+
+{% block css %}
+    <link href="{{ asset('coderthemes.com/osen/layouts/assets/css/app.min.css') }}" rel="stylesheet" type="text/css" id="app-style" />
+    <link href="{{ asset('coderthemes.com/osen/layouts/assets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
+    <style>
+        .form-group { margin-bottom: 1.5rem; }
+        .form-control.is-invalid { border-color: #dc3545; }
+        .invalid-feedback { display: block; color: #dc3545; font-size: 0.875rem; }
+        .card { box-shadow: 0 0.15rem 1.75rem 0 rgba(33, 40, 50, 0.15); }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="page-container py-4">
+        <div class="page-title-head d-flex align-items-center flex-column flex-sm-row gap-3 mb-4">
+            <h4 class="fs-24 fw-semibold mb-0 flex-grow-1">Ajouter un Nouveau Service</h4>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb m-0">
+                    <li class="breadcrumb-item"><a href="#">MedTravel</a></li>
+                    <li class="breadcrumb-item"><a href="{{ path('app_service_index') }}">Services</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Ajouter</li>
+                </ol>
+            </nav>
+        </div>
+
+        {{ form_start(form, {'attr': {'id': 'serviceForm', 'class': 'needs-validation', 'novalidate': true}}) }}
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card h-100">
+                    <div class="card-header bg-soft-primary border-bottom border-dashed">
+                        <h5 class="card-title mb-0">Informations du Service</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                {{ form_label(form.nomService, null, {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.nomService, {'attr': {'class': 'form-control', 'placeholder': 'Entrez le nom du service'}}) }}
+                                {{ form_errors(form.nomService, {'attr': {'class': 'invalid-feedback'}}) }}
+                            </div>
+                           
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-end mt-4">
+            <button type="submit" class="btn btn-primary btn-lg me-2" id="submitServiceForm">
+                <i class="ti ti-check me-1"></i> Créer le Service
+            </button>
+            <a href="{{ path('app_service_index') }}" class="btn btn-outline-danger btn-lg" id="cancelButton">
+                <i class="ti ti-arrow-left me-1"></i> Annuler
+            </a>
+        </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script src="{{ asset('coderthemes.com/osen/layouts/assets/js/vendor.min.js') }}"></script>
+    <script src="{{ asset('coderthemes.com/osen/layouts/assets/js/app.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('serviceForm');
+            
+            // Handle form cancel button
+            document.getElementById('cancelButton').addEventListener('click', function(e) {
+                e.preventDefault();
+                if (confirm('Êtes-vous sûr de vouloir annuler ? Les modifications non enregistrées seront perdues.')) {
+                    window.location.href = '{{ path('app_service_index') }}';
+                }
+            });
+
+            // Handle form submission
+            document.getElementById('submitServiceForm').addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Clear previous validation states
+                form.classList.remove('was-validated');
+                form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+                form.querySelectorAll('.invalid-feedback').forEach(el => el.style.display = 'none');
+                
+                // Validate form
+                if (!form.checkValidity()) {
+                    form.classList.add('was-validated');
+                    return;
+                }
+
+                // Submit the form
+                form.submit();
+            });
+
+            // Real-time validation
+            form.querySelectorAll('input, select').forEach(input => {
+                input.addEventListener('input', function() {
+                    if (this.checkValidity()) {
+                        this.classList.remove('is-invalid');
+                        this.classList.add('is-valid');
+                    } else {
+                        this.classList.remove('is-valid');
+                        this.classList.add('is-invalid');
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %} 

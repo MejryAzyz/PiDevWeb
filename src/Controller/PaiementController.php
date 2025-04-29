@@ -18,11 +18,7 @@ final class PaiementController extends AbstractController
     #[Route(name: 'app_paiement_index', methods: ['GET'])]
     public function index(PaiementRepository $paiementRepository): Response
     {
-<<<<<<< HEAD
-        return $this->render('paiement/index.html.twig', [
-=======
         return $this->render('reservation/paiements.html.twig', [
->>>>>>> c4098f6 (bundle)
             'paiements' => $paiementRepository->findAll(),
         ]);
     }
@@ -34,6 +30,22 @@ final class PaiementController extends AbstractController
         $form = $this->createForm(PaiementType::class, $paiement);
         $form->handleRequest($request);
         $idr = $_GET['id_reservation'];
+        if ($entityManager->getRepository('App\Entity\Reservation')->find($idr)) {
+            $r = $entityManager->getRepository('App\Entity\Reservation')->find($idr);
+            if ($r->getid_hebergement()) {
+                if ($r->getid_hebergement()->getTarif_nuit()) {
+                    $interval = $r->getDate_fin()->diff($r->getDate_debut());
+                    $days = $interval->days; // number of days between the two dates
+                    $paiement->setMontant($days * $r->getid_hebergement()->getTarif_nuit());
+                    $paiement->setId_reservation($entityManager->getRepository('App\Entity\Reservation')->find($idr));
+                    $paiement->setDate_paiement(new \DateTime());
+                    $entityManager->persist($paiement);
+                    $entityManager->flush();
+
+                    return $this->redirectToRoute('app_reservation_index', [], Response::HTTP_SEE_OTHER);
+                }
+            }
+        }
         if ($form->isSubmitted() && $form->isValid()) {
             $paiement->setId_reservation($entityManager->getRepository('App\Entity\Reservation')->find($idr));
             $paiement->setDate_paiement(new \DateTime());
@@ -65,9 +77,6 @@ final class PaiementController extends AbstractController
         ]);
     }
 
-<<<<<<< HEAD
-
-=======
     #[Route('/stripe/payment/{id}', name: 'stripe_payment')]
     public function stripePayment(int $id, Request $request, Reservation $reservation, PaiementRepository $paiementRepository): Response
     {
@@ -116,7 +125,6 @@ final class PaiementController extends AbstractController
         $this->addFlash('success', 'Paiement enregistré avec succès !');
         return $this->redirectToRoute('app_paiement_index'); // Replace with your actual route
     }
->>>>>>> c4098f6 (bundle)
 
     #[Route('/{id_paiement}', name: 'app_paiement_show', methods: ['GET'])]
     public function show(Paiement $paiement): Response

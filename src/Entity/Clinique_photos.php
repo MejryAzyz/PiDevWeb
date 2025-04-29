@@ -5,32 +5,17 @@ namespace App\Entity;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-<<<<<<< HEAD
-use App\Entity\Clinique;
-
-#[ORM\Entity]
-class Clinique_photos
-{
-
-=======
 #[ORM\Entity]
 #[ORM\Table(name: 'clinique_photos')]
 class Clinique_photos
 {
->>>>>>> c4098f6 (bundle)
     #[ORM\Id]
     #[ORM\Column(type: "integer")]
     private int $id_photo;
 
-<<<<<<< HEAD
-        #[ORM\ManyToOne(targetEntity: Clinique::class, inversedBy: "clinique_photoss")]
-    #[ORM\JoinColumn(name: 'clinique_id', referencedColumnName: 'id_clinique', onDelete: 'CASCADE')]
-    private Clinique $clinique_id;
-=======
     #[ORM\ManyToOne(targetEntity: Clinique::class, inversedBy: "cliniquePhotos")]
     #[ORM\JoinColumn(name: 'clinique_id', referencedColumnName: 'id_clinique', nullable: true)]
     private ?Clinique $clinique_id = null;
->>>>>>> c4098f6 (bundle)
 
     #[ORM\Column(type: "string", length: 255)]
     private string $photo_url;
@@ -38,82 +23,14 @@ class Clinique_photos
     #[ORM\Column(type: "datetime")]
     private \DateTimeInterface $uploaded_at;
 
-<<<<<<< HEAD
-    public function getId_photo()
-=======
     public function getId_photo(): ?int
->>>>>>> c4098f6 (bundle)
     {
         return $this->id_photo;
     }
 
-<<<<<<< HEAD
-    public function setId_photo($value)
-    {
-        $this->id_photo = $value;
-    }
-
-    public function getClinique_id()
-    {
-        return $this->clinique_id;
-    }
-
-    public function setClinique_id($value)
-    {
-        $this->clinique_id = $value;
-    }
-
-    public function getPhoto_url()
-    {
-        return $this->photo_url;
-    }
-
-    public function setPhoto_url($value)
-    {
-        $this->photo_url = $value;
-    }
-
-    public function getUploaded_at()
-    {
-        return $this->uploaded_at;
-    }
-
-    public function setUploaded_at($value)
-    {
-        $this->uploaded_at = $value;
-    }
-
-    public function getIdPhoto(): ?int
-    {
-        return $this->id_photo;
-    }
-
-    public function getPhotoUrl(): ?string
-    {
-        return $this->photo_url;
-    }
-
-    public function setPhotoUrl(string $photo_url): static
-    {
-        $this->photo_url = $photo_url;
-
-        return $this;
-    }
-
-    public function getUploadedAt(): ?\DateTimeInterface
-    {
-        return $this->uploaded_at;
-    }
-
-    public function setUploadedAt(\DateTimeInterface $uploaded_at): static
-    {
-        $this->uploaded_at = $uploaded_at;
-
-=======
     public function setId_photo(int $id_photo): self
     {
         $this->id_photo = $id_photo;
->>>>>>> c4098f6 (bundle)
         return $this;
     }
 
@@ -122,12 +39,6 @@ class Clinique_photos
         return $this->clinique_id;
     }
 
-<<<<<<< HEAD
-    public function setCliniqueId(?Clinique $clinique_id): static
-    {
-        $this->clinique_id = $clinique_id;
-
-=======
     public function setCliniqueId(?Clinique $clinique): self
     {
         $this->clinique_id = $clinique;
@@ -153,7 +64,6 @@ class Clinique_photos
     public function setUploaded_at(\DateTimeInterface $uploaded_at): self
     {
         $this->uploaded_at = $uploaded_at;
->>>>>>> c4098f6 (bundle)
         return $this;
     }
 }

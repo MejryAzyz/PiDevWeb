@@ -5,13 +5,8 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-<<<<<<< HEAD
-
-use App\Repository\DocteurRepository;
-=======
 use App\Repository\DocteurRepository;
 use Symfony\Component\Validator\Constraints as Assert;
->>>>>>> c4098f6 (bundle)
 
 #[ORM\Entity(repositoryClass: DocteurRepository::class)]
 #[ORM\Table(name: 'docteur')]
@@ -63,8 +58,6 @@ class Docteur
         return $this;
     }
 
-<<<<<<< HEAD
-=======
     #[Assert\NotBlank(message: 'Le nom est requis')]
     #[Assert\Length(
         min: 2,
@@ -72,7 +65,6 @@ class Docteur
         minMessage: 'Le nom doit contenir au moins {{ limit }} caractères',
         maxMessage: 'Le nom ne peut pas dépasser {{ limit }} caractères'
     )]
->>>>>>> c4098f6 (bundle)
     #[ORM\Column(type: 'string', nullable: false)]
     private ?string $nom = null;
 
@@ -87,8 +79,6 @@ class Docteur
         return $this;
     }
 
-<<<<<<< HEAD
-=======
     #[Assert\NotBlank(message: 'Le prénom est requis')]
     #[Assert\Length(
         min: 2,
@@ -96,7 +86,6 @@ class Docteur
         minMessage: 'Le prénom doit contenir au moins {{ limit }} caractères',
         maxMessage: 'Le prénom ne peut pas dépasser {{ limit }} caractères'
     )]
->>>>>>> c4098f6 (bundle)
     #[ORM\Column(type: 'string', nullable: false)]
     private ?string $prenom = null;
 
@@ -111,15 +100,12 @@ class Docteur
         return $this;
     }
 
-<<<<<<< HEAD
-=======
 
     #[Assert\NotBlank(message: "Le numéro de téléphone est obligatoire.")]
     #[Assert\Regex(
     pattern: "/^\+?[0-9]{8,15}$/",
     message: "Le numéro de téléphone doit être composé de 8 à 15 chiffres, avec un '+' facultatif au début."
     )]
->>>>>>> c4098f6 (bundle)
     #[ORM\Column(type: 'string', nullable: false)]
     private ?string $telephone = null;
 
@@ -134,11 +120,8 @@ class Docteur
         return $this;
     }
 
-<<<<<<< HEAD
-=======
     #[Assert\NotBlank(message: 'L\'email est requis')]
     #[Assert\Email(message: 'L\'email {{ value }} n\'est pas valide')]
->>>>>>> c4098f6 (bundle)
     #[ORM\Column(type: 'string', nullable: false)]
     private ?string $email = null;
 

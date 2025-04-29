@@ -185,8 +185,6 @@ class HebergementRepository extends ServiceEntityRepository
         return $qb;
     }
 
-<<<<<<< HEAD
-=======
     /**
      * Find hébergements with specific services
      */
@@ -231,6 +229,5 @@ class HebergementRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
->>>>>>> c4098f6 (bundle)
     // Add custom methods as needed
 }
