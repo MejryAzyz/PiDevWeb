@@ -1,9 +1,0 @@
-twig:
-    file_name_pattern: '*.twig'
-    date:
-        format: 'd/m/Y H:i'
-        interval_format: '%%d days'
-        timezone: 'Africa/Tunis'
-when@test:
-    twig:
-        strict_variables: true
