@@ -1,0 +1,40 @@
+{% block pagination %}
+    <nav aria-label="Page navigation">
+        <ul class="{{ class|default('pagination') }} {{ align is defined and align ? 'justify-content-' ~ align : '' }}">
+            {# Previous link #}
+            {% if pageCount > 1 and previous is defined %}
+                <li class="{{ prev_class|default('page-item') }}">
+                    <a class="{{ link_class|default('page-link') }}" href="{{ path(route_name, route_params|merge({(pageParameterName): previous})) }}">{{ prev_label|default('Previous') }}</a>
+                </li>
+            {% else %}
+                <li class="{{ prev_class|default('page-item') }} disabled">
+                    <span class="{{ link_class|default('page-link') }}">{{ prev_label|default('Previous') }}</span>
+                </li>
+            {% endif %}
+
+            {# Page numbers #}
+            {% for page in pages_in_range %}
+                {% if page != current %}
+                    <li class="page-item">
+                        <a class="{{ link_class|default('page-link') }}" href="{{ path(route_name, route_params|merge({(pageParameterName): page})) }}">{{ page }}</a>
+                    </li>
+                {% else %}
+                    <li class="{{ current_class|default('page-item active') }}">
+                        <span class="{{ link_class|default('page-link') }}">{{ page }}</span>
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+            {# Next link #}
+            {% if pageCount > 1 and next is defined %}
+                <li class="{{ next_class|default('page-item') }}">
+                    <a class="{{ link_class|default('page-link') }}" href="{{ path(route_name, route_params|merge({(pageParameterName): next})) }}">{{ next_label|default('Next') }}</a>
+                </li>
+            {% else %}
+                <li class="{{ next_class|default('page-item') }} disabled">
+                    <span class="{{ link_class|default('page-link') }}">{{ next_label|default('Next') }}</span>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+{% endblock %}

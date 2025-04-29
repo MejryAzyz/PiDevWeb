@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    {% block stylesheets %}{% endblock %}
+</head>
+<body>
+{% block modal %}
+    <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+            {% block modal_header %}{% endblock %}
+        </div>
+        <div class="modal-body">
+            {% block modal_body %}{% endblock %}
+        </div>
+        <div class="modal-footer">
+            {% block modal_footer %}{% endblock %}
+        </div>
+    </div>
+{% endblock %}
+{% block javascripts %}{% endblock %}
+</body>
+</html>

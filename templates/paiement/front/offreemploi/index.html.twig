@@ -1,0 +1,167 @@
+{% extends 'baseFront.html.twig' %}
+
+{% block title %}Emigrar - Job Offers{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
+
+{% block body %}
+    <!-- Breadcrumb Area -->
+    <div class="rt-breadcump rt-breadcump-height">
+        <div class="rt-page-bg rtbgprefix-cover" style="background-image: url({{ asset('assets/images/backgrounds/bredcump.png') }})"></div>
+        <div class="container">
+            <div class="row rt-breadcump-height">
+                <div class="col-12">
+                    <div class="breadcrumbs-content">
+                        <h3>Job Offers</h3>
+                        <div class="breadcrumbs">
+                            <span class="divider"><i class="icofont-home"></i></span>
+                            <a  title="Home">Home</a>
+                            <span class="divider"><i class="icofont-simple-right"></i></span>
+                            Job Offers
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="spacer-bottom"></div>
+    <section class="content-area">
+        <div class="container">
+            <div class="row">
+                <!-- Sidebar with Job Filters -->
+                <div class="col-lg-3 mx-auto col-md-7 mb-5 mb-lg-0">
+                    <form action="{{ path('app_offreemploi_index') }}" class="rt-sidebar-group">
+                        <div class="rt-widget widget_job_type">
+                            <h3 class="rt-widget-title">Job Type</h3>
+                            <ul>
+                                {% for job_type in ['Full Time', 'Part Time', 'Contract', 'Internship', 'Temporary'] %}
+                                    <li class="clearfix">
+                                        <div class="form-check-inline">
+                                            <input class="form-check-input" type="checkbox" id="job_type_{{ job_type|lower|replace({' ': '_'}) }}" name="job_type[]" value="{{ job_type }}" {{ app.request.query.all()['job_type'] is defined and job_type in app.request.query.all()['job_type']|default([]) ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="job_type_{{ job_type|lower|replace({' ': '_'}) }}">{{ job_type }}</label>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="rt-widget widget_contract_type">
+                            <h3 class="rt-widget-title">Contract Type</h3>
+                            <ul>
+                                {% for contract_type in ['CDI', 'CDD', 'Freelance', 'Internship', 'Apprenticeship'] %}
+                                    <li class="clearfix">
+                                        <div class="form-check-inline">
+                                            <input class="form-check-input" type="checkbox" id="contract_type_{{ contract_type|lower }}" name="contract_type[]" value="{{ contract_type }}" {{ app.request.query.all()['contract_type'] is defined and contract_type in app.request.query.all()['contract_type']|default([]) ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="contract_type_{{ contract_type|lower }}">{{ contract_type }}</label>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="text-center">
+                            <input type="submit" value="Filter" class="rt-btn rt-gradient rounded-sm rt-sm text-uppercase" />
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Job Offer Cards -->
+                <div class="col-lg-9">
+                    <div class="box-style__1 rt-mb-30">
+                        <form action="{{ path('app_offreemploi_index') }}" class="row">
+                            <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
+                                <button type="submit" name="sort" value="recommended" class="rt-btn pill rt-sm rt-gradient d-block">Recommended</button>
+                            </div>
+                            <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
+                                <select class="rt-selectactive banner-select" name="sort" style="width: 100%">
+                                    <option value="date" {{ app.request.query.get('sort') == 'date' ? 'selected' : '' }}>Date Posted</option>
+                                    <option value="relevance" {{ app.request.query.get('sort') == 'relevance' ? 'selected' : '' }}>Relevance</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-3 rt-input-group mini col-md-6 mb-3 mb-md-0">
+                                <input type="text" class="form-control" name="keywords" placeholder="Keywords (optional)" value="{{ app.request.query.get('keywords') }}">
+                            </div>
+                        </form>
+                    </div>
+
+                    {% if pagination|length > 0 %}
+                        {% for job in pagination %}
+                            <div class="box-style__1 rt-mb-30">
+                                <div class="hotel-inner-content row">
+                                    <div class="hotel-thumb col-md-3 mb-5 mb-md-0">
+                                        <div class="hotel-bg rtbgprefix-cover" style="background-image: url({{ job.imageurl ? asset('Uploads/offers/' ~ job.imageurl) : asset('assets/images/all-img/default-job.jpg') }});">
+                                            <div class="inaner-badge">
+                                                <span class="bg-gradient-primary text-white text-capitalize rt-pl-10 rt-pr-10 rt-pt-5 rt-pb-5">{{ job.typeposte ?? 'N/A' }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="hotel-text col-md-9">
+                                        <div class="top">
+                                            <h5>{{ job.titre ?? 'Untitled Job' }} <span>
+                                                {% for i in 1..4 %}<i class="icofont-star review"></i>{% endfor %}
+                                                <i class="icofont-star"></i>
+                                            </span></h5>
+                                            <p>{{ job.description|length > 100 ? job.description|slice(0, 100) ~ '...' : job.description ?? 'No description available' }}</p>
+                                        </div>
+                                        <div class="middle-text d-md-flex justify-content-md-between rt-mt-20">
+                                            <div class="left_column">
+                                                <span class="badge rt-gradinet-badge pill rt-mr-10">4.3 <small>/5</small></span>
+                                                <span class="primary-color">Excellent</span>
+                                                <span class="f-size-12 text-878">( {{ random(50, 100) }} Reviews )</span>
+                                                <span class="text-555 f-size-16 d-block rt-mt-15">
+                                                    <span class="rt-mr-15"><i class="icofont-location-pin primary-color rt-mr-4"></i>{{ job.emplacement ?? 'Location not specified' }}</span>
+                                                    <span><i class="icofont-clock-time primary-color rt-mr-4"></i>{{ job.datepublication ? job.datepublication|date('M d, Y') : 'N/A' }}</span>
+                                                </span>
+                                                <span class="text-555 f-size-16 d-block rt-mt-10">
+                                                    <span><i class="icofont-briefcase primary-color rt-mr-4"></i>{{ job.typecontrat ?? 'N/A' }}</span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="footer-elements d-flex justify-content-between align-items-center align-items-end">
+                                            <div class="left">
+                                                <a href="{{ path('app_offreemploi_postuler', {'id': job.id}) }}">Apply Now</a>
+                                            </div>
+                                            <div class="right">
+                                                <a href="{{ path('app_offreemploi_front_show', {'id': job.id}) }}" class="rt-btn rt-gradient pill rt-sm3 text-uppercase">View Details</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p>No job offers found.</p>
+                    {% endif %}
+
+                    <!-- Pagination -->
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination rt-paganation justify-content-center">
+                            {% if pagination.getCurrentPageNumber() > 1 %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ path('app_offreemploi_index', app.request.query.all()|merge({'page': pagination.getCurrentPageNumber() - 1})) }}"><i class="icofont-rounded-double-left"></i></a>
+                                </li>
+                            {% endif %}
+                            {% set pageCount = (pagination.getTotalItemCount() / pagination.getItemNumberPerPage())|round(0, 'ceil') %}
+                            {% for page in 1..pageCount %}
+                                <li class="page-item {{ page == pagination.getCurrentPageNumber() ? 'active' : '' }}">
+                                    <a class="page-link" href="{{ path('app_offreemploi_index', app.request.query.all()|merge({'page': page})) }}">{{ page }}</a>
+                                </li>
+                            {% endfor %}
+                            {% if pagination.getCurrentPageNumber() < pageCount %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ path('app_offreemploi_index', app.request.query.all()|merge({'page': pagination.getCurrentPageNumber() + 1})) }}"><i class="icofont-rounded-double-right"></i></a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}

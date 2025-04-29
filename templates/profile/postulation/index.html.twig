@@ -1,0 +1,91 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Postulations{% endblock %}
+
+{% block body %}
+    <div class="page-container">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header border-bottom border-dashed">
+                        <div class="d-flex align-items-center">
+                            <h4 class="card-title mb-0 flex-grow-1">Postulations</h4>
+                            <div class="flex-shrink-0">
+                                <a href="{{ path('app_postulation_new') }}" class="btn btn-primary btn-sm">
+                                    <i class="ti ti-plus me-1"></i> Add New
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        {% for message in app.flashes('success') %}
+                            <div class="alert alert-success">{{ message }}</div>
+                        {% endfor %}
+                        {% for message in app.flashes('warning') %}
+                            <div class="alert alert-warning">{{ message }}</div>
+                        {% endfor %}
+                        {% for message in app.flashes('error') %}
+                            <div class="alert alert-danger">{{ message }}</div>
+                        {% endfor %}
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover align-middle mb-0" id="postulations-table">
+                                <thead class="table-light">
+                                <tr>
+                                    <th>Accompagnateur</th>
+                                    <th>Job Offer</th>
+                                    <th>Status</th>
+                                    <th>Date Postulation</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for postulation in pagination %}
+                                    <tr>
+                                        <td>{{ postulation.idaccompagnateur() ? postulation.idaccompagnateur().username|default('N/A') : 'N/A' }}</td>
+                                        <td>{{ postulation.idoffre() ? postulation.idoffre().titre|default('N/A') : 'N/A' }}</td>
+                                        <td>
+                                            <span class="badge {% if postulation.statut() == 'Accepted' %}bg-success{% elseif postulation.statut() == 'Rejected' %}bg-danger{% else %}bg-primary{% endif %}">
+                                                {{ postulation.statut() }}
+                                            </span>
+                                        </td>
+                                        <td>{{ postulation.datepostulation() ? postulation.datepostulation()|date('Y-m-d H:i') : 'N/A' }}</td>
+                                        <td>
+                                            <div class="d-flex gap-2">
+                                                <a href="{{ path('app_postulation_show', {'id': postulation.id_postulation()}) }}" class="btn btn-soft-info btn-sm">
+                                                    <i class="ti ti-eye"></i>
+                                                </a>
+                                                <a href="{{ path('app_postulation_edit', {'id_postulation': postulation.id_postulation()}) }}" class="btn btn-soft-primary btn-sm">
+                                                    <i class="ti ti-pencil"></i>
+                                                </a>
+                                                <form action="{{ path('app_postulation_delete', {'id_postulation': postulation.id_postulation()}) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this postulation?');">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ postulation.id_postulation()) }}">
+                                                    <button type="submit" class="btn btn-soft-danger btn-sm">
+                                                        <i class="ti ti-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted">No postulations found.</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% if pagination|length > 0 %}
+                            <div class="d-flex justify-content-center mt-4">
+                                {{ knp_pagination_render(pagination, '@KnpPaginator/Pagination/bootstrap_v5_pagination.html.twig', {}, {
+                                    'align': 'center',
+                                    'size': 'sm',
+                                    'rounded': true
+                                }) }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -3,11 +3,47 @@
 {% block title %}Edit Postulation{% endblock %}
 
 {% block body %}
-    <h1>Edit Postulation</h1>
-
-    {{ include('postulation/_form.html.twig', {'button_label': 'Update'}) }}
-
-    <a href="{{ path('app_postulation_index') }}">back to list</a>
-
-    {{ include('postulation/_delete_form.html.twig') }}
+    <div class="page-container">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header border-bottom border-dashed">
+                        <h4 class="card-title mb-0">Edit Postulation</h4>
+                    </div>
+                    <div class="card-body">
+                        {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': ''}}) }}
+                        <div class="mb-3">
+                            {{ form_label(form.date_postulation, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.date_postulation, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.date_postulation) }}
+                        </div>
+                        <div class="mb-3">
+                            {{ form_label(form.statut, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.statut, {'attr': {'class': 'form-select'}}) }}
+                            {{ form_errors(form.statut) }}
+                        </div>
+                        <div class="mb-3">
+                            {{ form_label(form.id_accompagnateur, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.id_accompagnateur, {'attr': {'class': 'form-select'}}) }}
+                            {{ form_errors(form.id_accompagnateur) }}
+                        </div>
+                        <div class="mb-3">
+                            {{ form_label(form.id_offre, null, {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.id_offre, {'attr': {'class': 'form-select'}}) }}
+                            {{ form_errors(form.id_offre) }}
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                <i class="ti ti-check me-1"></i> Update
+                            </button>
+                            <a href="{{ path('app_postulation_index') }}" class="btn btn-soft-secondary btn-sm">
+                                <i class="ti ti-arrow-left me-1"></i> Back
+                            </a>
+                        </div>
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

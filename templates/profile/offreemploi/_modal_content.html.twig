@@ -1,0 +1,49 @@
+<div class="modal-header bg-primary text-white">
+    <h5 class="modal-title">
+        <i class="fas fa-eye me-2"></i>Job Offer Details
+    </h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body">
+    <div class="row mb-4">
+        <div class="col-md-4">
+            {% if offreemploi.imageurl %}
+                <img src="{{ asset('uploads/offers/' ~ offreemploi.imageurl) }}"
+                     alt="{{ offreemploi.titre }}"
+                     class="img-fluid rounded"
+                     style="max-height: 200px; object-fit: cover;">
+            {% else %}
+                <div class="bg-light rounded d-flex align-items-center justify-content-center"
+                     style="height: 200px;">
+                    <i class="fas fa-briefcase fa-3x text-muted"></i>
+                </div>
+            {% endif %}
+        </div>
+        <div class="col-md-8">
+            <h4>{{ offreemploi.titre }}</h4>
+            <div class="mb-3">
+                <span class="badge bg-primary">{{ offreemploi.typeposte }}</span>
+                <span class="badge bg-info">{{ offreemploi.typecontrat }}</span>
+                <span class="badge {% if offreemploi.etat == 'active' %}bg-success{% else %}bg-danger{% endif %}">
+                    {{ offreemploi.etat }}
+                </span>
+            </div>
+            <p><i class="fas fa-map-marker-alt me-2"></i>{{ offreemploi.emplacement }}</p>
+            <p><i class="fas fa-calendar me-2"></i>{{ offreemploi.datepublication ? offreemploi.datepublication|date('Y-m-d') : 'N/A' }}</p>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-align-left me-2"></i>Job Description
+            </h5>
+        </div>
+        <div class="card-body">
+            {{ offreemploi.description|nl2br }}
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+</div>

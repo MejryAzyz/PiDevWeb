@@ -2,15 +2,16 @@
 
 namespace App\Entity;
 
+use App\Repository\OffreemploiRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
-use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Symfony\Component\HttpFoundation\File\File;
 use App\Entity\Postulation;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: OffreemploiRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 class Offreemploi
 {
@@ -34,54 +35,59 @@ class Offreemploi
     ];
 
     #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: "IDENTITY")]
-    #[ORM\Column(type: "bigint")]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(type: "string", length: 255, options: ["collation" => "utf8mb4_general_ci"])]
-    #[Assert\NotBlank]
-    #[Assert\Length(max: 255)]
-    private string $titre = '';
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Title is required')]
+    #[Assert\Length(min: 3, max: 255)]
+    private ?string $titre = null;
 
-    #[ORM\Column(type: "text", options: ["collation" => "utf8mb4_general_ci"])]
-    #[Assert\NotBlank]
-    private string $description = '';
+    #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank(message: 'Description is required')]
+    private ?string $description = null;
 
-    #[ORM\Column(type: "string", length: 100, options: ["collation" => "utf8mb4_general_ci"])]
-    #[Assert\NotBlank]
-    #[Assert\Choice(choices: self::JOB_TYPES)]
-    private string $typeposte = '';
+    #[ORM\Column(length: 50)]
+    #[Assert\NotBlank(message: 'Job type is required')]
+    #[Assert\Choice(callback: 'getJobTypes', message: 'Please select a valid job type')]
+    private ?string $typeposte = null;
 
-    #[ORM\Column(type: "date", nullable: true)]
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $datepublication = null;
 
-    #[ORM\Column(type: "string", length: 255, nullable: true, options: ["collation" => "utf8mb4_general_ci"])]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $imageurl = null;
 
-    #[ORM\Column(type: "string", length: 255, options: ["collation" => "utf8mb4_general_ci"])]
-    #[Assert\NotBlank]
-    #[Assert\Choice(choices: [self::STATUS_ACTIVE, self::STATUS_INACTIVE])]
-    private string $etat = self::STATUS_ACTIVE;
+    #[ORM\Column(length: 20)]
+    #[Assert\NotBlank(message: 'Status is required')]
+    #[Assert\Choice(choices: ['active', 'inactive'], message: 'Please select a valid status')]
+    private ?string $etat = 'active';
 
-    #[ORM\Column(type: "string", length: 20, options: ["collation" => "utf8mb4_general_ci"])]
-    #[Assert\NotBlank]
-    #[Assert\Choice(choices: self::CONTRACT_TYPES)]
-    private string $typecontrat = '';
+    #[ORM\Column(length: 50)]
+    #[Assert\NotBlank(message: 'Contract type is required')]
+    #[Assert\Choice(callback: 'getContractTypes', message: 'Please select a valid contract type')]
+    private ?string $typecontrat = null;
 
-    #[ORM\Column(type: "string", length: 50, options: ["collation" => "utf8mb4_general_ci"])]
-    #[Assert\NotBlank]
+    #[ORM\Column(length: 50)]
+    #[Assert\NotBlank(message: 'Location is required')]
     #[Assert\Length(max: 50)]
-    private string $emplacement = '';
+    private ?string $emplacement = null;
 
-    #[ORM\Column(type: "datetime", nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $updated_at = null;
 
     #[ORM\OneToMany(mappedBy: "id_offre", targetEntity: Postulation::class)]
     private Collection $postulations;
 
+    private ?File $imageFile = null;
+
     public function __construct()
     {
         $this->postulations = new ArrayCollection();
+        $this->datepublication = new \DateTime();
+        $this->updated_at = new \DateTime();
+        $this->etat = self::STATUS_ACTIVE;
     }
 
     #[ORM\PrePersist]
@@ -102,34 +108,34 @@ class Offreemploi
         return $this->id;
     }
 
-    public function getTitre(): string
+    public function getTitre(): ?string
     {
         return $this->titre;
     }
 
-    public function setTitre(string $titre): self
+    public function setTitre(string $titre): static
     {
         $this->titre = $titre;
         return $this;
     }
 
-    public function getDescription(): string
+    public function getDescription(): ?string
     {
         return $this->description;
     }
 
-    public function setDescription(string $description): self
+    public function setDescription(string $description): static
     {
         $this->description = $description;
         return $this;
     }
 
-    public function getTypeposte(): string
+    public function getTypeposte(): ?string
     {
         return $this->typeposte;
     }
 
-    public function setTypeposte(string $typeposte): self
+    public function setTypeposte(string $typeposte): static
     {
         $this->typeposte = $typeposte;
         return $this;
@@ -140,7 +146,7 @@ class Offreemploi
         return $this->datepublication;
     }
 
-    public function setDatepublication(?\DateTimeInterface $datepublication): self
+    public function setDatepublication(?\DateTimeInterface $datepublication): static
     {
         $this->datepublication = $datepublication;
         return $this;
@@ -151,40 +157,40 @@ class Offreemploi
         return $this->imageurl;
     }
 
-    public function setImageurl(?string $imageurl): self
+    public function setImageurl(?string $imageurl): static
     {
         $this->imageurl = $imageurl;
         return $this;
     }
 
-    public function getEtat(): string
+    public function getEtat(): ?string
     {
         return $this->etat;
     }
 
-    public function setEtat(string $etat): self
+    public function setEtat(string $etat): static
     {
         $this->etat = $etat;
         return $this;
     }
 
-    public function getTypecontrat(): string
+    public function getTypecontrat(): ?string
     {
         return $this->typecontrat;
     }
 
-    public function setTypecontrat(string $typecontrat): self
+    public function setTypecontrat(string $typecontrat): static
     {
         $this->typecontrat = $typecontrat;
         return $this;
     }
 
-    public function getEmplacement(): string
+    public function getEmplacement(): ?string
     {
         return $this->emplacement;
     }
 
-    public function setEmplacement(string $emplacement): self
+    public function setEmplacement(string $emplacement): static
     {
         $this->emplacement = $emplacement;
         return $this;
@@ -195,7 +201,7 @@ class Offreemploi
         return $this->updated_at;
     }
 
-    public function setUpdatedAt(?\DateTimeInterface $updated_at): self
+    public function setUpdatedAt(\DateTimeInterface $updated_at): static
     {
         $this->updated_at = $updated_at;
         return $this;
@@ -224,6 +230,27 @@ class Offreemploi
             }
         }
 
+        return $this;
+    }
+
+    public static function getJobTypes(): array
+    {
+        return array_keys(self::JOB_TYPES);
+    }
+
+    public static function getContractTypes(): array
+    {
+        return array_keys(self::CONTRACT_TYPES);
+    }
+
+    public function getImageFile(): ?File
+    {
+        return $this->imageFile;
+    }
+
+    public function setImageFile(?File $imageFile): self
+    {
+        $this->imageFile = $imageFile;
         return $this;
     }
 }

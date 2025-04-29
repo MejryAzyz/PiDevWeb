@@ -10,7 +10,9 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
-use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class OffreemploiType extends AbstractType
 {
@@ -18,121 +20,75 @@ class OffreemploiType extends AbstractType
     {
         $builder
             ->add('titre', TextType::class, [
+                'label' => 'Title',
                 'attr' => [
                     'class' => 'form-control',
                     'placeholder' => 'Enter job title'
                 ],
                 'constraints' => [
-                    new Assert\NotBlank([
-                        'message' => 'Title is required'
-                    ]),
-                    new Assert\Length([
-                        'max' => 255,
-                        'maxMessage' => 'Title cannot be longer than {{ limit }} characters'
-                    ])
+                    new NotBlank(['message' => 'Please enter a title'])
                 ]
             ])
             ->add('description', TextareaType::class, [
+                'label' => 'Description',
                 'attr' => [
                     'class' => 'form-control',
-                    'rows' => 4,
+                    'rows' => '5',
                     'placeholder' => 'Enter job description'
                 ],
                 'constraints' => [
-                    new Assert\NotBlank([
-                        'message' => 'Description is required'
-                    ])
+                    new NotBlank(['message' => 'Please enter a description'])
                 ]
             ])
             ->add('typeposte', ChoiceType::class, [
-                'choices' => [
-                    'Full Time' => 'Full Time',
-                    'Part Time' => 'Part Time',
-                    'Contract' => 'Contract',
-                    'Internship' => 'Internship',
-                    'Temporary' => 'Temporary'
-                ],
+                'label' => 'Job Type',
+                'choices' => Offreemploi::JOB_TYPES,
                 'attr' => [
                     'class' => 'form-select'
                 ],
                 'placeholder' => 'Select job type',
-                'required' => true,
                 'constraints' => [
-                    new Assert\NotBlank([
-                        'message' => 'Job type is required'
-                    ])
+                    new NotBlank(['message' => 'Please select a job type'])
                 ]
             ])
             ->add('typecontrat', ChoiceType::class, [
-                'choices' => [
-                    'CDI' => 'CDI',
-                    'CDD' => 'CDD',
-                    'Freelance' => 'Freelance',
-                    'Internship' => 'Internship',
-                    'Apprenticeship' => 'Apprenticeship'
-                ],
+                'label' => 'Contract Type',
+                'choices' => Offreemploi::CONTRACT_TYPES,
                 'attr' => [
                     'class' => 'form-select'
                 ],
                 'placeholder' => 'Select contract type',
-                'required' => true,
                 'constraints' => [
-                    new Assert\NotBlank([
-                        'message' => 'Contract type is required'
-                    ])
+                    new NotBlank(['message' => 'Please select a contract type'])
                 ]
             ])
-            ->add('emplacement', ChoiceType::class, [
-                'choices' => [
-                    'France' => 'France',
-                    'Belgique' => 'Belgique',
-                    'Suisse' => 'Suisse',
-                    'Luxembourg' => 'Luxembourg',
-                    'Remote' => 'Remote'
-                ],
-                'attr' => [
-                    'class' => 'form-select'
-                ],
-                'placeholder' => 'Select location',
-                'required' => true,
-                'constraints' => [
-                    new Assert\NotBlank([
-                        'message' => 'Location is required'
-                    ])
-                ]
-            ])
-            ->add('etat', ChoiceType::class, [
-                'choices' => [
-                    'Active' => 'active',
-                    'Inactive' => 'inactive'
-                ],
-                'attr' => [
-                    'class' => 'form-select'
-                ],
-                'data' => 'active',
-                'required' => true,
-                'constraints' => [
-                    new Assert\NotBlank([
-                        'message' => 'Status is required'
-                    ])
-                ]
-            ])
-            ->add('imageurl', FileType::class, [
-                'required' => false,
-                'mapped' => false,
+            ->add('emplacement', TextType::class, [
+                'label' => 'Location',
                 'attr' => [
                     'class' => 'form-control',
-                    'accept' => 'image/jpeg,image/png'
+                    'placeholder' => 'Enter job location'
                 ],
                 'constraints' => [
-                    new Assert\File([
+                    new NotBlank(['message' => 'Please enter a location'])
+                ]
+            ])
+            ->add('imageFile', FileType::class, [
+                'label' => 'Image',
+                'mapped' => true,
+                'required' => false,
+                'attr' => [
+                    'class' => 'form-control',
+                    'accept' => 'image/*'
+                ],
+                'constraints' => [
+                    new File([
                         'maxSize' => '2M',
                         'mimeTypes' => [
                             'image/jpeg',
-                            'image/png'
+                            'image/png',
+                            'image/gif',
                         ],
-                        'mimeTypesMessage' => 'Please upload a valid image (JPEG or PNG)',
-                        'maxSizeMessage' => 'The file is too large ({{ size }} {{ suffix }}). Maximum size is {{ limit }} {{ suffix }}'
+                        'mimeTypesMessage' => 'Please upload a valid image file (JPEG, PNG, GIF)',
                     ])
                 ]
             ])
@@ -144,8 +100,7 @@ class OffreemploiType extends AbstractType
         $resolver->setDefaults([
             'data_class' => Offreemploi::class,
             'csrf_protection' => true,
-            'csrf_field_name' => '_token',
-            'csrf_token_id' => 'offreemploi_form'
+            'allow_extra_fields' => true,
         ]);
     }
 }

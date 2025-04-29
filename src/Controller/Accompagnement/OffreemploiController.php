@@ -6,6 +6,7 @@ use App\Entity\Offreemploi;
 use App\Form\OffreemploiType;
 use App\Repository\OffreemploiRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -30,12 +31,10 @@ class OffreemploiController extends AbstractController
     public function getFilterOptions(OffreemploiRepository $repository): JsonResponse
     {
         $offers = $repository->findAll();
-        
-        // Get unique values for each filter
         $jobTypes = array_unique(array_map(fn($o) => $o->getTypeposte(), $offers));
         $contractTypes = array_unique(array_map(fn($o) => $o->getTypecontrat(), $offers));
         $locations = array_unique(array_map(fn($o) => $o->getEmplacement(), $offers));
-        
+
         return new JsonResponse([
             'jobTypes' => array_values($jobTypes),
             'contractTypes' => array_values($contractTypes),
@@ -44,31 +43,33 @@ class OffreemploiController extends AbstractController
         ]);
     }
 
-    #[Route('/', name: 'app_offreemploi_index', methods: ['GET'])]
-    public function index(Request $request, OffreemploiRepository $offreemploiRepository): Response
+    #[Route('/front', name: 'app_offreemploi_front_index', methods: ['GET'])]
+    public function indexFront(Request $request, OffreemploiRepository $offreemploiRepository): Response
     {
         $jobType = $request->query->get('jobType');
         $contractType = $request->query->get('contractType');
         $location = $request->query->get('location');
         $status = $request->query->get('status');
 
-        $queryBuilder = $offreemploiRepository->createQueryBuilder('o');
+        $queryBuilder = $offreemploiRepository->createQueryBuilder('o')
+            ->where('o.etat = :etat')
+            ->setParameter('etat', 'active');
 
         if ($jobType) {
             $queryBuilder->andWhere('o.typeposte = :jobType')
-                        ->setParameter('jobType', $jobType);
+                ->setParameter('jobType', $jobType);
         }
         if ($contractType) {
             $queryBuilder->andWhere('o.typecontrat = :contractType')
-                        ->setParameter('contractType', $contractType);
+                ->setParameter('contractType', $contractType);
         }
         if ($location) {
             $queryBuilder->andWhere('o.emplacement = :location')
-                        ->setParameter('location', $location);
+                ->setParameter('location', $location);
         }
         if ($status) {
             $queryBuilder->andWhere('o.etat = :status')
-                        ->setParameter('status', $status);
+                ->setParameter('status', $status);
         }
 
         $offers = $queryBuilder->getQuery()->getResult();
@@ -96,8 +97,50 @@ class OffreemploiController extends AbstractController
             ]);
         }
 
-        return $this->render('offreemploi/index.html.twig', [
-            'offreemplois' => $offers,
+        return $this->render('front/offreemploi/index.html.twig', [
+            'pagination' => $offers,
+        ]);
+    }
+
+    #[Route('/', name: 'app_offreemploi_index', methods: ['GET'])]
+    public function index(Request $request, OffreemploiRepository $offreemploiRepository,PaginatorInterface $paginator
+    ): Response
+    {
+        $jobType = $request->query->get('jobType');
+        $contractType = $request->query->get('contractType');
+        $location = $request->query->get('location');
+        $status = $request->query->get('status');
+
+        $queryBuilder = $offreemploiRepository->createQueryBuilder('o');
+
+        if ($jobType) {
+            $queryBuilder->andWhere('o.typeposte = :jobType')
+                ->setParameter('jobType', $jobType);
+        }
+        if ($contractType) {
+            $queryBuilder->andWhere('o.typecontrat = :contractType')
+                ->setParameter('contractType', $contractType);
+        }
+        if ($location) {
+            $queryBuilder->andWhere('o.emplacement = :location')
+                ->setParameter('location', $location);
+        }
+        if ($status) {
+            $queryBuilder->andWhere('o.etat = :status')
+                ->setParameter('status', $status);
+        }
+
+        $offreemplois = $queryBuilder->getQuery()->getResult();
+        $query = $queryBuilder->getQuery();
+        $pagination = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1),
+            6 // 6 offreemplois per page
+        );
+
+        return $this->render('front/offreemploi/index.html.twig', [
+            'offreemplois' => $offreemplois,
+            'pagination' => $pagination,
         ]);
     }
 
@@ -108,74 +151,78 @@ class OffreemploiController extends AbstractController
         $form = $this->createForm(OffreemploiType::class, $offreemploi);
         $form->handleRequest($request);
 
-        if ($request->isXmlHttpRequest() && $request->isMethod('GET')) {
+        if ($form->isSubmitted() && $form->isValid()) {
+            try {
+                /** @var UploadedFile $imageFile */
+                $imageFile = $form->get('imageFile')->getData();
+                if ($imageFile) {
+                    $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+                    $safeFilename = $slugger->slug($originalFilename);
+                    $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
+
+                    $targetDirectory = $this->getParameter('images_directory');
+                    if (!file_exists($targetDirectory)) {
+                        mkdir($targetDirectory, 0777, true);
+                    }
+
+                    try {
+                        $imageFile->move($targetDirectory, $newFilename);
+                        $offreemploi->setImageurl($newFilename);
+                    } catch (FileException $e) {
+                        $this->logger->error('Error uploading image: ' . $e->getMessage());
+                        if ($request->isXmlHttpRequest()) {
+                            return new JsonResponse([
+                                'success' => false,
+                                'message' => 'Failed to upload image.',
+                                'errors' => ['imageurl' => $e->getMessage()]
+                            ], 400);
+                        }
+                        throw $e;
+                    }
+                }
+                $offreemploi->setDatepublication(new \DateTime());
+                $offreemploi->setEtat(Offreemploi::STATUS_ACTIVE);
+
+                $entityManager->persist($offreemploi);
+                $entityManager->flush();
+
+                if ($request->isXmlHttpRequest()) {
+                    return new JsonResponse([
+                        'success' => true,
+                        'message' => 'Job offer created successfully!'
+                    ]);
+                }
+
+                return $this->redirectToRoute('app_offreemploi_index');
+            } catch (\Exception $e) {
+                $this->logger->error('Error creating job offer: ' . $e->getMessage());
+
+                if ($request->isXmlHttpRequest()) {
+                    return new JsonResponse([
+                        'success' => false,
+                        'message' => 'An error occurred while creating the job offer.',
+                        'errors' => $this->getFormErrors($form)
+                    ], 400);
+                }
+
+                throw $e;
+            }
+        } elseif ($form->isSubmitted() && !$form->isValid() && $request->isXmlHttpRequest()) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'Please check the form for errors.',
+                'errors' => $this->getFormErrors($form)
+            ], 400);
+        }
+
+        if ($request->isXmlHttpRequest()) {
             return $this->render('offreemploi/_form.html.twig', [
-                'form' => $form->createView()
+                'form' => $form->createView(),
+                'button_label' => 'Create'
             ]);
         }
 
-        if ($form->isSubmitted()) {
-            if ($form->isValid()) {
-                try {
-                    /** @var UploadedFile $imageFile */
-                    $imageFile = $form->get('imageurl')->getData();
-                    if ($imageFile) {
-                        $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
-                        $safeFilename = $slugger->slug($originalFilename);
-                        $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
-
-                        // Create directory if it doesn't exist
-                        $targetDirectory = $this->getParameter('images_directory');
-                        if (!file_exists($targetDirectory)) {
-                            mkdir($targetDirectory, 0777, true);
-                        }
-
-                        try {
-                            $imageFile->move($targetDirectory, $newFilename);
-                            $offreemploi->setImageurl($newFilename);
-                        } catch (FileException $e) {
-                            return $this->json([
-                                'status' => 'error',
-                                'message' => 'Failed to upload image.',
-                                'errors' => ['imageurl' => $e->getMessage()]
-                            ]);
-                        }
-                    }
-
-                    $entityManager->persist($offreemploi);
-                    $entityManager->flush();
-
-                    return $this->json([
-                        'status' => 'success',
-                        'message' => 'Job offer created successfully!'
-                    ]);
-                } catch (\Exception $e) {
-                    return $this->json([
-                        'status' => 'error',
-                        'message' => 'An error occurred while saving the job offer.',
-                        'errors' => ['form' => $e->getMessage()]
-                    ]);
-                }
-            } else {
-                $errors = [];
-                foreach ($form->getErrors(true) as $error) {
-                    $fieldName = $error->getOrigin() ? $error->getOrigin()->getName() : 'general';
-                    if (!isset($errors[$fieldName])) {
-                        $errors[$fieldName] = [];
-                    }
-                    $errors[$fieldName][] = $error->getMessage();
-                }
-
-                return $this->json([
-                    'status' => 'error',
-                    'message' => 'Please fix the form errors.',
-                    'errors' => $errors
-                ]);
-            }
-        }
-
         return $this->render('offreemploi/new.html.twig', [
-            'offreemploi' => $offreemploi,
             'form' => $form->createView(),
         ]);
     }
@@ -184,69 +231,69 @@ class OffreemploiController extends AbstractController
     public function edit(Request $request, Offreemploi $offreemploi, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
         $form = $this->createForm(OffreemploiType::class, $offreemploi);
-        $form->handleRequest($request);
 
-        if ($request->isXmlHttpRequest() && $request->isMethod('GET')) {
-            return $this->render('offreemploi/_form.html.twig', [
-                'form' => $form->createView(),
-                'offreemploi' => $offreemploi
-            ]);
-        }
+        try {
+            if ($request->isXmlHttpRequest() && $request->isMethod('GET')) {
+                return $this->render('offreemploi/_form.html.twig', [
+                    'form' => $form->createView(),
+                    'offreemploi' => $offreemploi,
+                    'button_label' => 'Update'
+                ]);
+            }
 
-        if ($form->isSubmitted()) {
-            if ($form->isValid()) {
-                try {
-                    /** @var UploadedFile $imageFile */
-                    $imageFile = $form->get('imageurl')->getData();
-                    if ($imageFile) {
-                        $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
-                        $safeFilename = $slugger->slug($originalFilename);
-                        $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
+            $form->handleRequest($request);
 
-                        // Create directory if it doesn't exist
-                        $targetDirectory = $this->getParameter('images_directory');
-                        if (!file_exists($targetDirectory)) {
-                            mkdir($targetDirectory, 0777, true);
-                        }
+            if ($form->isSubmitted() && $form->isValid()) {
+                /** @var UploadedFile $imageFile */
+                $imageFile = $form->get('imageFile')->getData();
+                if ($imageFile) {
+                    $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+                    $safeFilename = $slugger->slug($originalFilename);
+                    $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
 
-                        try {
-                            // Delete old image if it exists
-                            $oldImage = $offreemploi->getImageurl();
-                            if ($oldImage) {
-                                $oldImagePath = $targetDirectory.'/'.$oldImage;
-                                if (file_exists($oldImagePath)) {
-                                    unlink($oldImagePath);
-                                }
-                            }
-
-                            $imageFile->move($targetDirectory, $newFilename);
-                            $offreemploi->setImageurl($newFilename);
-                        } catch (FileException $e) {
-                            return $this->json([
-                                'status' => 'error',
-                                'message' => 'Failed to upload image.',
-                                'errors' => ['imageurl' => $e->getMessage()]
-                            ]);
-                        }
+                    $targetDirectory = $this->getParameter('images_directory');
+                    if (!file_exists($targetDirectory)) {
+                        mkdir($targetDirectory, 0777, true);
                     }
 
-                    $entityManager->flush();
+                    try {
+                        $oldImage = $offreemploi->getImageurl();
+                        if ($oldImage) {
+                            $oldImagePath = $targetDirectory.'/'.$oldImage;
+                            if (file_exists($oldImagePath)) {
+                                unlink($oldImagePath);
+                            }
+                        }
 
+                        $imageFile->move($targetDirectory, $newFilename);
+                        $offreemploi->setImageurl($newFilename);
+                    } catch (FileException $e) {
+                        return $this->json([
+                            'success' => false,
+                            'message' => 'Failed to upload image.',
+                            'errors' => ['imageurl' => $e->getMessage()]
+                        ], 400);
+                    }
+                }
+
+                $entityManager->flush();
+
+                if ($request->isXmlHttpRequest()) {
                     return $this->json([
-                        'status' => 'success',
-                        'message' => 'Job offer updated successfully!'
-                    ]);
-                } catch (\Exception $e) {
-                    return $this->json([
-                        'status' => 'error',
-                        'message' => 'An error occurred while updating the job offer.',
-                        'errors' => ['form' => $e->getMessage()]
+                        'success' => true,
+                        'message' => 'Job offer updated successfully!',
+                        'id' => $offreemploi->getId()
                     ]);
                 }
-            } else {
+
+                $this->addFlash('success', 'Job offer updated successfully!');
+                return $this->redirectToRoute('app_offreemploi_index');
+            }
+
+            if ($request->isXmlHttpRequest() && $form->isSubmitted()) {
                 $errors = [];
                 foreach ($form->getErrors(true) as $error) {
-                    $fieldName = $error->getOrigin() ? $error->getOrigin()->getName() : 'general';
+                    $fieldName = $error->getOrigin() ? $error->getOrigin()->getName() : 'form';
                     if (!isset($errors[$fieldName])) {
                         $errors[$fieldName] = [];
                     }
@@ -254,22 +301,38 @@ class OffreemploiController extends AbstractController
                 }
 
                 return $this->json([
-                    'status' => 'error',
+                    'success' => false,
                     'message' => 'Please fix the form errors.',
                     'errors' => $errors
-                ]);
+                ], 400);
             }
-        }
 
-        return $this->render('offreemploi/edit.html.twig', [
-            'offreemploi' => $offreemploi,
-            'form' => $form->createView(),
-        ]);
+            return $this->render('offreemploi/edit.html.twig', [
+                'offreemploi' => $offreemploi,
+                'form' => $form->createView(),
+            ]);
+        } catch (\Exception $e) {
+            $this->logger->error('Error in edit action: ' . $e->getMessage());
+            if ($request->isXmlHttpRequest()) {
+                return $this->json([
+                    'success' => false,
+                    'message' => 'An error occurred while processing your request.',
+                    'error' => $e->getMessage()
+                ], 500);
+            }
+            throw $e;
+        }
     }
 
     #[Route('/{id}', name: 'app_offreemploi_show', methods: ['GET'])]
-    public function show(Offreemploi $offreemploi): Response
+    public function show(Offreemploi $offreemploi, Request $request): Response
     {
+        if ($request->isXmlHttpRequest()) {
+            return $this->render('offreemploi/_modal_content.html.twig', [
+                'offreemploi' => $offreemploi,
+            ]);
+        }
+
         return $this->render('offreemploi/show.html.twig', [
             'offreemploi' => $offreemploi,
         ]);
@@ -278,42 +341,30 @@ class OffreemploiController extends AbstractController
     #[Route('/{id}', name: 'app_offreemploi_delete', methods: ['POST'])]
     public function delete(Request $request, Offreemploi $offreemploi, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$offreemploi->getId(), $request->request->get('_token'))) {
-            try {
-                // Delete image file if exists
-                $imageFilename = $offreemploi->getImageurl();
-                if ($imageFilename) {
-                    $imagePath = $this->getParameter('offers_directory').'/'.$imageFilename;
-                    if (file_exists($imagePath)) {
-                        unlink($imagePath);
-                    }
-                }
-
-                $entityManager->remove($offreemploi);
-                $entityManager->flush();
-
-                if ($request->isXmlHttpRequest()) {
-                    return $this->json([
-                        'status' => 'success',
-                        'message' => 'Job offer deleted successfully!'
-                    ]);
-                }
-            } catch (\Exception $e) {
-                $this->logger->error('Error deleting job offer: ' . $e->getMessage());
-                if ($request->isXmlHttpRequest()) {
-                    return $this->json([
-                        'status' => 'error',
-                        'message' => 'Failed to delete job offer',
-                        'errors' => ['general' => $e->getMessage()]
-                    ], 500);
-                }
+        if (!$this->isCsrfTokenValid('delete'.$offreemploi->getId(), $request->request->get('_token'))) {
+            if ($request->isXmlHttpRequest()) {
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => 'Invalid CSRF token'
+                ], 403);
             }
-        } else if ($request->isXmlHttpRequest()) {
-            return $this->json([
-                'status' => 'error',
-                'message' => 'Invalid token',
-                'errors' => ['token' => 'Invalid CSRF token']
-            ], 400);
+            return $this->redirectToRoute('app_offreemploi_index');
+        }
+
+        try {
+            $entityManager->remove($offreemploi);
+            $entityManager->flush();
+
+            if ($request->isXmlHttpRequest()) {
+                return new JsonResponse(['success' => true]);
+            }
+        } catch (\Exception $e) {
+            if ($request->isXmlHttpRequest()) {
+                return new JsonResponse([
+                    'success' => false,
+                    'message' => 'An error occurred while deleting the job offer.'
+                ], 400);
+            }
         }
 
         return $this->redirectToRoute('app_offreemploi_index');
@@ -324,26 +375,34 @@ class OffreemploiController extends AbstractController
     {
         if ($request->isXmlHttpRequest()) {
             try {
-                // Toggle the status
                 $newStatus = $offreemploi->getEtat() === 'active' ? 'inactive' : 'active';
                 $offreemploi->setEtat($newStatus);
-                
                 $entityManager->flush();
-                
-                return new JsonResponse([
-                    'status' => 'success',
+
+                return $this->json([
+                    'success' => true,
                     'message' => 'Job offer status updated successfully!',
                     'newStatus' => $newStatus
                 ]);
             } catch (\Exception $e) {
                 $this->logger->error('Error updating offer status: ' . $e->getMessage());
-                return new JsonResponse([
-                    'status' => 'error',
-                    'message' => 'Failed to update job offer status'
+                return $this->json([
+                    'success' => false,
+                    'message' => 'Failed to update job offer status',
+                    'error' => $e->getMessage()
                 ], 500);
             }
         }
 
         return new Response('', 400);
+    }
+
+    private function getFormErrors($form): array
+    {
+        $errors = [];
+        foreach ($form->getErrors(true) as $error) {
+            $errors[$error->getOrigin()->getName()] = $error->getMessage();
+        }
+        return $errors;
     }
 }

@@ -1,0 +1,89 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Offres d'Emploi{% endblock %}
+
+{% block body %}
+    <div class="page-container">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header border-bottom border-dashed">
+                        <div class="d-flex align-items-center">
+                            <h4 class="card-title mb-0 flex-grow-1">Offres d'Emploi</h4>
+                            <div class="flex-shrink-0">
+                                <a href="{{ path('app_offreemploi_new') }}" class="btn btn-primary btn-sm">
+                                    <i class="ti ti-plus me-1"></i> Add New
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        {% for message in app.flashes('success') %}
+                            <div class="alert alert-success">{{ message }}</div>
+                        {% endfor %}
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover align-middle mb-0" id="offreemplois-table">
+                                <thead class="table-light">
+                                <tr>
+                                    <th>Titre</th>
+                                    <th>Type de Poste</th>
+                                    <th>Type de Contrat</th>
+                                    <th>Emplacement</th>
+                                    <th>État</th>
+                                    <th>Date de Publication</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for offreemploi in pagination %}
+                                    <tr>
+                                        <td>{{ offreemploi.titre }}</td>
+                                        <td>{{ offreemploi.typeposte }}</td>
+                                        <td>{{ offreemploi.typecontrat }}</td>
+                                        <td>{{ offreemploi.emplacement }}</td>
+                                        <td>
+                                            <span class="badge {% if offreemploi.etat == 'active' %}bg-success{% else %}bg-danger{% endif %}">
+                                                {{ offreemploi.etat|capitalize }}
+                                            </span>
+                                        </td>
+                                        <td>{{ offreemploi.datepublication|date('Y-m-d') }}</td>
+                                        <td>
+                                            <div class="d-flex gap-2">
+                                                <a href="{{ path('app_offreemploi_show', {'id': offreemploi.id}) }}" class="btn btn-soft-info btn-sm">
+                                                    <i class="ti ti-eye"></i>
+                                                </a>
+                                                <a href="{{ path('app_offreemploi_edit', {'id': offreemploi.id}) }}" class="btn btn-soft-primary btn-sm">
+                                                    <i class="ti ti-pencil"></i>
+                                                </a>
+                                                <form action="{{ path('app_offreemploi_delete', {'id': offreemploi.id}) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this offre d\'emploi?');">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ offreemploi.id) }}">
+                                                    <button type="submit" class="btn btn-soft-danger btn-sm">
+                                                        <i class="ti ti-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="7" class="text-center text-muted">No offres d'emploi found.</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% if pagination|length > 0 %}
+                            <div class="d-flex justify-content-center mt-4">
+                                {{ knp_pagination_render(pagination, '@KnpPaginator/Pagination/bootstrap_v5_pagination.html.twig', {}, {
+                                    'align': 'center',
+                                    'size': 'sm',
+                                    'rounded': true
+                                }) }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

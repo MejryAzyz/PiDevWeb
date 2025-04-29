@@ -1,0 +1,146 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block body %}
+    <!-- Header with navigation -->
+
+
+    <!-- Main dashboard content with cards -->
+    <div class="container mt-5">
+        <h1 class="rt-section-title">Welcome to the Admin Dashboard</h1>
+        <nav aria-label="breadcrumb" class="mt-3">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+            </ol>
+        </nav>
+
+        <!-- Flash messages -->
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success mt-3">{{ message }}</div>
+        {% endfor %}
+        {% for message in app.flashes('warning') %}
+            <div class="alert alert-warning mt-3">{{ message }}</div>
+        {% endfor %}
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger mt-3">{{ message }}</div>
+        {% endfor %}
+        <p class="mb-4">Manage your platform efficiently using the options below.</p>
+        <div class="row">
+            <!-- Accompagnateurs Card -->
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-users fa-3x mb-3 text-primary"></i>
+                        <h5 class="card-title">Accompagnateurs</h5>
+                        <p class="card-text">View and manage all accompagnateurs in the system.</p>
+                        <a href="{{ path('app_accompagnateur_index') }}" class="btn btn-primary rt-rounded">Go to Accompagnateurs</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Offres d'Emploi Card -->
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-briefcase fa-3x mb-3 text-success"></i>
+                        <h5 class="card-title">Offres d'Emploi</h5>
+                        <p class="card-text">Create and manage job offers available to applicants.</p>
+                        <a href="{{ path('app_offreemploi_index') }}" class="btn btn-success rt-rounded">Go to Offres d'Emploi</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Postulations Card -->
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-file-alt fa-3x mb-3 text-info"></i>
+                        <h5 class="card-title">Postulations</h5>
+                        <p class="card-text">Review and process job applications from accompagnateurs.</p>
+                        <a href="{{ path('app_postulation_index') }}" class="btn btn-info rt-rounded">Go to Postulations</a>
+                    </div>
+                </div>
+
+            </div>
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <table class="table table-bordered table-hover fs-14">
+                                <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Applicant</th>
+                                    <th>Offer</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for postulation in postulations %}
+                                    {% if postulation.statut == 'Pending' %}
+                                        <tr>
+                                            <td>{{ postulation.id_postulation }}</td>
+                                            <td>{{ postulation.idaccompagnateur ? postulation.idaccompagnateur.username : 'N/A' }}</td>
+                                            <td>{{ postulation.idoffre ? postulation.idoffre.titre : 'N/A' }}</td>
+                                            <td>{{ postulation.datepostulation|date('Y-m-d H:i') }}</td>
+                                            <td>{{ postulation.statut }}</td>
+                                            <td>
+                                                <a href="{{ path('app_postulation_accept', {'id': postulation.id_postulation}) }}" class="btn btn-success btn-sm rounded-pill" title="Accept">
+                                                    <i class="fas fa-check fa-xs"></i>
+                                                </a>
+                                                <a href="{{ path('app_postulation_reject', {'id': postulation.id_postulation}) }}" class="btn btn-danger btn-sm rounded-pill" title="Reject">
+                                                    <i class="fas fa-times fa-xs"></i>
+                                                </a>
+
+                                                <a href="{{ path('app_postulation_show_demand', {'id': postulation.id_postulation()}) }}" class="btn btn-info btn-sm rounded-pill" title="View">
+                                                    <i class="fas fa-eye fa-xs"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="6" class="text-center">No pending postulations.</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block css %}
+    <style>
+        .main-menu ul li {
+            margin-right: 10px;
+        }
+        .rt-btn {
+            padding: 10px 20px;
+            font-size: 14px;
+        }
+        .card {
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .rt-rounded {
+            border-radius: 25px;
+        }
+    </style>
+{% endblock %}
+
+{% block js %}
+    <!-- Ensure mobile menu toggle works -->
+    <script>
+        document.querySelector('.menu-click').addEventListener('click', function() {
+            document.querySelector('.main-menu ul').classList.toggle('show');
+        });
+    </script>
+{% endblock %}

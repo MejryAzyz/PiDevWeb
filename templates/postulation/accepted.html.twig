@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Postulation Accepted{% endblock %}
+
+{% block body %}
+    <div class="page-container">
+        <div class="page-title-head d-flex align-items-sm-center flex-sm-row flex-column gap-2">
+            <div class="flex-grow-1">
+                <h4 class="fs-18 fw-semibold mb-0">Postulation Accepted</h4>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="fs-16 fw-semibold text-success">Congratulations!</h5>
+                        <p>Your postulation for the job offer <strong>{{ offer_title }}</strong> has been accepted.</p>
+                        <ul class="list-unstyled">
+                            <li><strong>Postulation ID:</strong> {{ postulation.id_postulation }}</li>
+                            <li><strong>Applicant:</strong> {{ postulation.id_accompagnateur ? postulation.id_accompagnateur.username : 'N/A' }}</li>
+                            <li><strong>Date:</strong> {{ postulation.date_postulation|date('Y-m-d H:i') }}</li>
+                        </ul>
+                        <a href="{{ path('app_dashboard') }}" class="btn btn-primary btn-sm mt-3">Back to Dashboard</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

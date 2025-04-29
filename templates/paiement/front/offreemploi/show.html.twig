@@ -1,0 +1,295 @@
+{% extends 'baseFront.html.twig' %}
+
+{% block title %}Emigrar - {{ offre.titre|default('Job Offer Details') }} {% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .rt-duel-slider-main .single-main {
+            height: 400px;
+            position: relative;
+        }
+        .rt-duel-slider-thumb .single--thumb {
+            height: 80px;
+            cursor: pointer;
+        }
+        .inner-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+        .hotel-inner-content h5 {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+        .rt-tab-nav-1 .nav-link {
+            font-size: 1rem;
+            padding: 0.5rem 1.5rem;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <!-- Breadcrumb Area -->
+    <div class="rt-breadcump rt-breadcump-height">
+        <div class="rt-page-bg rtbgprefix-cover" style="background-image: url({{ asset('assets/images/backgrounds/bredcump.png') }})"></div>
+        <div class="container">
+            <div class="row rt-breadcump-height">
+                <div class="col-12">
+                    <div class="breadcrumbs-content">
+                        <h3>{{ offre.titre|default('Job Offer Details') }}</h3>
+                        <div class="breadcrumbs">
+                            <span class="divider"><i class="icofont-home"></i></span>
+                            <a  title="Home">Home</a>
+                            <span class="divider"><i class="icofont-simple-right"></i></span>
+                            <a href="{{ path('app_offreemploi_index') }}">Job Offers</a>
+                            <span class="divider"><i class="icofont-simple-right"></i></span>
+                            Details
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <section class="content-area">
+        <div class="container">
+            <div class="row">
+                <!-- Image Slider -->
+                <div class="col-lg-7">
+                    <div class="rt-duel-slider-main rt-mb-30">
+                        <div class="single-main rtbgprefix-cover"
+                             style="background-image: url({{ offre.imageurl ? asset('Uploads/offers/' ~ offre.imageurl) : asset('assets/images/all-img/default-job.jpg') }})">
+                            <div class="inner-badge badge-bg-1 f-size-14 rt-strong">
+                                {{ offre.typeposte|default('N/A') }}
+                            </div>
+                        </div>
+                        <div class="single-main rtbgprefix-cover"
+                             style="background-image: url({{ asset('assets/images/all-img/job-slider-2.jpg') }})">
+                            <div class="inner-badge badge-bg-1 f-size-14 rt-strong">
+                                {{ offre.typeposte|default('N/A') }}
+                            </div>
+                        </div>
+                        <div class="single-main rtbgprefix-cover"
+                             style="background-image: url({{ asset('assets/images/all-img/job-slider-3.jpg') }})">
+                            <div class="inner-badge badge-bg-1 f-size-14 rt-strong">
+                                {{ offre.typeposte|default('N/A') }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="rt-duel-slider-thumb">
+                        <div class="single--thumb rtbgprefix-cover"
+                             style="background-image: url({{ offre.imageurl ? asset('Uploads/offers/' ~ offre.imageurl) : asset('assets/images/all-img/default-job.jpg') }})"></div>
+                        <div class="single--thumb rtbgprefix-cover"
+                             style="background-image: url({{ asset('assets/images/all-img/job-slider-2.jpg') }})"></div>
+                        <div class="single--thumb rtbgprefix-cover"
+                             style="background-image: url({{ asset('assets/images/all-img/job-slider-3.jpg') }})"></div>
+                    </div>
+                </div>
+
+                <!-- Job Details -->
+                <div class="col-lg-5 mt-5 mt-lg-0">
+                    <div class="hotel-inner-content">
+                        <h5 class="f-size-18 rt-medium">{{ offre.titre|default('Untitled Job') }}</h5>
+                        <p class="f-size-13">
+                            <span class="text-555">{{ offre.typecontrat|default('N/A') }} - {{ offre.typeposte|default('N/A') }}</span>
+                            <span class="pl-2 text-777">| {{ offre.emplacement|default('Location not specified') }}</span>
+                        </p>
+                        <p class="rt-mt-15 rt-mb-20">
+                            <span class="badge rt-gradinet-badge pill rt-mr-10">4.3 <small>/5</small></span>
+                            <span class="primary-color rt-mr-10">Excellent</span>
+                            <span class="f-size-12 text-878">( {{ random(50, 100) }} Reviews )</span>
+                        </p>
+                        <p class="f-size-14 text-333">"{{ offre.description|length > 100 ? offre.description|slice(0, 100) ~ '...' : offre.description|default('No description available') }}"</p>
+                        <p class="primary-color">Key Details:</p>
+                        <ul class="rt-list rt-mb-30">
+                            <li class="text-333 title-font d-block f-size-13">
+                                <span class="primary-color rt-mr-5"><i class="icofont-check"></i></span>
+                                {{ offre.typecontrat|default('N/A') }} contract
+                            </li>
+                            <li class="text-333 title-font d-block f-size-13">
+                                <span class="primary-color rt-mr-5"><i class="icofont-check"></i></span>
+                                Located in {{ offre.emplacement|default('N/A') }}
+                            </li>
+                            <li class="text-333 title-font d-block f-size-13">
+                                <span class="primary-color rt-mr-5"><i class="icofont-check"></i></span>
+                                Posted on {{ offre.datepublication ? offre.datepublication|date('M d, Y') : 'N/A' }}
+                            </li>
+                        </ul>
+                        <div class="rt-divider style-one rt-mb-30"></div>
+                        <div class="d-flex flex-md-row flex-column justify-content-md-between">
+                            <div>
+                                <a href="{{ path('app_offreemploi_postuler', {'id': offre.id}) }}"
+                                   class="rt-btn rt-gradient rt-sm2 text-uppercase pill">Apply Now</a>
+                            </div>
+
+                        </div>
+                        <div class="rt-divider style-one rt-mt-30"></div>
+                        <div class="rt-mt-25">
+                            <ul class="rt-social normal-style-one">
+                                <li><span class="f-size-14"><strong>Share Link:</strong></span></li>
+                                <li><a href="#"><i class="icofont-facebook"></i></a></li>
+                                <li><a href="#"><i class="icofont-twitter"></i></a></li>
+                                <li><a href="#"><i class="icofont-linkedin"></i></a></li>
+                                <li><a href="#"><i class="icofont-google-plus"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabbed Content -->
+            <div class="row">
+                <div class="col-12 rt-mt-58">
+                    <div class="hotel-tabs">
+                        <div class="flight-list-box rt-mb-40">
+                            <ul class="nav rt-tab-nav-1 pill pl-md-4 pr-md-4" id="myTab-2" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="rt-itm_1-tab" data-toggle="tab" href="#rt-itm_1"
+                                       role="tab" aria-controls="rt-itm_1" aria-selected="true">Overview</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="rt-itm_2-tab" data-toggle="tab" href="#rt-itm_2" role="tab"
+                                       aria-controls="rt-itm_2" aria-selected="false">Requirements</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="rt-itm_3-tab" data-toggle="tab" href="#rt-itm_3" role="tab"
+                                       aria-controls="rt-itm_3" aria-selected="false">Benefits</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="rt-itm_5-tab" data-toggle="tab" href="#rt-itm_5" role="tab"
+                                       aria-controls="rt-itm_5" aria-selected="false">Policies</a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="tab-content" id="myTabContent">
+                            <!-- Overview Tab -->
+                            <div class="tab-pane fade show active" id="rt-itm_1" role="tabpanel"
+                                 aria-labelledby="rt-itm_1-tab">
+                                <div class="flight-list-box rt-mb-30">
+                                    <div class="inner-content rt-pl-15">
+                                        <h4 class="badge-hilighit color--1 f-size-14 text-white text-font text-uppercase rt-mb-30 rt-mt-15 rt-strong">
+                                            HIGHLIGHTS
+                                        </h4>
+                                        <p>{{ offre.description|default('No description available') }}</p>
+                                        <p>
+                                            This position is a {{ offre.typeposte|default('N/A') }} role based in
+                                            {{ offre.emplacement|default('N/A') }}. The role offers a
+                                            {{ offre.typecontrat|default('N/A') }} contract, ideal for candidates
+                                            seeking {{ offre.typeposte|lower|default('N/A') }} opportunities.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Requirements Tab -->
+                            <div class="tab-pane fade" id="rt-itm_2" role="tabpanel" aria-labelledby="rt-itm_2-tab">
+                                <div class="flight-list-box rt-mb-30">
+                                    <h4 class="f-siz-18 rt-pt-10 rt-semiblod text-uppercase rt-mb-15">REQUIREMENTS</h4>
+                                    <ul class="rt-list rt-pl-25">
+                                        <li class="text-333 title-font d-block f-size-14">
+                                            <span class="primary-color rt-mr-5"><i class="icofont-check"></i></span>
+                                            Relevant professional experience in {{ offre.typeposte|default('the field') }}.
+                                        </li>
+                                        <li class="text-333 title-font d-block f-size-14">
+                                            <span class="primary-color rt-mr-5"><i class="icofont-check"></i></span>
+                                            Strong communication and teamwork skills.
+                                        </li>
+                                        <li class="text-333 title-font d-block f-size-14">
+                                            <span class="primary-color rt-mr-5"><i class="icofont-check"></i></span>
+                                            Ability to work in {{ offre.emplacement|default('various locations') }}.
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Benefits Tab -->
+                            <div class="tab-pane fade" id="rt-itm_3" role="tabpanel" aria-labelledby="rt-itm_3-tab">
+                                <div class="flight-list-box rt-mb-30">
+                                    <h4 class="f-siz-18 rt-pt-10 rt-semiblod text-uppercase rt-mb-15">BENEFITS</h4>
+                                    <ul class="rt-list rt-pl-25">
+                                        <li class="text-333 title-font d-block f-size-14">
+                                            <span class="primary-color rt-mr-5"><i class="icofont-check"></i></span>
+                                            Competitive salary and benefits package.
+                                        </li>
+                                        <li class="text-333 title-font d-block f-size-14">
+                                            <span class="primary-color rt-mr-5"><i class="icofont-check"></i></span>
+                                            Opportunities for career growth and development.
+                                        </li>
+                                        <li class="text-333 title-font d-block f-size-14">
+                                            <span class="primary-color rt-mr-5"><i class="icofont-check"></i></span>
+                                            Supportive and inclusive work environment.
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Policies Tab -->
+                            <div class="tab-pane fade" id="rt-itm_5" role="tabpanel" aria-labelledby="rt-itm_5-tab">
+                                <div class="flight-list-box rt-mb-30">
+                                    <div class="inner-content rt-pt-10 rt-pl-15">
+                                        <h4 class="f-size-18 rt-semiblod rt-mb-35">Company Policies</h4>
+                                    </div>
+                                    <div class="media service-amitence-box rt-mb-30">
+                                        <img src="{{ asset('assets/images/all-img/hottel-cion-16.png') }}"
+                                             class="rt-pr-23" alt="hottel-cion">
+                                        <div class="media-body rt-pl-23">
+                                            <h5 class="f-size-16 rt-semiblod">Application Process</h5>
+                                            <p class="f-size-13 text-333">
+                                                Applications must be submitted by the deadline. Shortlisted candidates will be contacted for interviews.
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="media service-amitence-box rt-mb-30">
+                                        <img src="{{ asset('assets/images/all-img/hottel-cion-17.png') }}"
+                                             class="rt-pr-23" alt="hottel-cion">
+                                        <div class="media-body rt-pl-23">
+                                            <h5 class="f-size-16 rt-semiblod">Equal Opportunity</h5>
+                                            <p class="f-size-13 text-333">
+                                                We are an equal opportunity employer and value diversity in our workplace.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $(document).ready(function(){
+            $('.rt-duel-slider-main').slick({
+                slidesToShow: 1,
+                slidesToScroll: 1,
+                arrows: true,
+                asNavFor: '.rt-duel-slider-thumb',
+                prevArrow: '<button type="button" class="slick-prev"><i class="icofont-simple-left"></i></button>',
+                nextArrow: '<button type="button" class="slick-next"><i class="icofont-simple-right"></i></button>'
+            });
+            $('.rt-duel-slider-thumb').slick({
+                slidesToShow: 3,
+                slidesToScroll: 1,
+                asNavFor: '.rt-duel-slider-main',
+                dots: false,
+                arrows: false,
+                focusOnSelect: true,
+                responsive: [
+                    {
+                        breakpoint: 768,
+                        settings: {
+                            slidesToShow: 2
+                        }
+                    }
+                ]
+            });
+        });
+    </script>
+{% endblock %}
