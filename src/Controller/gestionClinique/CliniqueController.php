@@ -15,6 +15,12 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Endroid\QrCode\Builder\BuilderInterface;
+use Endroid\QrCode\Encoding\Encoding;
+use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelHigh;
+use Endroid\QrCode\Color\Color;
+use Endroid\QrCode\Writer\PngWriter;
+use Knp\Component\Pager\PaginatorInterface;
 
 #[Route('/clinique')]
 final class CliniqueController extends AbstractController
@@ -248,96 +254,40 @@ final class CliniqueController extends AbstractController
 
      // ➕ Méthode front pour afficher toutes les cliniques
      #[Route('/front/liste/{page}', name: 'app_clinique_front_index', methods: ['GET'])]
-     public function indexFront(Request $request, CliniqueRepository $cliniqueRepository, SpecialiteRepository $specialiteRepository, int $page = 1): Response
+     public function indexFront(Request $request, CliniqueRepository $cliniqueRepository, SpecialiteRepository $specialiteRepository, \Knp\Component\Pager\PaginatorInterface $paginator, int $page = 1): Response
      {
-         // Nombre d'éléments par page
-         $limit = 6;
+        // Récupérer les filtres depuis la requête
+        $filters = [
+            'price_range' => $request->query->get('price_range'),
+            'pays' => $request->query->get('pays'),
+            'specialty' => $request->query->get('specialty'),
+            'sort' => $request->query->get('sort', 'recommande')
+        ];
 
-         // Récupérer les prix min et max de toutes les cliniques
-         $priceRange = $cliniqueRepository->createQueryBuilder('c')
-             ->select('MIN(c.prix) as min_price, MAX(c.prix) as max_price')
-             ->getQuery()
-             ->getOneOrNullResult();
+        // Utiliser la méthode du repository
+        $result = $cliniqueRepository->findFilteredCliniques($filters);
 
-         $minPrice = $priceRange['min_price'] ?? 0;
-         $maxPrice = $priceRange['max_price'] ?? 1000;
+        // Pagination avec KnpPaginatorBundle
+        $sortField = $request->query->get('sort', 'c.id_clinique');
+        $sortDirection = $request->query->get('direction', 'asc');
+        $pagination = $paginator->paginate(
+            $result['query'],
+            $page,
+            4,
+            [
+                'defaultSortFieldName' => $sortField,
+                'defaultSortDirection' => $sortDirection,
+            ]
+        );
 
-         // Récupérer le filtre de prix depuis la requête
-         $priceFilter = $request->query->get('price_range');
-         $currentMinPrice = $minPrice;
-         $currentMaxPrice = $maxPrice;
-
-         // Récupérer le filtre de spécialité depuis la requête
-         $specialtyFilter = $request->query->get('specialty');
-
-         
-         $searchTerm = $request->query->get('search');
-
-         
-         $queryBuilder = $cliniqueRepository->createQueryBuilder('c')
-             ->leftJoin('c.cliniquePhotos', 'photos')
-             ->addSelect('photos')
-             ->leftJoin('c.docteurs', 'd')
-             ->leftJoin('d.specialite', 's');
-
-         // Appliquer le filtre de prix si présent
-         if ($priceFilter) {
-             list($currentMinPrice, $currentMaxPrice) = array_map('floatval', explode(',', $priceFilter));
-             $queryBuilder
-                 ->andWhere('c.prix >= :minPrice')
-                 ->andWhere('c.prix <= :maxPrice')
-                 ->setParameter('minPrice', $currentMinPrice)
-                 ->setParameter('maxPrice', $currentMaxPrice);
-         }
-
-         // Appliquer le filtre de spécialité si présent
-         if ($specialtyFilter) {
-             $queryBuilder
-                 ->andWhere('s.id_specialite = :specialtyId')
-                 ->setParameter('specialtyId', $specialtyFilter);
-         }
-
-        
-         if ($searchTerm) {
-             $queryBuilder
-                 ->andWhere('c.nom LIKE :searchTerm OR c.description LIKE :searchTerm OR c.adresse LIKE :searchTerm')
-                 ->setParameter('searchTerm', '%' . $searchTerm . '%');
-         }
-
-         $query = $queryBuilder->getQuery();
-
-         // Créer le paginator
-         $paginator = new \Doctrine\ORM\Tools\Pagination\Paginator($query);
-
-         
-         $totalItems = count($paginator);
-         $totalPages = ceil($totalItems / $limit);
-
-         
-         if ($page < 1) {
-             $page = 1;
-         }
-         if ($page > $totalPages && $totalPages > 0) {
-             $page = $totalPages;
-         }
-
-         
-         $paginator
-             ->getQuery()
-             ->setFirstResult($limit * ($page - 1))
-             ->setMaxResults($limit);
-
-         return $this->render('clinique/indexFront.html.twig', [
-             'cliniques' => $paginator,
-             'totalPages' => $totalPages,
-             'currentPage' => $page,
-             'limit' => $limit,
-             'min_price' => $minPrice,
-             'max_price' => $maxPrice,
-             'current_min_price' => $currentMinPrice,
-             'current_max_price' => $currentMaxPrice,
-             'specialites' => $specialiteRepository->findAll(), // Passer les spécialités à la vue
-         ]);
+        return $this->render('clinique/indexFront.html.twig', [
+            'cliniques' => $pagination,
+            'min_price' => $result['min_price'],
+            'max_price' => $result['max_price'],
+            'current_min_price' => $result['current_min_price'],
+            'current_max_price' => $result['current_max_price'],
+            'specialites' => $specialiteRepository->findAll(),
+        ]);
      }
     
 
@@ -345,12 +295,12 @@ final class CliniqueController extends AbstractController
      #[Route('/upload-photo', name: 'app_clinique_upload_photo', methods: ['POST'])]
     public function uploadPhoto(Request $request, EntityManagerInterface $entityManager): JsonResponse
     {
-        // Handle OPTIONS requests for CORS preflight
+        
         if ($request->isMethod('OPTIONS')) {
             return new JsonResponse([], Response::HTTP_OK);
         }
         
-        // Check if this is a test request without a file
+        
         if (!$request->files->has('file') && $request->headers->get('X-Requested-With') === 'XMLHttpRequest') {
             return new JsonResponse(['message' => 'Upload endpoint is working'], Response::HTTP_OK);
         }
@@ -400,10 +350,10 @@ final class CliniqueController extends AbstractController
             }
 
             try {
-                // Create new Clinique_photos entry
+                
                 $cliniquePhoto = new Clinique_photos();
                 
-                // Generate new ID
+                
                 $lastPhoto = $entityManager->getRepository(Clinique_photos::class)
                     ->findOneBy([], ['id_photo' => 'DESC']);
                 $newId = $lastPhoto ? $lastPhoto->getId_photo() + 1 : 1;
@@ -695,10 +645,84 @@ final class CliniqueController extends AbstractController
     }
 
     #[Route('/front/{id_clinique}', name: 'app_clinique_front_show', methods: ['GET'])]
-    public function showFront(Clinique $clinique): Response
+    public function showFront(Clinique $clinique, SpecialiteRepository $specialiteRepository): Response
     {
         return $this->render('clinique/showFront.html.twig', [
             'clinique' => $clinique,
+            'specialites' => $specialiteRepository->findAll(),
         ]);
+    }
+
+    #[Route('/qr-code/{id_clinique}', name: 'app_clinique_qr_code', methods: ['GET'])]
+    public function generateQrCode(Clinique $clinique, BuilderInterface $qrBuilder): Response
+    {
+        // Générer le contenu HTML pour le PDF
+        $html = $this->renderView('clinique/pdf_template.html.twig', [
+            'clinique' => $clinique
+        ]);
+
+        // Configurer Dompdf avec des options optimisées pour mobile
+        $options = new \Dompdf\Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isPhpEnabled', true);
+        $options->set('dpi', 72); // Basse résolution pour fichier plus petit
+        $options->set('defaultFont', 'Arial');
+
+        $dompdf = new \Dompdf\Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        // Obtenir le contenu du PDF
+        $pdfContent = $dompdf->output();
+
+       
+        $base64Pdf = base64_encode($pdfContent);
+        
+        
+        $dataUri = 'data:application/pdf;filename=clinique.pdf;base64,' . $base64Pdf;
+        
+        
+        $result = $qrBuilder
+            ->data($dataUri)
+            ->encoding(new Encoding('UTF-8'))
+            ->errorCorrectionLevel(new ErrorCorrectionLevelHigh())
+            ->size(1000) // Grande taille pour contenir toutes les données
+            ->margin(10)
+            ->foregroundColor(new Color(0, 0, 0))
+            ->backgroundColor(new Color(255, 255, 255))
+            ->build();
+
+        // Retourner le QR code comme image PNG
+        $response = new Response($result->getString());
+        $response->headers->set('Content-Type', 'image/png');
+        
+        return $response;
+    }
+
+    #[Route('/clinique/pdf/{id_clinique}', name: 'app_clinique_pdf', methods: ['GET'])]
+    public function generatePdf(Clinique $clinique): Response
+    {
+        // Générer le contenu HTML
+        $html = $this->renderView('clinique/pdf_template.html.twig', [
+            'clinique' => $clinique
+        ]);
+
+        // Configurer Dompdf
+        $options = new \Dompdf\Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isPhpEnabled', true);
+
+        $dompdf = new \Dompdf\Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        // Générer le PDF
+        $response = new Response($dompdf->output());
+        $response->headers->set('Content-Type', 'application/pdf');
+        $response->headers->set('Content-Disposition', 'attachment; filename="clinique-'.$clinique->getNom().'.pdf"');
+
+        return $response;
     }
 }

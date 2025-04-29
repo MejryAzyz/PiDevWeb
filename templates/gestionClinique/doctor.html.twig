@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Doctors | Osen - Responsive Bootstrap 5 Admin Dashboard{% endblock %}
+{% block title %}Add Doctors | Osen - Responsive Bootstrap 5 Admin Dashboard{% endblock %}
 
 {% block css %}
 <!-- App css -->
@@ -9,68 +9,199 @@
 <!-- Icons css -->
 <link href="{{ asset('assets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
 {% endblock %}
-
+           
 {% block body %}
-<!-- Begin page -->
-    <!-- Page Content -->
 
-        <div class="page-container">
-            <div class="page-title-head d-flex align-items-sm-center flex-sm-row flex-column gap-2">
-                <div class="flex-grow-1">
-                    <h4 class="fs-18 fw-semibold mb-0">Doctors</h4>
-                </div>
-                <div class="text-end">
-                    <ol class="breadcrumb m-0 py-0">
-                        <li class="breadcrumb-item"><a href="#">Osen</a></li>
-                        <li class="breadcrumb-item"><a href="#">Hospital</a></li>
-                        <li class="breadcrumb-item active">Doctors</li>
-                    </ol>
-                </div>
-            </div>
+            <!-- Start Content-->
+            <div class="page-container">
 
-            <div class="row">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header d-flex align-items-center justify-content-between border-bottom border-light">
-                            <h4 class="header-title">Doctor List</h4>
-                            <div>
-                                <a href="{{ path('home') }}" class="btn btn-success bg-gradient">
-                                    <i class="ti ti-plus me-1"></i> Ajouter Docteur
-                                </a>
-                                <a href="#" class="btn btn-secondary bg-gradient">
-                                    <i class="ti ti-file-import me-1"></i> Import
-                                </a>
+                
+                <div class="page-title-head d-flex align-items-sm-center flex-sm-row flex-column gap-2">
+                    <div class="flex-grow-1">
+                        <h4 class="fs-18 fw-semibold mb-0">Add Doctors</h4>
+                    </div>
+
+                    <div class="text-end">
+                        <ol class="breadcrumb m-0 py-0">
+                            <li class="breadcrumb-item"><a href="javascript: void(0);">Osen</a></li>
+                            
+                            <li class="breadcrumb-item"><a href="javascript: void(0);">Hospital</a></li>
+                            
+                            <li class="breadcrumb-item active">Add Doctors</li>
+                        </ol>
+                    </div>
+                </div>
+                
+
+                
+
+                <div class="row">
+                    <div class="col-lg-7">
+                        <div class="card">
+                            <div class="card-header border-bottom border-dashed">
+                                <h4 class="card-title mb-0">Basic information</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            <label for="doctorFirst" class="form-label">Doctor First Name</label>
+                                            <input type="text" class="form-control" id="doctorFirst" placeholder="Enter First Name" required="">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            <label for="doctorLast" class="form-label">Doctor Last Name</label>
+                                            <input type="text" class="form-control" id="doctorLast" placeholder="Enter Last Name" required="">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            <label for="email" class="form-label">Email Address</label>
+                                            <input type="email" class="form-control" id="email" placeholder="Enter Email" required="">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            <label for="phoneNumber" class="form-label">Phone Number</label>
+                                            <input type="number" class="form-control" id="phoneNumber" placeholder="Enter Number" required="">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Birth Date</label>
+                                            <input type="text" class="form-control flatpickr-input" data-provider="flatpickr" data-date-format="d M, Y" placeholder="dd-mm-yyyy" readonly="readonly">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            <label for="gender" class="form-label">Gender</label>
+                                            <select class="form-select my-1 my-md-0 me-sm-3" data-toggle="select2" id="gender">
+                                                <option>Select Gender</option>
+                                                <option>Male</option>
+                                                <option>Female</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            <label for="education" class="form-label">Education</label>
+                                            <input type="text" class="form-control" id="education" placeholder="Enter Education" required="">
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            <label for="department" class="form-label">Department</label>
+                                            <select class="form-select my-1 my-md-0 me-sm-3" data-toggle="select2" id="department">
+                                                <option>Select Department</option>
+                                                <option>Cardiology</option>
+                                                <option>Dermatology</option>
+                                                <option>Pediatrics</option>
+                                                <option>Gastroenterology</option>
+                                                <option>Orthopedics</option>
+                                                <option>Neurology</option>
+                                                <option>Psychiatry</option>
+                                                <option>Oncology</option>
+                                                <option>Endocrinology</option>
+                                                <option>Ophthalmology</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <div class="mb-3">
+                                            <label for="address" class="form-label">Doctor Address</label>
+                                            <textarea class="form-control" id="address" rows="3" placeholder="Full Address"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12">
+                                        <div>
+                                            <label for="about" class="form-label">About Doctor</label>
+                                            <textarea class="form-control" id="about" rows="5" placeholder="Write short line about doctor"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="table-responsive">
-                            <table class="table table-nowrap mb-0">
-                                <thead class="bg-light-subtle">
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Nom</th>
-                                        <th>Prenom</th>
-                                        <th>Email</th>
-                                        <th>Telephone</th>
-                                        <th>Clinique</th>
-                                        <th>Specialite</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                               
-                            </table>
+                    </div>
+
+                    <div class="col-lg-5">
+                        <div class="card">
+                            <div class="card-header border-bottom border-dashed">
+                                <h4 class="card-title mb-0">Upload Profile Photo</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="col-12">
+
+                                    <form action="https://coderthemes.com/" method="post" class="dropzone" id="myAwesomeDropzone" data-plugin="dropzone" data-previews-container="#file-previews" data-upload-preview-template="#uploadPreviewTemplate">
+                                        <div class="fallback">
+                                            <input name="file" type="file" />
+                                        </div>
+
+                                        <div class="dz-message needsclick">
+                                            <i class="h1 ti ti-cloud-upload mb-4"></i>
+                                            <h4>Drop files here or click to upload.</h4>
+                                            <span class="text-muted fs-13">(This is just a demo dropzone. Selected files are <strong>not</strong> actually uploaded.)</span>
+                                        </div>
+                                    </form>
+
+                                    <!-- Preview -->
+                                    <div class="dropzone-previews mt-3" id="file-previews"></div>
+
+                                    <!-- file preview template -->
+                                    <div class="d-none" id="uploadPreviewTemplate">
+                                        <div class="card mt-1 mb-0 shadow-none border">
+                                            <div class="p-2">
+                                                <div class="row align-items-center">
+                                                    <div class="col-auto">
+                                                        <img data-dz-thumbnail src="#" class="avatar-sm rounded bg-light" alt="">
+                                                    </div>
+                                                    <div class="col ps-0">
+                                                        <a href="javascript:void(0);" class="text-muted fw-bold" data-dz-name></a>
+                                                        <p class="mb-0" data-dz-size></p>
+                                                    </div>
+                                                    <div class="col-auto">
+                                                        <!-- Button -->
+                                                        <a href="#" class="btn btn-link btn-lg text-muted" data-dz-remove>
+                                                            <i class="ti ti-x"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- end file preview template -->
+
+                                </div>
+                            </div>
+                        </div>
+                        
+
+                        <div class="text-end mb-3">
+                            <a href="#!" class="btn btn-primary">Add Doctor</a>
+                            <a href="#!" class="btn btn-danger">Cancel</a>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    
 
+            </div>  
+    </div>
 {% endblock %}
 
-{% block js %}
-<!-- Vendor js -->
-<script src="{{ asset('assets/js/vendor.min.js') }}"></script>
 
-<!-- App js -->
-<script src="{{ asset('assets/js/app.js') }}"></script>
+    
+{% block js %}
+    <!-- Vendor js -->
+    <script src="{{ asset('assets/js/vendor.min.js') }}"></script>
+
+    <!-- App js -->
+    <script src="{{ asset('assets/js/vendor.min.js') }}"></script>
+
+    <!-- Dropzone File Upload js -->
+    <script src="{{ asset('assets/vendor/dropzone/min/dropzone.min.js') }}"></script>
+
+    <script src="{{ asset('assets/js/pages/doctor-add.js' )}}"></script>
+
 {% endblock %}

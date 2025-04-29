@@ -27,7 +27,7 @@
         ]
     },
     "knplabs/knp-paginator-bundle": {
-        "version": "v5.9.0"
+        "version": "v6.8.0"
     },
     "mailjet/mailjet-bundle": {
         "version": "2.0",
