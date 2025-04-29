@@ -264,13 +264,13 @@
                     <form action="{{ path('app_clinique_front_index') }}" method="get" class="row">
                         <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
                             <select name="sort" id="sort-select" class="rt-selectactive banner-select" style="width: 100%">
-                                <option value="c.id_clinique" {% if app.request.query.get('sort') == 'c.id_clinique' %}selected{% endif %}>Recommandé</option>
+                                <option value="c.id_clinique" {% if app.request.query.get('sort') == 'c.id_clinique' %}selected{% endif %}>Tous</option>
                                 <option value="c.prix" {% if app.request.query.get('sort') == 'c.prix' %}selected{% endif %}>Prix croissant</option>
                                 <option value="c.prix" {% if app.request.query.get('sort') == 'c.prix' and app.request.query.get('direction') == 'desc' %}selected{% endif %}>Prix décroissant</option>
                                 <option value="docteurCount" {% if app.request.query.get('sort') == 'docteurCount' %}selected{% endif %}>Nombre de docteurs</option>
                             </select>
                         </div>
-                        <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
+                        <!-- <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
                             <select name="pays" class="rt-selectactive banner-select" style="width: 100%">
                                 <option value="">Tous les pays</option>
                                 <option value="France" {% if app.request.query.get('pays') == 'France' %}selected{% endif %}>France</option>
@@ -278,7 +278,7 @@
                                 <option value="Espagne" {% if app.request.query.get('pays') == 'Espagne' %}selected{% endif %}>Espagne</option>
                                 <option value="Italie" {% if app.request.query.get('pays') == 'Italie' %}selected{% endif %}>Italie</option>
                             </select>
-                        </div>
+                        </div> -->
                         <div class="col-lg-3 rt-input-group mini col-md-6 mb-3 mb-md-0">
                             <select name="specialty" class="rt-selectactive banner-select" style="width: 100%">
                                 <option value="">Toutes les spécialités</option>
