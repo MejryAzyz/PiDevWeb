@@ -127,6 +127,9 @@ final class HebergementController extends AbstractController
             'capacities' => $capacities,
             'price_range' => $priceRange,
             'nations' => $nations,
+            'ipapi_api_key' => $_ENV['IPAPI_API_KEY'],
+            'exchange_rates_api_key' => $_ENV['EXCHANGE_RATES_API_KEY'],
+            'gemini_api_key' => $_ENV['GEMINI_API_KEY'],
         ]);
     }
 
@@ -135,6 +138,9 @@ final class HebergementController extends AbstractController
     {
         return $this->render('hebergement/front_show.html.twig', [
             'hebergement' => $hebergement,
+            'ipapi_api_key' => $_ENV['IPAPI_API_KEY'],
+            'exchange_rates_api_key' => $_ENV['EXCHANGE_RATES_API_KEY'],
+            'gemini_api_key' => $_ENV['GEMINI_API_KEY'],
         ]);
     }
 

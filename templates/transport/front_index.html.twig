@@ -253,3 +253,89 @@
     </div>
 </section>
 {% endblock %}
+
+{% block javascripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Récupérer les clés API depuis les variables Twig (à adapter si besoin)
+        const ipapiApiKey = '{{ ipapi_api_key|default('') }}';
+        const exchangeRatesApiKey = '{{ exchange_rates_api_key|default('') }}';
+
+        function extractPrice(text) {
+            const match = text.match(/(\d+(?:[.,]\d{1,2})?)/);
+            return match ? parseFloat(match[1].replace(',', '.')) : null;
+        }
+
+        async function getUserLocation() {
+            try {
+                const response = await fetch(`https://api.ipapi.com/api/check?access_key=${ipapiApiKey}`);
+                if (!response.ok) {
+                    throw new Error('Erreur de réponse de l\'API');
+                }
+                const data = await response.json();
+                let currency = 'EUR';
+                if (data.country_code === 'TN') {
+                    currency = 'TND';
+                } else if (data.country_code === 'US') {
+                    currency = 'USD';
+                } else if (data.country_code === 'GB') {
+                    currency = 'GBP';
+                }
+                return {
+                    country: data.country_name,
+                    currency: currency
+                };
+            } catch (error) {
+                return {
+                    country: 'France',
+                    currency: 'EUR'
+                };
+            }
+        }
+
+        async function convertPrices(currency) {
+            try {
+                const response = await fetch(`https://api.exchangerate-api.com/v4/latest/EUR?api_key=${exchangeRatesApiKey}`);
+                if (!response.ok) {
+                    throw new Error('Erreur de réponse de l\'API de conversion');
+                }
+                const data = await response.json();
+                const rate = data.rates[currency];
+                if (!rate) return;
+                // Conversion récursive sur tout le body pour TOUS les prix
+                function convertAllTextNodePrices(node) {
+                    if (node.nodeType === Node.TEXT_NODE) {
+                        const priceRegex = /(\d+(?:[.,]\d{1,2})?)\s*€/g;
+                        node.textContent = node.textContent.replace(priceRegex, (match, p1) => {
+                            const originalPrice = parseFloat(p1.replace(',', '.'));
+                            const convertedPrice = (originalPrice * rate).toFixed(2);
+                            return `${convertedPrice} ${currency}`;
+                        });
+                    } else if (node.nodeType === Node.ELEMENT_NODE) {
+                        node.childNodes.forEach(child => convertAllTextNodePrices(child));
+                    }
+                }
+                convertAllTextNodePrices(document.body);
+            } catch (error) {}
+        }
+
+        async function updateLocationInfo() {
+            const location = await getUserLocation();
+            const locationInfo = document.createElement('div');
+            locationInfo.className = 'location-info text-muted mb-3';
+            locationInfo.innerHTML = `
+                <i class="icofont-location-pin"></i> 
+                Prix affichés en ${location.currency} pour les utilisateurs de ${location.country}
+            `;
+            const title = document.querySelector('.breadcrumbs-content h3');
+            if (title) {
+                title.parentNode.insertBefore(locationInfo, title.nextSibling);
+            }
+            if (location.currency !== 'EUR') {
+                await convertPrices(location.currency);
+            }
+        }
+        updateLocationInfo();
+    });
+</script>
+{% endblock %}

@@ -282,9 +282,6 @@
                                         <span class="bg-gradient-primary text-white text-capitalize rounded-pill px-3 py-1">nouveau</span>
                                     </div><!-- /.inaner-badge -->
                                     {% endif %}
-                                    <div class="price-badge position-absolute bottom-0 end-0 m-3">
-                                        <span class="bg-primary text-white rounded-pill px-3 py-2 font-weight-bold">{{ hebergement.tarif_nuit }}€ / Nuit</span>
-                                    </div>
                                 </div>
                             </div><!-- /.hotel-thumb -->
                             <div class="hotel-text col-md-8 p-4">
@@ -304,19 +301,24 @@
                                         </div>
                                     </div><!-- /.left- -->
                                 </div><!-- /.middle-text -->
-                                <div class="footer-elements d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
-                                    <div class="rating">
-                                        <span class="text-warning">
-                                            <i class="icofont-star"></i>
-                                            <i class="icofont-star"></i>
-                                            <i class="icofont-star"></i>
-                                            <i class="icofont-star"></i>
-                                            <i class="icofont-star"></i>
-                                        </span>
+                                <div class="footer-elements d-flex flex-column align-items-end mt-4 pt-3 border-top">
+                                    <div class="price-badge mb-2">
+                                        <span class="bg-primary text-white rounded-pill px-3 py-2 font-weight-bold">{{ hebergement.tarif_nuit }}€ / Nuit</span>
                                     </div>
-                                    <div class="right">
-                                        <a href="{{ path('app_hebergement_front_show', {'id_hebergement': hebergement.idHebergement}) }}" class="rt-btn rt-gradient rounded-pill rt-sm3 text-uppercase">Voir Détails</a>
-                                    </div><!-- /.right -->
+                                    <div class="d-flex align-items-center w-100 justify-content-between">
+                                        <div class="rating">
+                                            <span class="text-warning">
+                                                <i class="icofont-star"></i>
+                                                <i class="icofont-star"></i>
+                                                <i class="icofont-star"></i>
+                                                <i class="icofont-star"></i>
+                                                <i class="icofont-star"></i>
+                                            </span>
+                                        </div>
+                                        <div class="right">
+                                            <a href="{{ path('app_hebergement_front_show', {'id_hebergement': hebergement.idHebergement}) }}" class="rt-btn rt-gradient rounded-pill rt-sm3 text-uppercase">Voir Détails</a>
+                                        </div><!-- /.right -->
+                                    </div>
                                 </div><!-- /.footer-elements -->
                             </div><!-- /.hotel-text -->
                         </div><!-- /.hotel-inner-content -->
@@ -390,31 +392,146 @@
     </div><!-- /.container -->
 </section>
 
-<!-- Chatbot Component -->
-<div class="chatbot-wrapper">
-    <button id="chatbot-toggle" class="chatbot-toggle">
-        <i class="icofont-robot"></i>
-    </button>
-    <div id="chatbot-container" class="chatbot-container chatbot-hidden">
-        <div class="chatbot-header">
-            <div class="chatbot-title-container">
-                <h5 class="chatbot-title">Assistant Hébergement</h5>
-                <p class="chatbot-subtitle">Posez-moi vos questions</p>
-            </div>
-        </div>
-        <div id="chatbot-messages" class="chatbot-messages"></div>
-        <div class="chatbot-input-container">
-            <input type="text" id="chatbot-input" class="chatbot-input" placeholder="Écrivez votre message...">
-            <button id="chatbot-send" class="chatbot-send">
-                <i class="icofont-paper-plane"></i>
-            </button>
-        </div>
+<!-- Chatbot Toggle Button -->
+<button id="chatbot-toggle" class="chatbot-toggle">
+    <i class="fas fa-comments"></i>
+</button>
+
+<!-- Chatbot Container -->
+<div id="chatbot-container" class="chatbot-hidden">
+    <div class="chatbot-header">
+        <h3>Assistant Virtuel</h3>
+        <span class="status">En ligne</span>
+    </div>
+    <div id="chatbot-messages"></div>
+    <div class="chatbot-input-area">
+        <input type="text" id="chatbot-input" placeholder="Tapez votre message..." autocomplete="off">
+        <button id="chatbot-send">
+            <i class="fas fa-paper-plane"></i>
+        </button>
     </div>
 </div>
+
+<!-- Add Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<!-- Add our chatbot styles -->
+<link rel="stylesheet" href="{{ asset('css/hebergement-chatbot.css') }}">
+
+<!-- Add our chatbot script -->
+<script src="{{ asset('js/hebergement-chatbot.js') }}"></script>
 
 {% block javascripts %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Récupérer les clés API depuis les variables Twig
+        const ipapiApiKey = '{{ ipapi_api_key }}';
+        const exchangeRatesApiKey = '{{ exchange_rates_api_key }}';
+        const geminiApiKey = '{{ gemini_api_key }}'; // Add Gemini API key
+
+        // Fonction pour extraire le prix d'une chaîne de caractères
+        function extractPrice(text) {
+            const match = text.match(/(\d+(?:[.,]\d{1,2})?)/);
+            return match ? parseFloat(match[1].replace(',', '.')) : null;
+        }
+
+        // Fonction pour obtenir la localisation de l'utilisateur
+        async function getUserLocation() {
+            try {
+                const response = await fetch(`https://api.ipapi.com/api/check?access_key=${ipapiApiKey}`);
+                if (!response.ok) {
+                    throw new Error('Erreur de réponse de l\'API');
+                }
+                const data = await response.json();
+                console.log('Données de localisation:', data);
+                
+                // Déterminer la devise en fonction du pays
+                let currency = 'EUR'; // Devise par défaut
+                if (data.country_code === 'TN') {
+                    currency = 'TND';
+                } else if (data.country_code === 'US') {
+                    currency = 'USD';
+                } else if (data.country_code === 'GB') {
+                    currency = 'GBP';
+                }
+                // Ajoutez d'autres pays et devises selon vos besoins
+
+                return {
+                    country: data.country_name,
+                    currency: currency
+                };
+            } catch (error) {
+                console.error('Erreur lors de la géolocalisation:', error);
+                return {
+                    country: 'France',
+                    currency: 'EUR'
+                };
+            }
+        }
+
+        // Fonction pour convertir les prix
+        async function convertPrices(currency) {
+            try {
+                const response = await fetch(`https://api.exchangerate-api.com/v4/latest/EUR?api_key=${exchangeRatesApiKey}`);
+                if (!response.ok) {
+                    throw new Error('Erreur de réponse de l\'API de conversion');
+                }
+                const data = await response.json();
+                console.log('Données de conversion:', data);
+                const rate = data.rates[currency];
+                
+                if (!rate) {
+                    console.error('Taux de change non trouvé pour la devise:', currency);
+                    return;
+                }
+
+                // Convertir tous les prix affichés
+                document.querySelectorAll('.price-badge').forEach(element => {
+                    const originalPrice = extractPrice(element.textContent);
+                    if (originalPrice !== null) {
+                        const convertedPrice = (originalPrice * rate).toFixed(2);
+                        element.textContent = `${convertedPrice} ${currency} / Nuit`;
+                        console.log('Prix converti:', originalPrice, '->', convertedPrice, currency);
+                    } else {
+                        console.warn('Prix non trouvé dans:', element.textContent);
+                    }
+                });
+            } catch (error) {
+                console.error('Erreur lors de la conversion des devises:', error);
+            }
+        }
+
+        // Fonction pour mettre à jour l'interface avec les informations de localisation
+        async function updateLocationInfo() {
+            try {
+                const location = await getUserLocation();
+                console.log('Localisation détectée:', location);
+                
+                const locationInfo = document.createElement('div');
+                locationInfo.className = 'location-info text-muted mb-3';
+                locationInfo.innerHTML = `
+                    <i class="icofont-location-pin"></i> 
+                    Prix affichés en ${location.currency} pour les utilisateurs de ${location.country}
+                `;
+                
+                // Insérer l'info de localisation après le titre
+                const title = document.querySelector('.breadcrumbs-content h3');
+                if (title) {
+                    title.parentNode.insertBefore(locationInfo, title.nextSibling);
+                }
+                
+                // Convertir les prix si la devise n'est pas l'euro
+                if (location.currency !== 'EUR') {
+                    await convertPrices(location.currency);
+                }
+            } catch (error) {
+                console.error('Erreur lors de la mise à jour des informations:', error);
+            }
+        }
+
+        // Appeler la fonction de mise à jour
+        updateLocationInfo();
+
         // Initialiser le slider de prix
         var priceSlider = document.querySelector('.slider-range');
         if (priceSlider) {
@@ -484,9 +601,5 @@
         }
     });
 </script>
-
-<!-- Chatbot Script -->
-<link rel="stylesheet" href="{{ asset('js/hebergement-chatbot.css') }}">
-<script src="{{ asset('js/hebergement-chatbot.js') }}"></script>
 {% endblock %}
 {% endblock %}
