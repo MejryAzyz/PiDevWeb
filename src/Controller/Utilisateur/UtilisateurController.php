@@ -13,58 +13,41 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use App\Form\UserSearchType;
+use Knp\Component\Pager\PaginatorInterface;
 
 #[Route('/utilisateur')]
 final class UtilisateurController extends AbstractController{
-    #[Route(name: 'app_utilisateur_index', methods: ['GET'])]
-    public function index(UtilisateurRepository $utilisateurRepository): Response
+    #[Route('/', name: 'app_utilisateur_index', methods: ['GET'])]
+    public function index(Request $request, UtilisateurRepository $utilisateurRepository, PaginatorInterface $paginator): Response
     {
+        $searchForm = $this->createForm(UserSearchType::class);
+        $searchForm->handleRequest($request);
+
+        $searchData = $searchForm->getData();
+        $sortDirection = $request->query->get('direction', 'asc');
+
+        $query = $utilisateurRepository->findByFiltersQuery(
+            $searchData['search'] ?? null,
+            $searchData['nationalite'] ?? null,
+            $searchData['status'] ?? '',
+            $sortDirection
+        );
+
+        $utilisateurs = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1),
+            10 // Items per page
+        );
+        
         return $this->render('utilisateur/index.html.twig', [
-            'utilisateurs' => $utilisateurRepository->findAll(),
+            'utilisateurs' => $utilisateurs,
+            'searchForm' => $searchForm->createView(),
+            'sortDirection' => $sortDirection,
         ]);
     }
 
-    #[Route('/register', name: 'app_register')]
-    public function register(
-        Request $request,
-        EntityManagerInterface $entityManager,
-        UserPasswordHasherInterface $passwordHasher,
-        RoleRepository $roleRepository
-
-    ): Response {
-        $user = new Utilisateur();
-        $form = $this->createForm(UtilisateurType::class, $user);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            // 🔐 Encrypt the password
-            $hashedPassword = $passwordHasher->hashPassword(
-                $user,
-                $user->getMot_de_passe()
-            );
-            $user->setMot_de_passe($hashedPassword);
-
-            // Optional default values
-            $user->setStatus(1); // or 0 if unverified
-            $user->setVerif(0);
-            $user->setVerification_token('');
-            $user->setReset_password_token('');
-
-           $role = $roleRepository->find(1); // Ou par nom
-           $user->setRole($role);
     
-            $user->setImage_url('');
-
-            $entityManager->persist($user);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_utilisateur_index'); // Or your home page
-        }
-
-        return $this->render('utilisateur/register.html.twig', [
-            'registerForm' => $form->createView(),
-        ]);
-    }
 
     #[Route('/new', name: 'app_utilisateur_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
@@ -123,5 +106,27 @@ final class UtilisateurController extends AbstractController{
         return $this->redirectToRoute('app_utilisateur_index', [], Response::HTTP_SEE_OTHER);
     }
 
+    #[Route('/{id_utilisateur}/ban', name: 'app_utilisateur_ban', methods: ['POST'])]
+    public function ban(Request $request, Utilisateur $utilisateur, EntityManagerInterface $entityManager): Response
+    {
+        if ($this->isCsrfTokenValid('ban'.$utilisateur->getIdUtilisateur(), $request->request->get('_token'))) {
+            $utilisateur->setStatus(0);
+            $entityManager->flush();
+            $this->addFlash('success', 'L\'utilisateur a été banni avec succès.');
+        }
 
+        return $this->redirectToRoute('app_utilisateur_index');
+    }
+
+    #[Route('/{id_utilisateur}/unban', name: 'app_utilisateur_unban', methods: ['POST'])]
+    public function unban(Request $request, Utilisateur $utilisateur, EntityManagerInterface $entityManager): Response
+    {
+        if ($this->isCsrfTokenValid('unban'.$utilisateur->getIdUtilisateur(), $request->request->get('_token'))) {
+            $utilisateur->setStatus(1);
+            $entityManager->flush();
+            $this->addFlash('success', 'L\'utilisateur a été débloqué avec succès.');
+        }
+
+        return $this->redirectToRoute('app_utilisateur_index');
+    }
 }

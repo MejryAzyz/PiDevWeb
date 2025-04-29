@@ -79,72 +79,16 @@
 
 <div class="main-menu">
     <ul>
-        <li class="current-menu-item"><a href="#home">Accueil</a></li>
-        <li><a href="trip-1.html">Forfaits Voyage</a></li>
-        <li><a href="service-1.html">Services</a></li>
-        <li class="menu-item-has-children"><a href="#">Pages</a>
+        <li class="current-menu-item"><a href="{{ path('home') }}">Accueil</a></li>
+        <li><a href="">À Propos</a></li>
+        <li><a href="{{ path('mesReservation') }}">Mes Réservations</a></li>
+        <li class="menu-item-has-children"><a href="#">Services</a>
             <ul class="sub-menu">
-                <li class="menu-item-has-children"><a href="#">Pages d'Accueil</a>
-                    <ul class="sub-menu">
-                        <li><a href="index.html">Accueil Un</a></li>
-                        <li><a href="index-02.html">Accueil Deux</a></li>
-                    </ul>
-                </li>
-                <li class="menu-item-has-children"><a href="#">Pages Hôtel</a>
-                    <ul class="sub-menu">
-                        <li><a href="hotel-1.html">Hôtel Un</a></li>
-                        <li><a href="hotel-2.html">Hôtel Deux</a></li>
-                        <li><a href="hotel-3.html">Hôtel Trois</a></li>
-                    </ul>
-                </li>
-                <li class="menu-item-has-children"><a href="#">Pages Vol</a>
-                    <ul class="sub-menu">
-                        <li><a href="flight-1.html">Vol Un</a></li>
-                        <li><a href="flight-details.html">Vol Deux</a></li>
-                    </ul>
-                </li>
-                <li class="menu-item-has-children"><a href="#">Pages Train</a>
-                    <ul class="sub-menu">
-                        <li><a href="train-1.html">Train Un</a></li>
-                        <li><a href="train-2.html">Train Deux</a></li>
-                    </ul>
-                </li>
-                <li class="menu-item-has-children"><a href="#">Pages Voyage</a>
-                    <ul class="sub-menu">
-                        <li><a href="trip-1.html">Voyage Un</a></li>
-                        <li><a href="trip-2.html">Voyage Deux</a></li>
-                        <li><a href="trip-3.html">Voyage Trois</a></li>
-                    </ul>
-                </li>
-                <li class="menu-item-has-children"><a href="#">Pages Voiture</a>
-                    <ul class="sub-menu">
-                        <li><a href="car-1.html">Voiture Un</a></li>
-                        <li><a href="car-2.html">Voiture Deux</a></li>
-                    </ul>
-                </li>
-                <li class="menu-item-has-children"><a href="#">Pages Blog</a>
-                    <ul class="sub-menu">
-                        <li><a href="blog.html">Blog</a></li>
-                        <li><a href="blog-grid.html">Blog-Grille</a></li>
-                        <li><a href="single-blog.html">Blog-Simple 1</a></li>
-                        <li><a href="singleblog-lsidebar.html">Blog-Simple 2</a></li>
-                    </ul>
-                </li>
-                <li class="menu-item-has-children"><a href="#">Autres Pages</a>
-                    <ul class="sub-menu">
-                        <li><a href="about.html">À Propos</a></li>
-                        <li><a href="service-1.html">Service</a></li>
-                        <li><a href="afflite.html">Affilié</a></li>
-                        <li><a href="help.html">Aide</a></li>
-                        <li><a href="how-work.html">Comment ça marche</a></li>
-                        <li><a href="contact.html">Contact</a></li>
-                        <li><a href="404.html">404</a></li>
-                    </ul>
-                </li>
+                <li><a href="{{ path('app_hebergement_front_index') }}">Hébergement</a></li>
+                <li><a href="{{ path('app_clinique_front_index', {'page': 1}) }}">Cliniques</a></li>
+                <li><a href="{{ path('app_transport_front_index') }}">Transport</a></li>
             </ul>
         </li>
-        <li> <a href="blog.html">Blog</a></li>
-    
     </ul>
     <div class="mobile-menu">
         <div class="menu-click">

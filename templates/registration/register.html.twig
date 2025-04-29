@@ -1,0 +1,176 @@
+{# {% extends 'base.html.twig' %}
+
+{% block title %}Register{% endblock %}
+
+{% block body %}
+    {% for flash_error in app.flashes('verify_email_error') %}
+        <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
+    {% endfor %}
+
+    <h1>Register</h1>
+
+    {{ form_errors(registrationForm) }}
+
+    {{ form_start(registrationForm) }}
+        {{ form_row(registrationForm.email) }}
+        {{ form_row(registrationForm.mot_de_passe, {
+            label: 'Password'
+        }) }}
+        {{ form_row(registrationForm.agreeTerms) }}
+
+        <button type="submit" class="btn">Register</button>
+    {{ form_end(registrationForm) }}
+{% endblock %} #}
+{% extends 'baseFront.html.twig' %}
+{% block head %}
+    {% block title %}Inscription{% endblock %}
+{% endblock %}
+{% block body %}
+<div class="col-lg-6 mx-auto" style="margin-top: 300px;">
+    <div class="card">
+        <div class="card-header border-bottom border-dashed d-flex align-items-center">
+            <h4 class="header-title">Inscription</h4>
+        </div>
+        <div class="card-body">
+            {{ form_start(registerForm, {'attr': {'class': 'rt-form', 'action': path('app_register'), 'id': 'register-form', 'method': 'POST', 'novalidate': 'novalidate'}}) }}
+            <div id="progressbarwizard">
+                <ul class="nav nav-pills nav-justified form-wizard-header mb-3">
+                    <li class="nav-item">
+                        <a href="#account" data-bs-toggle="tab" data-toggle="tab" class="nav-link rounded-0 py-2 active">
+                            <i class="bi bi-person-circle fs-18 align-middle me-1"></i>
+                            <span class="d-none d-sm-inline">Compte</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#profile" data-bs-toggle="tab" data-toggle="tab" class="nav-link rounded-0 py-2">
+                            <i class="bi bi-emoji-smile fs-18 align-middle me-1"></i>
+                            <span class="d-none d-sm-inline">Profil</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#finish" data-bs-toggle="tab" data-toggle="tab" class="nav-link rounded-0 py-2">
+                            <i class="bi bi-check2-circle fs-18 align-middle me-1"></i>
+                            <span class="d-none d-sm-inline">Terminer</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="tab-content b-0 mb-0">
+                    <div id="bar" class="progress mb-3" style="height: 7px;">
+                        <div class="bar progress-bar progress-bar-striped progress-bar-animated bg-success"></div>
+                    </div>
+
+                    <div class="tab-pane active" id="account">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="row mb-3">
+                                    <label class="col-md-3 col-form-label" for="{{ registerForm.email.vars.id }}">Adresse email</label>
+                                    <div class="col-md-9">
+                                        {{ form_widget(registerForm.email, {'attr': {'class': 'form-control', 'placeholder': 'Adresse email'}}) }}
+                                        {{ form_errors(registerForm.email) }}
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <label class="col-md-3 col-form-label" for="{{ registerForm.mot_de_passe.vars.id }}">Mot de passe</label>
+                                    <div class="col-md-9">
+                                        {{ form_widget(registerForm.mot_de_passe, {'attr': {'class': 'form-control', 'placeholder': 'Mot de passe'}}) }}
+                                        {{ form_errors(registerForm.mot_de_passe) }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane" id="profile">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="row mb-3">
+                                    <label class="col-md-3 col-form-label" for="{{ registerForm.nom.vars.id }}">Nom</label>
+                                    <div class="col-md-9">
+                                        {{ form_widget(registerForm.nom, {'attr': {'class': 'form-control', 'placeholder': 'Nom'}}) }}
+                                        {{ form_errors(registerForm.nom) }}
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <label class="col-md-3 col-form-label" for="{{ registerForm.prenom.vars.id }}">Prénom</label>
+                                    <div class="col-md-9">
+                                        {{ form_widget(registerForm.prenom, {'attr': {'class': 'form-control', 'placeholder': 'Prénom'}}) }}
+                                        {{ form_errors(registerForm.prenom) }}
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <label class="col-md-3 col-form-label" for="{{ registerForm.telephone.vars.id }}">Téléphone</label>
+                                    <div class="col-md-9">
+                                        {{ form_widget(registerForm.telephone, {'attr': {'class': 'form-control', 'placeholder': 'Téléphone'}}) }}
+                                        {{ form_errors(registerForm.telephone) }}
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <label class="col-md-3 col-form-label" for="{{ registerForm.date_naissance.vars.id }}">Date de naissance</label>
+                                    <div class="col-md-9">
+                                        {{ form_widget(registerForm.date_naissance, {'attr': {'class': 'form-control'}}) }}
+                                        {{ form_errors(registerForm.date_naissance) }}
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <label class="col-md-3 col-form-label" for="{{ registerForm.adresse.vars.id }}">Adresse</label>
+                                    <div class="col-md-9">
+                                        {{ form_widget(registerForm.adresse, {'attr': {'class': 'form-control', 'placeholder': 'Adresse'}}) }}
+                                        {{ form_errors(registerForm.adresse) }}
+                                    </div>
+                                </div>
+                              
+                                <div class="row mb-3">
+                                    <label class="col-md-3 col-form-label" for="{{ registerForm.nationalite.vars.id }}">Nationalité</label>
+                                    <div class="col-md-9">
+                                        {{ form_widget(registerForm.nationalite, {'attr': {'class': 'form-select form-select-lg', 'placeholder': 'Nationalité'}}) }}
+                                        {{ form_errors(registerForm.nationalite) }}
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane" id="finish">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="text-center">
+                                    <h2 class="mt-0"><i class="bi bi-check2-all"></i></h2>
+                                    <h3 class="mt-0">Merci !</h3>
+                                    <p class="w-75 mb-2 mx-auto">Veuillez vérifier vos informations avant de soumettre.</p>
+                                    <div class="mb-3">
+                                        <div class="form-check d-inline-block">
+                                            <input type="checkbox" class="form-check-input fs-15" id="customCheck3">
+                                            <label class="form-check-label" for="customCheck3">J'accepte les Conditions d'utilisation et la Politique de confidentialité</label>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <div class="form-check d-inline-block">
+                                            <input type="checkbox" class="form-check-input fs-15" id="customCheck4">
+                                            <label class="form-check-label" for="customCheck4">J'aimerais recevoir des promos, nouveaux produits et plus encore !</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                   
+                        <div class="last text-center mt-4">
+                            <input type="submit" class="btn btn-primary btn-lg px-5 py-3" value="S'inscrire">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{ form_end(registerForm) }}
+
+            <div class="ac-register text-center mt-3">
+                <span>Vous avez déjà un compte ? <a href="{{ path('app_login') }}">CONNEXION <i class="icofont-double-right"></i></a></span>
+            </div>
+
+           
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -22,7 +22,6 @@ class AuthenticationSuccessHandler implements AuthenticationSuccessHandlerInterf
         $user = $token->getUser();
         $role = $user->getRole();
 
-        // Redirect based on role
         if ($role && $role->getId_role() === 1) {
             return new RedirectResponse($this->urlGenerator->generate('app_utilisateur_index'));
         } else {

@@ -108,6 +108,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     #[ORM\Column(type: 'string', nullable: false)]
+    #[Assert\NotBlank(message: "Le Password ne peut pas être vide")]
     private ?string $mot_de_passe = null;
 
     public function getMot_de_passe(): ?string
@@ -295,6 +296,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: ReservationTransport::class, mappedBy: 'utilisateur')]
     private Collection $reservationTransports;
 
+
     public function __construct()
     {
         $this->reservationHebergements = new ArrayCollection();
@@ -414,5 +416,16 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     public function getUserIdentifier(): string
     {
         return $this->email;
+    }
+
+    public function isVerified(): bool
+    {
+        return $this->verif === 1;
+    }
+
+    public function setIsVerified(bool $isVerified): self
+    {
+        $this->verif = $isVerified ? 1 : 0;
+        return $this;
     }
 }

@@ -17,13 +17,11 @@ class EditFormType extends AbstractType
             ->add('nom')
             ->add('prenom')
             ->add('email')
-            ->add('mot_de_passe')
             ->add('telephone')
             ->add('date_naissance', null, [
                 'widget' => 'single_text'
             ])
             ->add('adresse')
-            ->add('image_url')
             
             ->add('nationalite')
             ->add('role', EntityType::class, [
