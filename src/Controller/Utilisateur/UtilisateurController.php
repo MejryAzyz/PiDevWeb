@@ -23,12 +23,14 @@ final class UtilisateurController extends AbstractController{
         $searchForm = $this->createForm(UserSearchType::class);
         $searchForm->handleRequest($request);
 
-        $search = $request->query->get('search', '');
-        $nationalite = $request->query->get('nationalite', '');
-        $status = $request->query->get('status', '');
+        $searchData = $searchForm->getData();
 
-        $utilisateurs = $utilisateurRepository->findByFilters($search, $nationalite, $status);
-
+        $utilisateurs = $utilisateurRepository->findByFilters(
+            $searchData['search'] ?? null,
+            $searchData['nationalite'] ?? null,
+            $searchData['status'] ?? ''
+        );
+        
         return $this->render('utilisateur/index.html.twig', [
             'utilisateurs' => $utilisateurs,
             'searchForm' => $searchForm->createView(),
