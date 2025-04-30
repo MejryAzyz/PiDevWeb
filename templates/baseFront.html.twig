@@ -327,6 +327,34 @@
     </div><!-- /.footer-bottom -->
 </section>
 
+<!-- Chatbot Component -->
+<div class="chatbot-wrapper">
+    <button id="chatbot-toggle" class="chatbot-toggle">
+        <i class="icofont-robot"></i>
+    </button>
+    <div id="chatbot-container" class="chatbot-container chatbot-hidden">
+        <div class="chatbot-header">
+            <div class="chatbot-title-container">
+                <h5 class="chatbot-title">Assistant Virtuel</h5>
+                <p class="chatbot-subtitle">Comment puis-je vous aider?</p>
+            </div>
+        </div>
+        <div id="chatbot-messages" class="chatbot-messages"></div>
+        <div class="chatbot-input-container">
+            <input type="text" id="chatbot-input" class="chatbot-input" placeholder="Écrivez votre message...">
+            <button id="chatbot-send" class="chatbot-send">
+                <i class="icofont-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Add chatbot styles -->
+<link rel="stylesheet" href="{{ asset('js/hebergement-chatbot.css') }}">
+
+<!-- Add chatbot script -->
+<script src="{{ asset('js/hebergement-chatbot.js') }}"></script>
+
 <!-- ==================Start Js Link===================== -->
 <script data-cfasync="false" src="../../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
 <script src="{{ asset('coderthemes.com/osen/layouts/assets/js/jquery-2.2.4.min.js') }}"></script>
@@ -340,7 +368,6 @@
 <script src="{{ asset('coderthemes.com/osen/layouts/assets/js/waypoints.min.js') }}"></script>
 <script src="{{ asset('coderthemes.com/osen/layouts/assets/js/jquery.counterup.min.js') }}"></script>
 <script src="{{ asset('coderthemes.com/osen/layouts/assets/js/jquery.magnific-popup.min.js') }}"></script>
-<script src="{{ asset('coderthemes.com/osen/layouts/assets/js/jquery.scrollUp.min.js') }}"></script>
 <script src="{{ asset('coderthemes.com/osen/layouts/assets/js/owl.carousel.min.js') }}"></script>
 <script src="{{ asset('coderthemes.com/osen/layouts/assets/js/TweenMax.min.js') }}"></script>
 <script src="{{ asset('coderthemes.com/osen/layouts/assets/js/scrollax.min.js') }}"></script>
@@ -355,31 +382,11 @@
 <script src="{{ asset('coderthemes.com/osen/layouts/assets/js/vivus.min.js') }}"></script>
 <script src="{{ asset('coderthemes.com/osen/layouts/assets/js/tippy.all.min.js') }}"></script>
 <script src="{{ asset('coderthemes.com/osen/layouts/assets/js/app1.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 {% block js %}{% endblock %}
 <!-- ==================End Js Link===================== -->
 
-<!-- ==================Start Script Link===================== -->
-<script src="{{ asset('coderthemes.com/osen/layouts/assets/js/jquery-2.2.4.min.js') }}"></script>
-<script src="{{ asset('coderthemes.com/osen/layouts/assets/js/popper.min.js') }}"></script>
-<script src="{{ asset('coderthemes.com/osen/layouts/assets/js/bootstrap.min.js') }}"></script>
-<script src="{{ asset('coderthemes.com/osen/layouts/assets/js/moment.min.js') }}"></script>
-<script src="{{ asset('coderthemes.com/osen/layouts/assets/js/jquery.magnific-popup.min.js') }}"></script>
-<script src="{{ asset('coderthemes.com/osen/layouts/assets/js/owl.carousel.min.js') }}"></script>
-<script src="{{ asset('coderthemes.com/osen/layouts/assets/js/slick.min.js') }}"></script>
-<script src="{{ asset('coderthemes.com/osen/layouts/assets/js/select2.min.js') }}"></script>
-<script src="{{ asset('coderthemes.com/osen/layouts/assets/js/slider-range.js') }}"></script>
-<script src="{{ asset('coderthemes.com/osen/layouts/assets/js/wow.min.js') }}"></script>
-<script src="{{ asset('coderthemes.com/osen/layouts/assets/js/waypoints.min.js') }}"></script>
-<script src="{{ asset('coderthemes.com/osen/layouts/assets/js/jquery.counterup.min.js') }}"></script>
-<script src="{{ asset('coderthemes.com/osen/layouts/assets/js/isotope.pkgd.min.js') }}"></script>
-<script src="{{ asset('coderthemes.com/osen/layouts/assets/js/OverlayScrollbars.min.js') }}"></script>
-<script src="{{ asset('coderthemes.com/osen/layouts/assets/js/tippy.all.min.js') }}"></script>
-<script src="{{ asset('coderthemes.com/osen/layouts/assets/js/app.js') }}"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 {% block javascripts %}{% endblock %}
-<!-- ==================End Script Link===================== -->
-
 </body>
 
 </html>

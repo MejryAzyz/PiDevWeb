@@ -5,90 +5,29 @@
 (function() {
     'use strict';
 
-    // Get current accommodation data if we're on a details page
-    function getCurrentHebergementData() {
-        // Check if we're on a details page
-        const isDetailsPage = window.location.pathname.includes('/hebergement/') && !window.location.pathname.endsWith('/index');
-        
-        if (isDetailsPage) {
-            // Extract data from the page
-            return {
-                nom: document.querySelector('.hotel-name h4') ? document.querySelector('.hotel-name h4').textContent.trim() : null,
-                adresse: document.querySelector('.hotel-name .f-14') ? document.querySelector('.hotel-name .f-14').textContent.trim() : null,
-                tarifNuit: document.querySelector('.price-badge h4') ? 
-                    parseInt(document.querySelector('.price-badge h4').textContent.trim().replace('€', '')) : null,
-                capacite: document.querySelector('.property-details li:first-child .property-value') ? 
-                    parseInt(document.querySelector('.property-details li:first-child .property-value').textContent.trim()) : null,
-                telephone: document.querySelector('.media-body a[href^="tel:"]') ? 
-                    document.querySelector('.media-body a[href^="tel:"]').textContent.trim() : null,
-                email: document.querySelector('.media-body a[href^="mailto:"]') ? 
-                    document.querySelector('.media-body a[href^="mailto:"]').textContent.trim() : null
-            };
-        }
-        
-        return null;
-    }
-
-    // AI Personality and Response Patterns
-    const AI_PERSONALITY = {
-        name: 'Alex',
-        traits: {
-            friendly: true,
-            helpful: true,
-            professional: true,
-            enthusiastic: true
-        },
-        responsePatterns: {
-            greeting: [
-                "Bonjour! Je suis Alex, votre assistant virtuel pour les hébergements. Comment puis-je vous aider aujourd'hui?",
-                "Salut! Je suis ravi de vous aider avec vos questions sur nos hébergements. Que souhaitez-vous savoir?",
-                "Bonjour! Je suis là pour vous guider dans votre recherche d'hébergement. Que puis-je faire pour vous?"
-            ],
-            thinking: [
-                "Je réfléchis à votre question...",
-                "Je consulte mes informations...",
-                "Je cherche la meilleure réponse pour vous..."
-            ],
-            error: [
-                "Je m'excuse, j'ai rencontré une petite difficulté. Pouvez-vous reformuler votre question?",
-                "Je n'ai pas bien compris. Pourriez-vous être plus précis?",
-                "Je vais avoir besoin d'un peu plus de détails pour vous aider au mieux."
-            ],
-            farewell: [
-                "Au revoir! N'hésitez pas à revenir si vous avez d'autres questions.",
-                "À bientôt! J'espère avoir pu vous aider.",
-                "Merci de votre visite! Revenez quand vous voulez."
-            ]
-        }
-    };
-
-    // Chatbot configuration
-    const CHATBOT_CONFIG = {
-        apiKey: 'AIzaSyAj23EhnddEwWhX9-bJs9rJUnsiZn9Fv1g',
-        model: 'gemini-pro',
-        endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent'
-    };
-
     // Chatbot state
     let isChatbotOpen = false;
     let conversationHistory = [];
 
     // DOM Elements
-        const chatbotToggle = document.getElementById('chatbot-toggle');
-        const chatbotContainer = document.getElementById('chatbot-container');
-        const chatbotMessages = document.getElementById('chatbot-messages');
-        const chatbotInput = document.getElementById('chatbot-input');
-        const chatbotSend = document.getElementById('chatbot-send');
-        
-    // Initialize chatbot with personality
+    const chatbotToggle = document.getElementById('chatbot-toggle');
+    const chatbotContainer = document.getElementById('chatbot-container');
+    const chatbotMessages = document.getElementById('chatbot-messages');
+    const chatbotInput = document.getElementById('chatbot-input');
+    const chatbotSend = document.getElementById('chatbot-send');
+
+    // Page URLs with correct routes
+    const PAGES = {
+        cliniques: '/app_clinique_front_index',
+        hebergements: '/app_hebergement_front_index',
+        reservations: '/mesReservation',
+        transport: '/app_transport_front_index'
+    };
+
+    // Initialize chatbot
     function initChatbot() {
-        // Add welcome message with personality
-        setTimeout(() => {
-            const randomGreeting = AI_PERSONALITY.responsePatterns.greeting[
-                Math.floor(Math.random() * AI_PERSONALITY.responsePatterns.greeting.length)
-            ];
-            addMessage(randomGreeting, 'bot');
-        }, 500);
+        // Add welcome message
+        addMessage("Bonjour! Je suis votre assistant virtuel. Comment puis-je vous aider aujourd'hui?", 'bot', false);
         
         // Event listeners
         chatbotToggle.addEventListener('click', toggleChatbot);
@@ -96,27 +35,33 @@
         chatbotInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 handleSendMessage();
-                }
-            });
-        }
-        
-    // Toggle chatbot visibility with animation
+            }
+        });
+
+        // Add click event listener for links in messages
+        chatbotMessages.addEventListener('click', (e) => {
+            if (e.target.tagName === 'A') {
+                e.preventDefault();
+                const href = e.target.getAttribute('href');
+                // Remove the leading slash if present for proper routing
+                const route = href.startsWith('/') ? href.substring(1) : href;
+                window.location.href = route;
+            }
+        });
+    }
+
+    // Toggle chatbot visibility
     function toggleChatbot() {
         isChatbotOpen = !isChatbotOpen;
         chatbotContainer.classList.toggle('chatbot-hidden');
         if (isChatbotOpen) {
-            setTimeout(() => {
-                chatbotInput.focus();
-            }, 300);
+            chatbotInput.focus();
         }
     }
 
-    // Enhanced message handling with typing simulation
-    function addMessage(text, sender) {
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `chatbot-message ${sender}-message`;
-        
-        if (sender === 'bot') {
+    // Add message to chat
+    function addMessage(text, sender, showTyping = true) {
+        if (showTyping && sender === 'bot') {
             // Add typing indicator
             const typingIndicator = document.createElement('div');
             typingIndicator.className = 'typing-indicator';
@@ -124,137 +69,112 @@
             chatbotMessages.appendChild(typingIndicator);
             chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
             
-            // Simulate typing delay based on message length
-            const typingDelay = Math.min(1000 + (text.length * 20), 3000);
-            
+            // Remove typing indicator and show message after delay
             setTimeout(() => {
-                chatbotMessages.removeChild(typingIndicator);
-                
-                // Add message with typing effect
-                let currentText = '';
-                const words = text.split(' ');
-                let wordIndex = 0;
-                
-                const typeNextWord = () => {
-                    if (wordIndex < words.length) {
-                        currentText += (wordIndex > 0 ? ' ' : '') + words[wordIndex];
-                        messageDiv.innerHTML = `<p>${currentText}</p>`;
-                        chatbotMessages.appendChild(messageDiv);
-                    chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
-                        wordIndex++;
-                        setTimeout(typeNextWord, Math.random() * 100 + 50);
-                    }
-                };
-                
-                typeNextWord();
-            }, typingDelay);
+                if (typingIndicator.parentNode === chatbotMessages) {
+                    chatbotMessages.removeChild(typingIndicator);
+                }
+                appendMessageToChat(text, sender);
+            }, 1000);
         } else {
-            messageDiv.innerHTML = `<p>${text}</p>`;
-            chatbotMessages.appendChild(messageDiv);
-            chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+            appendMessageToChat(text, sender);
         }
     }
 
-    // Enhanced message handling with context awareness
-    async function handleSendMessage() {
+    // Append message to chat
+    function appendMessageToChat(text, sender) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `chatbot-message ${sender}-message`;
+        messageDiv.innerHTML = `<p>${text}</p>`;
+        chatbotMessages.appendChild(messageDiv);
+        chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+    }
+
+    // Handle user messages
+    function handleSendMessage() {
         const message = chatbotInput.value.trim();
         if (!message) return;
 
         // Add user message to chat
-        addMessage(message, 'user');
+        addMessage(message, 'user', false);
         chatbotInput.value = '';
 
-        try {
-            // Get current accommodation data
-            const hebergementData = getCurrentHebergementData();
-            
-            // Show thinking indicator
-            const thinkingMessage = AI_PERSONALITY.responsePatterns.thinking[
-                Math.floor(Math.random() * AI_PERSONALITY.responsePatterns.thinking.length)
-            ];
-            const thinkingIndicator = document.createElement('div');
-            thinkingIndicator.className = 'typing-indicator';
-            thinkingIndicator.innerHTML = `<span></span><span></span><span></span><p class="thinking-text">${thinkingMessage}</p>`;
-            chatbotMessages.appendChild(thinkingIndicator);
-            chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+        // Process message and generate response
+        const response = generateResponse(message);
+        addMessage(response, 'bot');
+    }
 
-            // Prepare context for Gemini
-            let context = '';
-            if (hebergementData) {
-                context = `Je suis sur la page de l'hébergement "${hebergementData.nom}" avec les détails suivants:
-- Adresse: ${hebergementData.adresse}
-- Tarif par nuit: ${hebergementData.tarifNuit}€
-- Capacité: ${hebergementData.capacite} personnes
-- Contact: ${hebergementData.telephone}, ${hebergementData.email}
+    // Create a link in the message
+    function createLink(text, page) {
+        return `<a href="${page}" class="chatbot-link" style="color: #4a6cf7; text-decoration: underline; cursor: pointer;">${text}</a>`;
+    }
 
-`;
+    // Generate response based on user message
+    function generateResponse(message) {
+        const lowerMessage = message.toLowerCase();
+        
+        // Simple response patterns
+        if (lowerMessage.includes('bonjour') || lowerMessage.includes('salut') || lowerMessage.includes('hello')) {
+            return "Bonjour! Comment puis-je vous aider aujourd'hui?";
+        } 
+        // Clinique related queries
+        else if (lowerMessage.includes('clinique') || lowerMessage.includes('hopital') || lowerMessage.includes('médical') || lowerMessage.includes('medical') || lowerMessage.includes('soins')) {
+            if (lowerMessage.includes('adresse') || lowerMessage.includes('où') || lowerMessage.includes('ou')) {
+                return `Nos cliniques sont situées dans différentes villes. Vous pouvez consulter leurs adresses exactes sur ${createLink('notre page des cliniques', PAGES.cliniques)}. Chaque clinique dispose d'une fiche détaillée avec son emplacement.`;
+            } else if (lowerMessage.includes('docteur') || lowerMessage.includes('médecin') || lowerMessage.includes('specialiste')) {
+                return `Nos cliniques disposent d'une équipe de médecins spécialisés. Vous pouvez consulter leurs profils, spécialités et disponibilités sur ${createLink('la page de nos cliniques', PAGES.cliniques)}.`;
+            } else if (lowerMessage.includes('prix') || lowerMessage.includes('tarif') || lowerMessage.includes('coût')) {
+                return `Les tarifs des cliniques varient selon les soins et services requis. Consultez ${createLink('notre page des cliniques', PAGES.cliniques)} pour voir les tarifs de base. Pour un devis précis, contactez directement la clinique de votre choix.`;
             } else {
-                context = `Je suis sur la page de liste des hébergements.`;
+                return `Nos cliniques partenaires offrent des soins médicaux de haute qualité. Découvrez tous nos établissements sur ${createLink('la page des cliniques', PAGES.cliniques)}. Que souhaitez-vous savoir plus précisément?`;
             }
-
-            // Call Gemini API with enhanced context
-            const response = await fetch(`${CHATBOT_CONFIG.endpoint}?key=${CHATBOT_CONFIG.apiKey}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    contents: [
-                        {
-                            role: 'user',
-                            parts: [{ text: `${context}Tu es un assistant virtuel nommé ${AI_PERSONALITY.name} spécialisé dans l'aide aux clients pour les hébergements. Tu es ${AI_PERSONALITY.traits.friendly ? 'amical' : ''} ${AI_PERSONALITY.traits.helpful ? 'et serviable' : ''}. 
-
-Voici les informations importantes à savoir:
-1. Les prix sont en euros (€)
-2. La capacité indique le nombre maximum de personnes
-3. Les réservations se font par téléphone ou email
-4. Les disponibilités sont à vérifier directement avec l'hébergement
-
-Réponds à la question suivante de manière naturelle et conversationnelle, en utilisant les informations disponibles: ${message}` }]
-                        }
-                    ],
-                    generationConfig: {
-                        temperature: 0.7,
-                        topK: 40,
-                        topP: 0.95,
-                        maxOutputTokens: 1024,
-                    }
-                })
-            });
-
-            if (!response.ok) {
-                throw new Error('API request failed');
+        }
+        // Reservation related queries
+        else if (lowerMessage.includes('réserv') || lowerMessage.includes('reserv') || lowerMessage.includes('rendez-vous') || lowerMessage.includes('rdv')) {
+            if (lowerMessage.includes('annul')) {
+                return `Pour annuler une réservation, accédez à ${createLink('la section Mes Réservations', PAGES.reservations)} de votre compte. Vous pouvez y gérer toutes vos réservations.`;
+            } else if (lowerMessage.includes('modif')) {
+                return `Pour modifier une réservation, rendez-vous dans ${createLink('la section Mes Réservations', PAGES.reservations)} de votre compte. Attention, les modifications sont soumises à la disponibilité des services.`;
+            } else if (lowerMessage.includes('date')) {
+                return `Lors de votre réservation sur ${createLink('notre plateforme', PAGES.reservations)}, vous pourrez choisir vos dates de séjour, la date de départ et les horaires qui vous conviennent. Tout est personnalisable selon vos besoins.`;
+            } else {
+                return `Pour effectuer une réservation, commencez par choisir une clinique sur ${createLink('notre page des cliniques', PAGES.cliniques)}, un hébergement sur ${createLink('notre page des hébergements', PAGES.hebergements)}, et un transport sur ${createLink('notre page des transports', PAGES.transport)}. Vous pourrez ensuite sélectionner vos dates et finaliser votre réservation en ligne.`;
             }
-
-            const data = await response.json();
-            let botResponse = data.candidates[0].content.parts[0].text;
-
-            // Remove thinking indicator
-            chatbotMessages.removeChild(thinkingIndicator);
-
-            // Add bot response to chat and conversation history
-            addMessage(botResponse, 'bot');
-            conversationHistory.push({
-                role: 'model',
-                parts: [{ text: botResponse }]
-            });
-
-            // Keep conversation history manageable
-            if (conversationHistory.length > 10) {
-                conversationHistory = conversationHistory.slice(-10);
+        }
+        // Accompaniment related queries
+        else if (lowerMessage.includes('accompagn') || lowerMessage.includes('assistance') || lowerMessage.includes('aide') || lowerMessage.includes('support')) {
+            if (lowerMessage.includes('service')) {
+                return `Nous proposons un service d'accompagnement complet. Consultez ${createLink('nos services de transport', PAGES.transport)} et autres prestations d'assistance pour votre séjour médical.`;
+            } else if (lowerMessage.includes('langue') || lowerMessage.includes('traduction')) {
+                return "Nos accompagnateurs sont multilingues et peuvent vous assister pour la traduction lors de vos rendez-vous médicaux et pendant votre séjour.";
+            } else if (lowerMessage.includes('disponible') || lowerMessage.includes('horaire')) {
+                return `Consultez les disponibilités de nos accompagnateurs sur ${createLink('la page des services', PAGES.transport)}. Ils sont disponibles selon vos besoins, que ce soit pour des rendez-vous ponctuels ou un accompagnement continu.`;
+            } else {
+                return `Notre service d'accompagnement est là pour faciliter votre séjour médical. Découvrez nos prestations sur ${createLink('la page des services', PAGES.transport)}.`;
             }
-
-        } catch (error) {
-            console.error('Error:', error);
-            chatbotMessages.removeChild(thinkingIndicator);
-            const errorMessage = AI_PERSONALITY.responsePatterns.error[
-                Math.floor(Math.random() * AI_PERSONALITY.responsePatterns.error.length)
-            ];
-            addMessage(errorMessage, 'bot');
+        }
+        // Existing responses with links
+        else if (lowerMessage.includes('capacité') || lowerMessage.includes('personnes') || lowerMessage.includes('places')) {
+            return `La capacité des hébergements varie selon le type de logement. Consultez ${createLink('notre page des hébergements', PAGES.hebergements)} où vous pourrez filtrer les options selon vos besoins.`;
+        } else if (lowerMessage.includes('prix') || lowerMessage.includes('tarif') || lowerMessage.includes('coût')) {
+            return `Les prix varient selon le type d'hébergement, la saison et la durée du séjour. Consultez ${createLink('notre page des hébergements', PAGES.hebergements)} où vous pourrez filtrer selon votre budget.`;
+        } else if (lowerMessage.includes('disponibilité') || lowerMessage.includes('disponible')) {
+            return `Pour vérifier la disponibilité d'un hébergement, consultez ${createLink('notre page des hébergements', PAGES.hebergements)} et utilisez le calendrier sur la page de l'hébergement qui vous intéresse.`;
+        } else if (lowerMessage.includes('transport') || lowerMessage.includes('déplacement') || lowerMessage.includes('navette')) {
+            return `Découvrez nos services de transport sur ${createLink('la page dédiée', PAGES.transport)}. Nos horaires sont flexibles et adaptés à vos rendez-vous médicaux.`;
+        } else if (lowerMessage.includes('merci') || lowerMessage.includes('remercie')) {
+            return "Je vous en prie! N'hésitez pas si vous avez d'autres questions.";
+        } else if (lowerMessage.includes('au revoir') || lowerMessage.includes('bye')) {
+            return "Au revoir! Merci d'avoir utilisé notre service. À bientôt!";
+        } else {
+            return `Je peux vous renseigner sur ${createLink('nos cliniques', PAGES.cliniques)}, ${createLink('vos réservations', PAGES.reservations)}, ${createLink('les hébergements', PAGES.hebergements)}, et ${createLink('les services de transport', PAGES.transport)}. N'hésitez pas à me poser des questions plus précises.`;
         }
     }
 
     // Initialize chatbot when DOM is loaded
-    document.addEventListener('DOMContentLoaded', initChatbot);
-
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initChatbot);
+    } else {
+        initChatbot();
+    }
 })(); 

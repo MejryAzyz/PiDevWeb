@@ -392,42 +392,12 @@
     </div><!-- /.container -->
 </section>
 
-<!-- Chatbot Toggle Button -->
-<button id="chatbot-toggle" class="chatbot-toggle">
-    <i class="fas fa-comments"></i>
-</button>
-
-<!-- Chatbot Container -->
-<div id="chatbot-container" class="chatbot-hidden">
-    <div class="chatbot-header">
-        <h3>Assistant Virtuel</h3>
-        <span class="status">En ligne</span>
-    </div>
-    <div id="chatbot-messages"></div>
-    <div class="chatbot-input-area">
-        <input type="text" id="chatbot-input" placeholder="Tapez votre message..." autocomplete="off">
-        <button id="chatbot-send">
-            <i class="fas fa-paper-plane"></i>
-        </button>
-    </div>
-</div>
-
-<!-- Add Font Awesome for icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-
-<!-- Add our chatbot styles -->
-<link rel="stylesheet" href="{{ asset('css/hebergement-chatbot.css') }}">
-
-<!-- Add our chatbot script -->
-<script src="{{ asset('js/hebergement-chatbot.js') }}"></script>
-
 {% block javascripts %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Récupérer les clés API depuis les variables Twig
         const ipapiApiKey = '{{ ipapi_api_key }}';
         const exchangeRatesApiKey = '{{ exchange_rates_api_key }}';
-        const geminiApiKey = '{{ gemini_api_key }}'; // Add Gemini API key
 
         // Fonction pour extraire le prix d'une chaîne de caractères
         function extractPrice(text) {

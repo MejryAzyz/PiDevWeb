@@ -321,35 +321,12 @@
     </div><!-- /.container -->
 </section>
 
-<!-- Chatbot Component -->
-<div class="chatbot-wrapper">
-    <button id="chatbot-toggle" class="chatbot-toggle">
-        <i class="icofont-robot"></i>
-    </button>
-    <div id="chatbot-container" class="chatbot-container chatbot-hidden">
-        <div class="chatbot-header">
-            <div class="chatbot-title-container">
-                <h5 class="chatbot-title">Assistant Hébergement</h5>
-                <p class="chatbot-subtitle">Posez-moi vos questions</p>
-            </div>
-        </div>
-        <div id="chatbot-messages" class="chatbot-messages"></div>
-        <div class="chatbot-input-container">
-            <input type="text" id="chatbot-input" class="chatbot-input" placeholder="Écrivez votre message...">
-            <button id="chatbot-send" class="chatbot-send">
-                <i class="icofont-paper-plane"></i>
-            </button>
-        </div>
-    </div>
-</div>
-
 {% block javascripts %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Récupérer les clés API depuis les variables Twig
         const ipapiApiKey = '{{ ipapi_api_key }}';
         const exchangeRatesApiKey = '{{ exchange_rates_api_key }}';
-        const geminiApiKey = '{{ gemini_api_key }}'; // Add Gemini API key
 
         // Fonction pour extraire le prix d'une chaîne de caractères
         function extractPrice(text) {
@@ -458,9 +435,5 @@
         updateLocationInfo();
     });
 </script>
-
-<!-- Chatbot Script -->
-<link rel="stylesheet" href="{{ asset('js/hebergement-chatbot.css') }}">
-<script src="{{ asset('js/hebergement-chatbot.js') }}"></script>
 {% endblock %}
 {% endblock %} 
