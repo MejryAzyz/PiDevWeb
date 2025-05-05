@@ -48,7 +48,7 @@ symfony server:start
 ```
 ---
 
-## 🛠️ Utilisation : Instructions pour configurer PHP (Symfony utilise PHP comme base)
+## 🛠️ Utilisation : Instructions pour configurer PHP (Symfony utilise PHP comme base) <a name="utilisation"></a>
 
 Pour faire fonctionner **Med Travel**, vous devez installer **PHP**, qui est la base de Symfony. Voici les étapes pour installer et vérifier PHP sur votre machine.
 
@@ -77,7 +77,7 @@ Pour utiliser ce projet, vous devez installer **PHP**. Voici les étapes :
     ```
  ---
    
-## 🤝 Contribuer
+## 🤝 Contribuer <a name="contribution"></a>
 
 Nous remercions tous ceux qui ont contribué à **Med Travel** !
 
@@ -107,7 +107,7 @@ Si vous souhaitez contribuer, suivez les étapes ci-dessous pour faire un **fork
    ```
 ---
 
-## 📄 Licence
+## 📄 Licence <a name="licence"></a>
 
 Ce projet est distribué sous la licence **MIT**. Cela signifie que vous êtes libre d'utiliser, copier, modifier, fusionner, publier, distribuer, sous-licencier et/ou vendre des copies du logiciel, sous réserve de respecter les conditions de la licence.
 
