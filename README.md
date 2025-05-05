@@ -34,7 +34,7 @@ La complexité de l'organisation d’un séjour médical à l’étranger est so
 
 ---
 
-## ⚙️ Installation
+## ⚙️ Installation <a name="installation"></a>
 
 1. Clonez le repository :
 ```bash
